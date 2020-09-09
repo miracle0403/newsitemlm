@@ -1,5 +1,5 @@
 var expressValidator = require('express-validator');
-var mail = require('./mail');
+//var mail = require('./mail');
 var mailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
 
@@ -15,11 +15,11 @@ function bankupdate( details, db, currentUser, req, res){
 	if (errors){
 		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, bank: details.bank_name, nuban: details.account_number, acc: details.account_name, fullname:details.fullname });
 	}else{
-		db.query('UPDATE user SET bank_name = ? account_name = ? account_number = ? fullname = ? WHERE user_id = ?', [details.bank_name, details.account_number, details.account_name, details.fullname, currentUser], funtion(err, results, fields){
-			if (err) throw;
+		db.query('UPDATE user SET bank_name = ? account_name = ? account_number = ? fullname = ? WHERE user_id = ?', [details.bank_name, details.account_number, details.account_name, details.fullname, currentUser], function(err, results, fields){
+			if (err) throw err;
 			res.render('profile', {mess: "UPDATE SUCCESSFUL", success: 'Bank update successful!'});  
 		});
-	}
+	
 	}
 }
 
@@ -46,8 +46,8 @@ function bioupdate( details, db, currentUser, req){
 						var error = "Sorry, this phone is taken";
 				res.render('profile', {mess: 'PROFILE UPDATE FAILED', error: error, email: details.email, phone: details.phone });
 					}else{
-						db.query('UPDATE user SET email = ? phone = ? WHERE user_id = ?', [details.email, '+' + details.phone, currentUser], funtion(err, results, fields){
-							if (err) throw;
+						db.query('UPDATE user SET email = ? phone = ? WHERE user_id = ?', [details.email, '+' + details.phone, currentUser], function(err, results, fields){
+							if (err) throw err;
 							res.render('profile', {mess: "UPDATE SUCCESSFUL", success: 'Profile update successful!'}); 
 						});
 					}
@@ -70,6 +70,6 @@ function passwordChange( details, db, currentUser, req){
 		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, oldPassword: details.old_password, password: details.password, cpass: details.cpass});
 	}else{
 		db.query('SELECT password FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
-					if (err) throw err;
+					if (err) throw err; });
 	}
 }

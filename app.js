@@ -9,7 +9,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
+//var expressValidator = require('express-validator');
+const { body, validationResult } = require('express-validator');
 var mysql = require('mysql');
 var hbs = require('hbs');
 var fs = require('fs');
@@ -73,7 +74,7 @@ app.use(flash());
 // middle ware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressValidator());
+//app.use(expressValidator());
 
 app.use(function(req, res, next){
   res.locals.isAuthenticated = req.isAuthenticated();

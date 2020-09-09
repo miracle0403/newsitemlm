@@ -12,17 +12,24 @@ var securePin = require('secure-pin');
 var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 var db = require('../db.js');
-var expressValidator = require('express-validator');
+//var expressValidator = require('express-validator');
 
-var link = require('./functions/routes/route-link');
-var bycrypt = require('./functions/other/bcrypt');
-var reg = require('./functions/register/reg');
-var profile = require('./functions/profile/profile');
+const { body, validationResult } = require('express-validator');
 
+var link = require('../functions/routes/route-link');
 var bcrypt = require('bcrypt-nodejs');
+var reg = require('../functions/register/reg');
+var profile = require('../functions/profile/profile');
+
+//var bcrypt = require('../functions/other/bcrypt');
+
+function rounds( err, results ){
+        if ( err ) throw err;
+}
+
 const saltRounds = bcrypt.genSalt( 10, rounds);
 
-var pool  = mysql.createPool({
+/*var pool  = db.createPool({
   connectionLimit : 100,
   multipleStatements: true, 
   waitForConnections: true,
@@ -30,7 +37,7 @@ var pool  = mysql.createPool({
   user: "root",
 //  password: 'new',
   database: "new"
-});
+});*/
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

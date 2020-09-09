@@ -1,5 +1,5 @@
 var expressValidator = require('express-validator');
-var mail = require('./mail');
+//var mail = require('./mail');
 var mailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
 
@@ -89,7 +89,7 @@ function resendverify(email, mailer, hash, link, hbs, db, req, res){
 	//flash message 
 	var success = 'link resent';
 	res.redirect('/register');
-	});
+	
 }
 
 //confirm verification link 
