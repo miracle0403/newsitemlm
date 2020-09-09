@@ -185,21 +185,21 @@ router.post('/register/:username', function (req, res, next){
 
 
 //post profile update
-router.post('/bank', function(req, res, next)
+router.post('/bank', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
 	var details = req.body;
 	profile.bankupdate( details, db, currentUser, req, res)
 });
 
 
-router.post('/bioupdate', function(req, res, next)
+router.post('/bioupdate', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
 	var details = req.body;
 	bioupdate( details, db, currentUser, req)
 });
 
 
-router.post('/passwordchange', function(req, res, next)
+router.post('/passwordchange', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
 	var details = req.body;
 	
