@@ -70,6 +70,23 @@ function passwordChange( details, db, currentUser, req){
 		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, oldPassword: details.old_password, password: details.password, cpass: details.cpass});
 	}else{
 		db.query('SELECT password FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
-					if (err) throw err; });
+			if (err) throw err;
+			var pash = results[0].password;
+			bcrypt.compare(details.old_password, pash, function(err, response){
+				if(response === false){
+					//flash message
+					var error = 'password change dailed';
+					res.redirect('/profile');
+				}else{
+					bcrypt.hash(password, saltRounds, null, function(err, hash){
+						db.query('UPDATE user SET password = ? WHERE user_id = ?', [hash, currentUser], function(err, results, fields){
+							if(err) throw err;
+							var success = 'Password change was successful';
+							res.redirect('/profile')
+						});
+					});
+				}
+			});
+		});
 	}
 }

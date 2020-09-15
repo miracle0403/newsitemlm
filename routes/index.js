@@ -1,4 +1,6 @@
 'use strict';
+
+
 const nodemailer =  require('nodemailer');
 var ensureLoggedIn = require( 'connect-ensure-login' ).ensureLoggedIn
 var express = require('express');
@@ -12,6 +14,9 @@ var securePin = require('secure-pin');
 var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 var db = require('../db.js');
+var password = require('../functions/profile/passwordreset');
+var querystring = require('querystring');
+
 //var expressValidator = require('express-validator');
 
 const { body, validationResult } = require('express-validator');
@@ -45,11 +50,36 @@ router.get('/', function(req, res, next) {
   res.render('index', { mess: message });
 });
 
-router.get('/:username', function(req, res, next) {
-		var username = req.params.username;
-		var route = '/';
-		link.route(username, db, route, req, res);
+
+router.get('/ref=:username', function(req, res, next) {
+	var username = req.params.username;
+	
+		var rout = '/';
+		link.route(username, db, rout, req, res);
 });
+
+router.get('/passwordreset', function(req, res, next) {
+		var message = 'Site Name';
+  res.render('passwordreset', { mess: message + '  |  Password Reset'});
+});
+
+router.get('/resendPass/email=:email/link=:link', function(req, res, next) {
+	var details = req.params;
+	password.resendPass(details)
+});
+
+router.get('/changePass/email=:email', function(req, res, next) {
+	var details = req.params;
+	password.changePass(details)
+});
+
+
+router.get('/confirmPass/email=:email/link=:link', function(req, res, next) {
+	var details = req.params;
+	password.confirmReset(details)
+});
+
+
 
 //faq
 router.get('/faq', function(req, res, next) {
@@ -57,7 +87,7 @@ router.get('/faq', function(req, res, next) {
   res.render('faq', { mess: message });
 });
 
-router.get('/faq/:username', function(req, res, next) {
+router.get('/faq/ref=:username', function(req, res, next) {
 		var username = req.params.username;
 		var route = '/faq';
 		link.route(username, db, route, req, res);
@@ -198,6 +228,16 @@ router.post('/bank', function(req, res, next){
 	profile.bankupdate( details, db, currentUser, req, res)
 });
 
+router.post('/passwordreset', function(req, res, next){
+	var details = req.body;
+	password.passwordreset(details)
+});
+
+router.post('/changepass', function(req, res, next){
+	var details = req.body;
+	password.changePass(details)
+});
+
 
 router.post('/bioupdate', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
@@ -206,12 +246,32 @@ router.post('/bioupdate', function(req, res, next){
 });
 
 
-router.post('/passwordchange', function(req, res, next){
+router.post('/enterfeeder', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
 	var details = req.body;
 	
+	
 });
 
+
+router.post('/passwordchange', function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var details = req.body;
+	password.changePass(details);
+});
+
+router.post('/activation', function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	db.query('SELECT phone, fullname, username, sponsor FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
+		if (err ) throw err;
+		var details = results[0];
+		db.query('SELECT COUNT FROM user AS count WHERE sponsor = ?', [details.sponsor], function(err, results, fields){
+			if (err ) throw err;
+			var count = results[0].count;
+			activation.activate(count, details);
+		});
+	});
+});
 
 function authentificationMiddleware(){
   return (req, res, next) => {

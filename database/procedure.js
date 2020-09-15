@@ -12,3 +12,25 @@ INSERT INTO user_tree(sponsor, user, rgt, lft) VALUES(sponsor, username, @myLeft
 
 INSERT INTO user (sponsor, full_name, phone, code, username, email, password, status, verification) VALUES ( sponsor, full_name, phone,code, username, email, password, 'active', 'no');
 END$$
+
+CREATE TABLE `user` (
+	`user_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`full_name` VARCHAR(50) NOT NULL DEFAULT '0',
+	`username` VARCHAR(255) NOT NULL,
+	`email` VARCHAR(255) NOT NULL,
+	`phone` VARCHAR(255) NOT NULL,
+	`password` TEXT NOT NULL,
+	`status` INT(11) NOT NULL DEFAULT '0',
+	`account_name` VARCHAR(255) NULL,
+	`bank_name` VARCHAR(255) NULL,
+	`account_number` BIGINT (10)  NULL,
+	`sponsor` TEXT NULL DEFAULT NULL,
+	`verification` TEXT NOT NULL DEFAULT 'No',
+	
+	`user_type` VARCHAR (255) NOT NULL ,
+	`activated` TEXT NOT NULL DEFAULT 'No',
+	`date_joined` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`user_id`),
+	UNIQUE INDEX `username` (`username`),
+	UNIQUE INDEX `email` (`email`)
+)

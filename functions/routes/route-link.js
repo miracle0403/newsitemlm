@@ -1,4 +1,4 @@
-function route(affiliate, db, route, req,res, message){
+exports.route = function (affiliate, db, route, req,res, message){
 	
 	this.route = route;
 	this.db = db;
@@ -43,3 +43,4 @@ function getProfile(currentUser, db, res){
 		}
 	});
 }
+

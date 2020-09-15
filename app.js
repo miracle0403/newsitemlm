@@ -48,9 +48,9 @@ var options = {
   waitForConnections: true,
   connectionLimit : 100,
   host: "localhost",
-  user: "root",
-  //password: 'new',
-  database: "new"
+  user: "newuser",
+  password: 'user_password',
+  database: "newdb"
 };
 
 app.use(myConnection(mysql, options, 'pool')); 
