@@ -5,9 +5,9 @@ const nodemailer =  require('nodemailer');
 var ensureLoggedIn = require( 'connect-ensure-login' ).ensureLoggedIn
 var express = require('express');
 var router = express.Router();
-
+var ensureLoggedIn = require('connect-ensure-login');
 var mailer = require('nodemailer');
-var hbs = require('nodemailer-express-handlebars');
+var msghbs = require('nodemailer-express-handlebars');
 
 
 var passport = require('passport'); 
@@ -105,6 +105,10 @@ router.get('/promote_us/ref=:username', function(req, res, next) {
 		var username = req.params.username;
 		var route = '/promote_us';
 		link.route(username, db, route, req, res);
+});
+
+router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
+	
 });
 
 
@@ -329,7 +333,7 @@ router.post('/bioupdate', function(req, res, next){
 //post log in
 router.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
-  successRedirect: '/dashboard',
+  successReturnToOrRedirect: '/dashboard',
   failureFlash: true
 }));
 
