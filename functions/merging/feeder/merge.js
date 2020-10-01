@@ -34,7 +34,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -58,7 +58,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -82,7 +82,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -106,7 +106,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -130,7 +130,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -157,7 +157,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -181,7 +181,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -208,7 +208,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -235,7 +235,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -259,7 +259,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -283,7 +283,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -307,7 +307,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -331,7 +331,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -361,7 +361,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;
@@ -385,7 +385,7 @@ exports.merge = function (info, currentUser){
 								if (err) throw err;
 								securePin.generateString (10, charSet, function(str){
 								var date = new Date();
-								date.setHours( getHours() + 25 );
+								date.setHours(date.getHours() + 3);
 								var year = date.getFullYear();
 								var month = date.getMonth() + 1;
 								var day = date.getDate() + 1;

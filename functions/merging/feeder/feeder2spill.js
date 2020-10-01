@@ -24,8 +24,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;
@@ -49,8 +48,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;
@@ -74,8 +72,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;
@@ -99,8 +96,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;
@@ -124,8 +120,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;
@@ -149,8 +144,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;
@@ -174,8 +168,7 @@ exports.feeder2spill = function(){
 						if (err) throw err;
 						securePin.generateString (10, charSet, function(str){
 							var date = new Date();
-							date.setHours( getHours() + 25 );
-							var year = date.getFullYear();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
 							var month = date.getMonth() + 1;
 							var day = date.getDate() + 1;
 							var order_id = 'fe' + str + year + month + day;

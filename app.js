@@ -37,6 +37,35 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+//get new partials
+var messageTemplate = fs.readFileSync(__dirname + '/views/mail/partials/messages.hbs', 'utf8');
+hbs.registerPartial('message', messageTemplate); 
+
+var mainnavTemplate = fs.readFileSync(__dirname + '/views/partials/mainnav.hbs', 'utf8');
+hbs.registerPartial('mainnav', mainnavTemplate); 
+
+var noearnTemplate = fs.readFileSync(__dirname + '/views/partials/nomerge.hbs', 'utf8');
+hbs.registerPartial('nomerge', noearnTemplate); 
+
+var mainhTemplate = fs.readFileSync(__dirname + '/views/partials/mainh.hbs', 'utf8');
+hbs.registerPartial('mainh', mainhTemplate); 
+
+var mainfTemplate = fs.readFileSync(__dirname + '/views/partials/spageh.hbs', 'utf8');
+hbs.registerPartial('spageh', mainfTemplate); 
+
+var mainfTemplate = fs.readFileSync(__dirname + '/views/partials/spagenav.hbs', 'utf8');
+hbs.registerPartial('spagenav', mainfTemplate); 
+
+
+var mainfTemplate = fs.readFileSync(__dirname + '/views/partials/mainf.hbs', 'utf8');
+hbs.registerPartial('mainf', mainfTemplate); 
+
+
+var mainfTemplate = fs.readFileSync(__dirname + '/views/partials/spagef.hbs', 'utf8');
+hbs.registerPartial('spagef', mainfTemplate); 
+
+
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -100,6 +129,7 @@ passport.use(new localStrategy(function(username, password, done){
    const hash = results[0].password.toString();
    bcrypt.compare(password, hash, function(err, response){
    		if (response === true){
+   			console.log('logged in')
    			return done(null, {user_id: results[0].user_id});
      }else{
      		return done(null, false,{

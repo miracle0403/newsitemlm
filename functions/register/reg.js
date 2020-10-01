@@ -1,72 +1,74 @@
-var expressValidator = require('express-validator');
-//var mail = require('./mail');
-var mailer = require('nodemailer');
-var hbs = require('nodemailer-express-handlebars');
 
-function register(db, req, res, bcrypt, username, fullname, phone, pass1, pass2, sponsor, email, code){
-	
-	req.checkBody(username, 'Username must be between 8 to 25 characters').len(8,25);
-  req.checkBody(fullname, 'Full Name must be between 8 to 25 characters').len(8,25);
-  req.checkBody(password, 'Password must be between 8 to 25 characters').len(8,100);
-  req.checkBody(cpass, 'Password confirmation must be between 8 to 100 characters').len(8,100);
-  req.checkBody(email, 'Email must be between 8 to 105 characters').len(8,105);
-  req.checkBody(email, 'Invalid Email').isEmail();
-  req.checkBody(code, 'Country Code must not be empty.').notEmpty();
-  req.checkBody(password, 'Password must match').equals(cpass);
-  req.checkBody(phone, 'Phone Number must be ten characters').len(10);
-  
-  var errors = req.validationErrors();
-	if (errors){
-		res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, code: code, sponsor: sponsor});
+//var mail = require('./mail');
+
+var bcrypt = require('bcrypt-nodejs');
+const { validationResult, matchedData } = require('express-validator');
+function rounds( err, results ){
+        if ( err ) throw err;
+}
+var mail = require('../mail/verify.js');
+const saltRounds = bcrypt.genSalt( 10, rounds);
+
+
+
+
+exports.register = function(db, req, res, username, fullname, phone, password, cpass, sponsor, email, errors){
+	 
+	if (errors.length > 0){
+		res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor});
 	}else{
+		if (cpass !== password){
+			var error = 'Password must match';
+			res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor, error: error});
+		}else{
 		db.query('SELECT username FROM user WHERE username = ?', [username], function(err, results, fields){
 			if (err) throw err;
 			if(results.length > 0){
 				var error = "Sorry, this username is taken";
-				res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, code: code, sponsor: sponsor});
+				res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,  sponsor: sponsor});
 			}else{
 				db.query('SELECT email FROM user WHERE email = ?', [email], function(err, results, fields){
 					if (err) throw err;
 					if (results.length > 0){
 						var error = "Sorry, this email is taken";
-						res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, code: code, sponsor: sponsor});
+						res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
 					}else{
 						db.query('SELECT phone FROM user WHERE phone = ?', [phone], function(err, results, fields){
 							if (err) throw err;
-							var phon = results[0].phone;
-							if (phon == phone){
+							
+							if (results.length > 0){
 								var error = "Sorry, this phone number is taken";
-						res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, code: code, sponsor: sponsor});
+						res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
 							}else{
 								db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
 									if (err) throw err;
 									if(results.length === 0){
-										db.query('SELECT sponsor FROM default', function(err, results, fields){
+										db.query('SELECT user FROM default_sponsor', function(err, results, fields){
 											if (err) throw err;
-											var sponsor = results[0].sponsor;
-											var phone = code + phone;
+											var sponsor = results[0].user;
+											;
 											//register user
 											bcrypt.hash(password, saltRounds, null, function(err, hash){
-												db.query( 'CALL register (?, ?, ?, ?, ?, ?, ?, ?)', [sponsor, fullname, phone, username, email, hash, 'active', 'no'], function(err, result, fields){
+												db.query( 'INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  password) VALUES (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
 													if (err) throw err;
 													var success = 'Registration successful! please verify your email';
-													mail.verifymail(email, mailer, username, hash, link, hbs);
+													mail.verifymail(email,   username, hash);
 													res.render('/register/' + sponsor, {mess: 'REGISTRATION SUCCESSFUL', success: success});
 												});
 											});
 										});
 									}else{
-										var phon = code + phone;
+										var phon =   + phone;
 											//register user
 										bcrypt.hash(password, saltRounds, null, function(err, hash){
 											db.query( 'CALL register (?, ?, ?, ?, ?, ?, ?, ?)', [sponsor, fullname, phon, username, email, hash, 'active', 'no'], function(err, result, fields){
 												if (err) throw err;
 												var success = 'Registration successful! please verify your email';
-												var link = 'site.com' + '/' + username + '/' + email + '/' + hash;
+												var link = 'http://localhost:3000' + '/' + username + '/' + email + '/' + hash;
 												db.query('INSERT INTO verifyemail (link, email) VALUES(?,?)', [link, email], function(err, results, fields){
 													if (err) throw err;
-													mail.verifymail(email, mailer, username, link, hbsmail);
-													res.render('/register/' + sponsor, {mess: 'REGISTRATION SUCCESSFUL', success: success, email, link});
+													mail.verifymail(email, username, link);
+													res.render('/register' , {mess: 'REGISTRATION SUCCESSFUL', success: success, email, link, username:username});
 												});	
 											});
 										});
@@ -78,14 +80,14 @@ function register(db, req, res, bcrypt, username, fullname, phone, pass1, pass2,
 				});
 			}
 		});
-	}
+	}}
 }
 
 //resend verification link 
 
-function resendverify(email, mailer, hash, link, hbs, db, req, res){
+function resendverify(email, hash, link, hbs, db, req, res){
 	this.email = email;
-	mail.verifymail(email, mailer, username, link, hbs);
+	mail.verifymail(email,   username, link, hbs);
 	//flash message 
 	var success = 'link resent';
 	res.redirect('/register');
@@ -117,7 +119,7 @@ function confirmverify(email, link, db, req, res, flashMessages){
 						username: results[0].username
 					}
 					//send welcome message 
-					mail.welcome(email, mailer,  hbs, details.fullname, details.username);
+					mail.welcome(email,    hbs, details.fullname, details.username);
 					res.redirect('/verify' + '/' + email + '/' + link );
 				});
 			});

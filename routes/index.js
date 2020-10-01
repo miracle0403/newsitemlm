@@ -9,6 +9,7 @@ var router = express.Router();
 var mailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
 
+
 var passport = require('passport'); 
 var securePin = require('secure-pin');
 var charSet = new securePin.CharSet();
@@ -19,11 +20,12 @@ var querystring = require('querystring');
 
 //var expressValidator = require('express-validator');
 
-const { body, validationResult } = require('express-validator');
+var { check, validationResult } = require('express-validator');
+
 
 var link = require('../functions/routes/route-link');
 var bcrypt = require('bcrypt-nodejs');
-var reg = require('../functions/register/reg');
+var verify = require('../nodemailer/verify');
 var profile = require('../functions/profile/profile');
 
 //var bcrypt = require('../functions/other/bcrypt');
@@ -99,7 +101,7 @@ router.get('/promote_us', function(req, res, next) {
   res.render('promote', { mess: message });
 });
 
-router.get('/promote_us/:username', function(req, res, next) {
+router.get('/promote_us/ref=:username', function(req, res, next) {
 		var username = req.params.username;
 		var route = '/promote_us';
 		link.route(username, db, route, req, res);
@@ -112,7 +114,7 @@ router.get('/register', function(req, res, next) {
   res.render('register', { mess: message });
 });
 
-router.get('/register/:username', function(req, res, next) {
+router.get('/register/ref=:username', function(req, res, next) {
 		var username = req.params.username;
 		var route = '/register';
 		link.route(username, db, route, req, res);
@@ -124,10 +126,17 @@ router.get('/howitworks',  function (req, res, next){
  res.render('howitworks', {mess: message});
 });
 
-router.get('/howitworks/:username', function(req, res, next) {
+router.get('/howitworks/ref=:username', function(req, res, next) {
 		var username = req.params.username;
 		var route = '/howitworks';
 		link.route(username, db, route, req, res);
+});
+
+//get logout
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  req.session.destroy();
+  res.redirect('/');
 });
 
 //resend verification link
@@ -160,7 +169,7 @@ router.get('/login', function(req, res, next) {
 	}
 });
 
-router.get('/login/:username', function(req, res, next){
+router.get('/login/ref=:username', function(req, res, next){
 	const flashMessages = res.locals.getMessages( );
 	var username = req.params.username;
 	db.query('SELECT username FROM user WHEN username = ?', [username], function(err, results, fields){
@@ -193,20 +202,90 @@ router.get('/profile', authentificationMiddleware(), function(req, res, next) {
 //Post section
 
 //post register
-router.post('/register', function (req, res, next){
+router.post('/register', [	check('username', 'Username must be between 8 to 25 characters').isLength(8,25),	check('fullname', 'Full Name must be between 8 to 25 characters').isLength(8,25),	check('password', 'Password must be between 8 to 25 characters').isLength(8,100),	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),	check('email', 'Invalid Email').isEmail(),		check('phone', 'Phone Number must be eleven characters').isLength(11)], function (req, res, next) {	 
+	console.log(req.body)
 	
 	var username = req.body.username;
-    var password = req.body.pass1;
-    var cpass = req.body.pass2;
+    var password = req.body.password;
+    var cpass = req.body.cpass;
     var email = req.body.email;
     var fullname = req.body.fullname;
-    var code = req.body.code;
+    
     var phone = req.body.phone;
 	var sponsor = '';
-				reg.register(db, req, res, bcrypt, username, fullname, phone, password, cpass, sponsor, email, code);;
+	
+			var errors = validationResult(req).errors;
+			
+			if (errors.length > 0){
+		res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor});
+	}else{
+		if (cpass !== password){
+			var error = 'Password must match';
+			res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor, error: error});
+		}else{
+			db.query('SELECT username FROM user WHERE username = ?', [username], function(err, results, fields){
+				if (err) throw err;
+				if(results.length > 0){
+					var error = "Sorry, this username is taken";
+					res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,  sponsor: sponsor});
+				}else{
+					db.query('SELECT email FROM user WHERE email = ?', [email], function(err, results, fields){
+						if (err) throw err;
+						if (results.length > 0){
+							var error = "Sorry, this email is taken";
+							res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
+						}else{
+							db.query('SELECT phone FROM user WHERE phone = ?', [phone], function(err, results, fields){
+								if (err) throw err;
+							
+								if (results.length > 0){
+									var error = "Sorry, this phone number is taken";
+									res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
+									}else{
+										db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
+											if (err) throw err;
+											if(results.length === 0){
+												db.query('SELECT user FROM default_sponsor', function(err, results, fields){
+													if (err) throw err;
+													var sponsor = results[0].user;
+											
+													//register user
+													bcrypt.hash(password, saltRounds, null, function(err, hash){
+													db.query( 'INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  password) VALUES (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+														if (err) throw err;
+														var success = 'Registration successful! please verify your email';
+														
+														//mail
+														//verify.verifymail(email,   username, hash);
+													res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+													});
+												});
+											});
+										}else{
+											var sponsor = req.body.sponsor;
+											bcrypt.hash(password, saltRounds, null, function(err, hash){
+												db.query( 'INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  password) VALUES (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+													if (err) throw err;
+													var success = 'Registration successful! please verify your email';
+														
+														//mail
+														//verify.verifymail(email,   username, hash);
+													res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+												});
+											});
+										}
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+	}
 });
 
-router.post('/register/:username', function (req, res, next){
+router.post('/register/ref=:username', function (req, res, next){
 	var username = req.params.username;
 	var username = req.body.username;
     var password = req.body.pass1;
@@ -245,6 +324,23 @@ router.post('/bioupdate', function(req, res, next){
 	bioupdate( details, db, currentUser, req)
 });
 
+
+
+//post log in
+router.post('/login', passport.authenticate('local', {
+  failureRedirect: '/login',
+  successRedirect: '/dashboard',
+  failureFlash: true
+}));
+
+//Passport login
+passport.serializeUser(function(user_id, done){
+  done(null, user_id)
+});
+        
+passport.deserializeUser(function(user_id, done){
+  done(null, user_id)
+});
 
 router.post('/enterfeeder', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;

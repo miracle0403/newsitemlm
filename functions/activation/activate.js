@@ -24,7 +24,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date, 'activation'], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -37,7 +37,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -63,7 +63,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -76,7 +76,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -108,7 +108,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -121,7 +121,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -147,7 +147,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
@@ -160,7 +160,7 @@ exports.activate = function(count, details){
 										var order_id = 'act' + str;
 										var date = new Date();
 										var dt = new Date();
-										date.setMinutes( date.getMinutes() + 180);
+										date.setHours(date.getHours() + 3);
 										db.query('INSERT INTO pending_transactions ( receiver, bank_name, account_name, account_number, giver_number, giver_name, order_id, created_on, expire) VALUES(?,?,?,?,?,?,?,?,?)', [receiver.fullname, receiver.bank_name, receiver.account_name, receiver_account_number, details.phone, details.fullname, order_id, dt, date], function(err, results, fields){
 											if (err) throw err;
 											var success = 'Successful!';
