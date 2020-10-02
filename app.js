@@ -27,7 +27,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var db = require('./db.js');
 
-
+console.log('mysql server started')
+console.log('no bugs')
+console.log('nodejs server started')
+console.log('database is good')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 

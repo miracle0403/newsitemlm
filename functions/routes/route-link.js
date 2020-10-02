@@ -17,7 +17,7 @@ exports.route = function (affiliate, db, route, req,res, message){
 	});
 }
 
-function getProfile(currentUser, db, res){
+exports.getProfile = function(currentUser, db, res){
 	
 	db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
 		if (err) throw err;
@@ -43,4 +43,3 @@ function getProfile(currentUser, db, res){
 		}
 	});
 }
-

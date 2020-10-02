@@ -4,7 +4,7 @@ var mailer = require('nodemailer');
 var hbs = require('nodemailer-express-handlebars');
 
 
-function bankupdate( details, db, currentUser, req, res){
+exports.bankupdate = function( details, db, currentUser, req, res){
 	
 	req.checkBody(details.bank_name, 'Bank Name must be between 8 to 15 characters').len(8,15);
 	req.checkBody , (details.account_number, 'Account Number must be 10 numbers ').len(10);
