@@ -1,13 +1,13 @@
 'use strict';
 
-
+var paystack = require('paystack')('pk_test_a4e3579de9e0ee17f9bb6fcc79653ab81da4d895');
 const nodemailer =  require('nodemailer');
 var ensureLoggedIn = require( 'connect-ensure-login' ).ensureLoggedIn
 var express = require('express');
 var router = express.Router();
-var ensureLoggedIn = require('connect-ensure-login');
+var ensureLoggedIn =  require('connect-ensure-login').ensureLoggedIn
 var mailer = require('nodemailer');
-var msghbs = require('nodemailer-express-handlebars');
+var hbs = require('nodemailer-express-handlebars');
 
 
 var passport = require('passport'); 
@@ -108,7 +108,19 @@ router.get('/promote_us/ref=:username', function(req, res, next) {
 });
 
 router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
-	
+	var currentUser = req.session.passport.user.user_id;
+	db.query( 'SELECT * FROM user WHERE user_id = ?', [currentUser], function ( err, results, fields ){
+  	if( err ) throw err;
+  	var bio = results[0];
+  	if(bio.bank_name === null){
+  		res.redirect('/profile');
+  	}else {
+  		if (bio.user_type === 'user' && bio.activated === 'No'){
+  			console.log('start now')
+  			res.render('dashboard', { mess: 'USER DASHBOARD', unactivate: 'You are not yet activated'})
+  		}
+  	}
+ });
 });
 
 
@@ -196,17 +208,154 @@ router.get('/login/ref=:username', function(req, res, next){
 });
 
 //profile
-router.get('/profile', authentificationMiddleware(), function(req, res, next) {
+router.get('/profile', ensureLoggedIn('/login'), function(req, res, next) {
   var currentUser = req.session.passport.user.user_id;
-  
-		link.getProfile(currentUser, db, res)
+  db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
+		if (err) throw err;
+		var details = results[0];
+		if(details.user_type == 'user'){
+			var bio = results[0];
+			console.log(bio)
+			if(bio.bank_name === null && bio.account_number === null && bio.account_name === null){
+				
+				var error = 'You have not updated your profile yet';
+				var flashMessages = res.locals.getMessages();
+				console.log(error, flashMessages)
+				if (flashMessages.emailerror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							emailerror: flashMessages.emailerror});
+				}else if (flashMessages.emailsuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showSuccess: true,
+							emailsuccess: flashMessages.emailsuccess});
+				}else if (flashMessages.phonesuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							showSuccess: true,
+							bio: bio,
+							phonesuccess: flashMessages.phonesuccess});
+				}else if (flashMessages.phoneerror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							phoneerror: flashMessages.phoneerror});
+				}else if (flashMessages.passworderror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							passworderror: flashMessages.passworderror});
+				}else if (flashMessages.passwordsuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showSuccess: true,
+							passwordsuccess: flashMessages.passwordsuccess});
+				}else if (flashMessages.banksuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showSuccess: true,
+							banksuccess: flashMessages.banksuccess});
+				} else if (flashMessages.bankerror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							bankerror: flashMessages.bankerror});
+				}else{
+					res.render('profile', {mess: 'User Profile', error: error, bio: bio});
+				}
+			}else{
+				var flashMessages = res.locals.getMessages();
+				console.log(error, flashMessages)
+				if (flashMessages.emailerror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							emailerror: flashMessages.emailerror});
+				}else if (flashMessages.emailsuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showSuccess: true,
+							emailsuccess: flashMessages.emailsuccess});
+				}else if (flashMessages.phonesuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							showSuccess: true,
+							bio: bio,
+							phonesuccess: flashMessages.phonesuccess});
+				}else if (flashMessages.phoneerror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							phoneerror: flashMessages.phoneerror});
+				}else if (flashMessages.passworderror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							passworderror: flashMessages.passworderror});
+				}else if (flashMessages.passwordsuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showSuccess: true,
+							passwordsuccess: flashMessages.passwordsuccess});
+				}else if (flashMessages.banksuccess){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showSuccess: true,
+							banksuccess: flashMessages.banksuccess});
+				} else if (flashMessages.bankerror ){
+					res.render( 'profile', {
+							mess: 'PROFILE UPDATE',
+							error: error,
+							bio: bio,
+							showErrors: true,
+							bankerror: flashMessages.bankerror});
+				}else{
+					res.render('profile', {mess: 'User Profile', error: error, bio: bio});
+				}
+			}
+		}else{
+			if(type == 'admin'){
+				
+			}
+		}
+	});
 });
 
 
 //Post section
 
 //post register
-router.post('/register', [	check('username', 'Username must be between 8 to 25 characters').isLength(8,25),	check('fullname', 'Full Name must be between 8 to 25 characters').isLength(8,25),	check('password', 'Password must be between 8 to 25 characters').isLength(8,100),	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),	check('email', 'Invalid Email').isEmail(),		check('phone', 'Phone Number must be eleven characters').isLength(11)], function (req, res, next) {	 
+router.post('/register', [	check('username', 'Username must be between 8 to 25 characters').isLength(8,25),	check('fullname', 'Full Name must be between 8 to 25 characters').isLength(8,25),	check('password', 'Password must be between 8 to 15 characters').isLength(8,15),	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),	check('email', 'Invalid Email').isEmail(),		check('phone', 'Phone Number must be eleven characters').isLength(11)], function (req, res, next) {	 
 	console.log(req.body)
 	
 	var username = req.body.username;
@@ -304,12 +453,7 @@ router.post('/register/ref=:username', function (req, res, next){
 });
 
 
-//post profile update
-router.post('/bank', function(req, res, next){
-	var currentUser = req.session.passport.user.user_id;
-	var details = req.body;
-	profile.bankupdate( details, db, currentUser, req, res)
-});
+
 
 router.post('/passwordreset', function(req, res, next){
 	var details = req.body;
@@ -322,12 +466,109 @@ router.post('/changepass', function(req, res, next){
 });
 
 
-router.post('/bioupdate', function(req, res, next){
+router.post('/emailchange', [	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),
+	check('email', 'Invalid Email').isEmail() ], function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
-	var details = req.body;
-	bioupdate( details, db, currentUser, req)
+	var bio = req.body;
+	var errors = validationResult(req).errors;
+	if (errors.length > 0){
+		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, bio: bio});
+	}else{
+		db.query('SELECT email FROM user WHERE email = ?', [bio.email], function(err, results, fields){
+			if (err) throw err;
+			if (results.length > 0){
+				var error = "Sorry, this email is taken";
+				req.flash('emailerror', error);
+			res.redirect('/profile/#emailerror');
+			}else{
+				db.query('UPDATE user SET email = ? WHERE user_id = ?', [bio.email, currentUser], function(err, results, fields){
+					if (err) throw err;
+					var success = 'Email update was successful!';
+					req.flash('emailsuccess', success);
+			res.redirect('/profile/#emailsuccess');
+				}); 
+			}
+		});
+	}
 });
 
+
+router.post('/passwordchange',[	 check('password', 'Password must be between 8 to 15 characters').isLength(8, 15), check('oldpass', 'Old password must be between 8 to 15 characters').isLength(8, 15), check('cpass', 'Password confirmation must be between 8 to 15 characters').isLength(8, 15)], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var bio = req.body;
+	var errors = validationResult(req).errors;
+	if (errors.length > 0){
+		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, bio: bio});
+	}else if (bio.cpass !== bio.password){
+		var error = 'Password does not match';
+		req.flash('passworderror', error);
+		res.redirect('/profile/#passworderror');
+	}else{
+		db.query('SELECT password FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
+			if (err) throw err;
+			var pash = results[0].password;
+			bcrypt.compare(bio.oldpass, pash, function(err, response){
+				if(response === false){
+					//flash message
+					var error = 'password change failed';
+					req.flash('passworderror', error);
+					res.redirect('/profile/#passworderror');
+				}else{
+					bcrypt.hash(password, saltRounds, null, function(err, hash){
+						db.query('UPDATE user SET password = ? WHERE user_id = ?', [hash, currentUser], function(err, results, fields){
+							if(err) throw err;
+							var success = 'Password change was successful';
+							req.flash('passwordsuccess', success);
+							res.redirect('/profile/#passwordsuccess')
+						});
+					});
+				}
+			});
+		});
+	}
+});
+
+router.post('/bank', ensureLoggedIn('/login'), [	 check('fullname', 'Full Name must be less than 25 characters').isLength(5, 25), check('account_name', 'Account Name must be between 8 to 25 characters').isLength(8, 25), check('bank_name', 'Bank Name must be between 3 to 15 characters').isLength(3, 15), check('account_number', 'Account Number must be between 10 characters').isLength(10)], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var bio = req.body;
+	var errors = validationResult(req).errors;
+	if (errors.length > 0){
+		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, bio: bio});
+	}else{
+		db.query('UPDATE user SET full_name = ?, account_name = ?, bank_name = ?, account_number = ? WHERE user_id = ?', [bio.fullname, bio.account_name, bio.bank_name, bio.account_number, currentUser], function(err, results, fields){
+			if (err) throw err;
+			var success = 'Bank details updated successfully!';
+			req.flash('banksuccess', success);
+			res.redirect('/profile/#banksuccess')
+		});
+	}
+});
+
+
+router.post('/phonechange', [	 check('phone', 'Phone Number must be between 11 characters').isLength(11) ], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var bio = req.body;
+	var errors = validationResult(req).errors;
+	if (errors.length > 0){
+		res.render('profile', {mess: 'PROFILE UPDATE FAILED', errors: errors, bio: bio });
+	}else{
+		db.query('SELECT phone FROM user WHERE phone = ?', [bio.phone], function(err, results, fields){
+			if (err) throw err;
+			if (results.length > 0){
+				var error = "Sorry, this Phone number is taken";
+				req.flash('phoneerror', error);
+			res.redirect('/profile/#phoneerror');
+			}else{
+				db.query('UPDATE user SET phone = ? WHERE user_id = ?', [bio.phone, currentUser], function(err, results, fields){
+					if (err) throw err;
+					var success = 'Phone number update was successful!';
+					req.flash('phonesuccess', success);
+			res.redirect('/profile/#phonesuccess');
+				}); 
+			}
+		});
+	}
+});
 
 
 //post log in
@@ -354,11 +595,6 @@ router.post('/enterfeeder', function(req, res, next){
 });
 
 
-router.post('/passwordchange', function(req, res, next){
-	var currentUser = req.session.passport.user.user_id;
-	var details = req.body;
-	password.changePass(details);
-});
 
 router.post('/activation', function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;

@@ -44,6 +44,10 @@ app.set('view engine', 'hbs');
 var messageTemplate = fs.readFileSync(__dirname + '/views/mail/partials/messages.hbs', 'utf8');
 hbs.registerPartial('message', messageTemplate); 
 
+//get new partials
+var unactivateTemplate = fs.readFileSync(__dirname + '/views/partials/unactivate.hbs', 'utf8');
+hbs.registerPartial('unactivate', unactivateTemplate); 
+
 var mainnavTemplate = fs.readFileSync(__dirname + '/views/partials/mainnav.hbs', 'utf8');
 hbs.registerPartial('mainnav', mainnavTemplate); 
 
