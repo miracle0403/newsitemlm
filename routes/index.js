@@ -114,11 +114,63 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
   	var bio = results[0];
   	if(bio.bank_name === null){
   		res.redirect('/profile');
-  	}else {
+  	}else{
   		if (bio.user_type === 'user' && bio.activated === 'No'){
-  			console.log('start now')
-  			res.render('dashboard', { mess: 'USER DASHBOARD', unactivate: 'You are not yet activated'})
-  		}
+  			db.query( 'SELECT * FROM transactions WHERE payer_username = ?', [bio.username], function ( err, results, fields ){
+  				if( err ) throw err;
+  				if(results.length === 0){
+  					var flashMessages = res.locals.getMessages();
+						if (flashMessages.mergeerror){
+							res.render( 'dashboard', {
+								mess: 'USER DASHBOARD',
+								bio: bio,
+								showErrors: true,
+								mergeerror: flashMessages.mergeerror,
+								noactimerge:'no merging',
+								unactivate: 'You are not yet activated'
+							});
+						}else if (flashMessages.success) {
+							res.render( 'dashboard', {
+								mess: 'USER DASHBOARD',
+								bio: bio,
+								showSuccess: true,
+								success: flashMessages.success,
+								noactimerge:'no merging',
+								unactivate: 'You are not yet activated'
+							});
+						}else{
+							res.render('dashboard', { mess: 'USER DASHBOARD', noactimerge:'no merging', unactivate: 'You are not yet activated'});
+						}
+  				}else{
+  					var actimerge = results[0];
+  					var timeleft = new Date().getHours(actimerge.expire) + 1;
+  					var flashMessages = res.locals.getMessages();
+  					if (flashMessages.mergeerror){
+							res.render( 'dashboard', {
+								mess: 'USER DASHBOARD',
+								bio: bio,
+								showErrors: true,
+								mergeerror: flashMessages.mergeerror,
+								timeleft: timeleft,
+								actimerge: actimerge,
+								unactivate: 'You are not yet activated'
+							});
+						}else if (flashMessages.success){
+							res.render( 'dashboard', {
+								mess: 'USER DASHBOARD',
+								bio: bio,
+								timeleft: timeleft,
+								showSuccess: true,
+								success: flashMessages.success,
+								actimerge: actimerge,
+								unactivate: 'You are not yet activated'
+							});
+						}else{
+							res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, actimerge:actimerge, unactivate: 'You are not yet activated'});
+						}
+  				}
+  			});
+  		}//else if activated
   	}
  });
 });
@@ -353,6 +405,73 @@ router.get('/profile', ensureLoggedIn('/login'), function(req, res, next) {
 
 
 //Post section
+
+//post activation
+
+router.post('/activate', function(req, res, next) {
+  var currentUser = req.session.passport.user.user_id;
+  console.log(currentUser)
+  if(currentUser === undefined){
+  		var error = 'You need to log in first';
+			req.flash('error', error);
+			res.redirect('/login');
+  }else{
+  	db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
+			if (err) throw err;
+			var details = results[0];
+			db.query('SELECT user FROM transactions WHERE payer_username = ?', [details.username], function(err, results, fields){
+				if (err) throw err;
+				if (results.length > 0){
+					var error = 'You still have a pending transaction.'
+					req.flash('mergeerror', error);
+					res.redirect('/dashboard/#mergeerror');
+				}else{
+					db.query('SELECT COUNT(username) AS count FROM user WHERE sponsor = ? AND activated = ?', [details.sponsor, 'Yes'], function(err, results, fields){
+						if (err ) throw err;
+						var count = results[0].count;
+						var amount = (count - 4) / 5;
+						if(Number.isInteger(amount) === false){
+							db.query('SELECT * FROM activation ORDER BY alloted DESC', function(err, results, fields){
+								if (err) throw err;
+								if(results.length === 0){
+									var error = 'Take a chill pill. No one to receive from you... Try again';
+									req.flash('mergeerror', error);
+									res.redirect('/dashboard/#mergeerror');
+								}else {
+									var acti = results[0];
+									db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+										if (err) throw err;
+										var receiver = results[0];
+										db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
+											if (err) throw err;
+											db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
+												if (err) throw err;
+												securePin.generateString(15, charSet, function(str){
+													var order_id = 'act' + str;
+													var date = new Date();
+													var dt = new Date();
+													date.setHours(date.getHours() + 25);
+													console.log(dt, date, receiver, details)
+													
+													db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
+														if (err) throw err;
+														var success = 'Someone is ready to receive from you. You have only 3 hours to complete payment';
+														req.flash('success', success);
+									res.redirect('/dashboard/#mergesuccess');
+													});
+												});
+											});
+										});
+									});
+								}
+							});
+						}//if number is an integer
+					});
+				}
+			});
+		});
+	}
+});
 
 //post register
 router.post('/register', [	check('username', 'Username must be between 8 to 25 characters').isLength(8,25),	check('fullname', 'Full Name must be between 8 to 25 characters').isLength(8,25),	check('password', 'Password must be between 8 to 15 characters').isLength(8,15),	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),	check('email', 'Invalid Email').isEmail(),		check('phone', 'Phone Number must be eleven characters').isLength(11)], function (req, res, next) {	 
@@ -596,18 +715,6 @@ router.post('/enterfeeder', function(req, res, next){
 
 
 
-router.post('/activation', function(req, res, next){
-	var currentUser = req.session.passport.user.user_id;
-	db.query('SELECT phone, fullname, username, sponsor FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
-		if (err ) throw err;
-		var details = results[0];
-		db.query('SELECT COUNT FROM user AS count WHERE sponsor = ?', [details.sponsor], function(err, results, fields){
-			if (err ) throw err;
-			var count = results[0].count;
-			activation.activate(count, details);
-		});
-	});
-});
 
 function authentificationMiddleware(){
   return (req, res, next) => {

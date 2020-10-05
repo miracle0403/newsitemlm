@@ -34,3 +34,26 @@ CREATE TABLE `verifyemail` (
 	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	UNIQUE INDEX `email` (`email`)
 );
+
+CREATE TABLE `transactions` (
+	`user` VARCHAR (255) NOT NULL,
+	`receiver_fullname` VARCHAR (255) NOT NULL,
+	`receiver_username` VARCHAR (255) NOT NULL,
+	`receiver_phone` BIGINT (10) NOT NULL,
+	`receiver_bank_name` VARCHAR (255) NOT NULL,
+	`receiver_account_name` VARCHAR (255) NOT NULL,
+	`receiver_account_number` BIGINT (10) NOT NULL,
+	`payer_fullname` VARCHAR (255) NOT NULL,
+	`payer_username` VARCHAR (255) NOT NULL,
+	`payer_phone` BIGINT (10) NOT NULL,
+	`purpose` VARCHAR (255) NOT NULL,
+	`expire` DATETIME NOT NULL,
+	`status` VARCHAR (255) NOT NULL DEFAULT 'PENDING',
+	`order_id` VARCHAR (255) NOT NULL,
+	`date_entered` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `activation` (
+	`username` VARCHAR (255) NOT NULL,
+	`alloted` VARCHAR (255) NOT NULL
+);

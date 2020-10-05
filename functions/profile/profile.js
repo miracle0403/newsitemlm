@@ -46,7 +46,7 @@ function bioupdate( details, db, currentUser, req){
 						var error = "Sorry, this phone is taken";
 				res.render('profile', {mess: 'PROFILE UPDATE FAILED', error: error, email: details.email, phone: details.phone });
 					}else{
-						db.query('UPDATE user SET email = ? phone = ? WHERE user_id = ?', [details.email, '+' + details.phone, currentUser], function(err, results, fields){
+						db.query('UPDATE user SET email = ? and phone = ? and fullname = ? WHERE user_id = ?', [details.email, '+' + details.phone, currentUser], function(err, results, fields){
 							if (err) throw err;
 							res.render('profile', {mess: "UPDATE SUCCESSFUL", success: 'Profile update successful!'}); 
 						});
