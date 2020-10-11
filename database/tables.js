@@ -50,10 +50,28 @@ CREATE TABLE `transactions` (
 	`expire` DATETIME NOT NULL,
 	`status` VARCHAR (255) NOT NULL DEFAULT 'PENDING',
 	`order_id` VARCHAR (255) NOT NULL,
+	`pop` VARCHAR (255) NULL,
 	`date_entered` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE `activation` (
 	`username` VARCHAR (255) NOT NULL,
 	`alloted` VARCHAR (255) NOT NULL
+);
+
+
+CREATE TABLE `feeder_tree` (
+	`sponsor` VARCHAR (255) NOT NULL,
+	`username` VARCHAR (255) NOT NULL,
+	`sponreceive` VARCHAR (255) NOT NULL,
+	`requiredEntrance` INT (11) NOT NULL,
+	`a` VARCHAR (255)  NULL,
+	`b` VARCHAR (255)  NULL,
+	`c` VARCHAR (255)  NULL,
+	`receive` VARCHAR (255) NOT NULL,
+	`status` VARCHAR (255) NOT NULL,
+	`order_id` VARCHAR (255) NOT NULL,
+	`lft` INT (11) NOT NULL,
+	`rgt` INT (11) NOT NULL,
+	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

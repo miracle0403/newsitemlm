@@ -43,7 +43,8 @@
           </div>
          </div>
         </div>
-{{else}}
+{{/if}}
+{{#if pendingmerge}}
 <div class = "content">
 {{#showSuccess}}
 				{{#success}}
@@ -52,6 +53,13 @@
 				  </div>
 				{{/success}}
 			{{/showSuccess}}
+				{{#showErrors}}
+				{{#mergeerror}}
+				  <div id = "mergeerror" class="alert alert-danger">
+					{{.}}
+				  </div>
+				{{/mergeerror}}
+			{{/showErrors}}
 <div class="row">
           <div class="col-md-12">
             <div class="card ">
@@ -60,27 +68,129 @@
                
               </div>
               <div class="card-body ">
-                {{#if actimerge}}
+                
                 <p class = "text-danger"><b>
-                Pay {{actimerge.receiver_fullname}} N1000 before {{actimerge.expire}}.</b>
+                Pay {{pendingmerge.receiver_fullname}} N1000 before {{pendingmerge.expire}}.</b>
                 </p>
                 <br>
                 <p>
-                Account Name:  {{actimerge.receiver_account_name}}<br>
-                Account Number: {{actimerge.receiver_account_number}}<br>
-                Bank: {{actimerge.receiver_bank_name}}<br>
+                Account Name:  {{pendingmerge.receiver_account_name}}<br>
+                Account Number: {{pendingmerge.receiver_account_number}}<br>
+                Bank: {{pendingmerge.receiver_bank_name}}<br>
                 Amount: N1000<br>
-                Phone: {{actimerge.receiver_phone}}<br>
-                Status: {{actimerge.status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} hours.</span>
+                Phone: {{pendingmerge.receiver_phone}}<br>
+                Status: {{pendingmerge.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
-                {{/if}}
+               
                 
-                <form action = "/tId">
+                
                 	<div class = "form-group">
-                		<input class = "form control" name = "tId" placeholder = "transaction Id">
+                	<a href = "/iPaid/{{pendingmerge.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
                 	</div>
-                </form>
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+</div>
+{{/if}}
+
+{{#if unconmerge}}
+<div class = "content">
+{{#showSuccess}}
+				{{#success}}
+				  <div id = "success" class="alert alert-success">
+					{{.}} click <a href = "/dashboard/#merging"> here to see</a>
+				  </div>
+				{{/success}}
+			{{/showSuccess}}
+				{{#showErrors}}
+				{{#mergeerror}}
+				  <div id = "mergeerror" class="alert alert-danger">
+					{{.}}
+				  </div>
+				{{/mergeerror}}
+			{{/showErrors}}
+<div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                You claimed to pay  {{unconmerge.receiver_fullname}} the sum of N1000. Call your receiver to confirm your payment before {{unconmerge.expire}}</b>
+                </p>
+                <br>
+                <p>
+                Account Name:  {{unconmerge.receiver_account_name}}<br>
+                Account Number: {{unconmerge.receiver_account_number}}<br>
+                Bank: {{unconmerge.receiver_bank_name}}<br>
+                Amount: N1000<br>
+                Phone: {{unconmerge.receiver_phone}}<br>
+                Status: <span class = "text-warning"> {{unconmerge.status}}</span><br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+                <br><img src = "{{unconmerge.pop}}" class = "img-fluid"/>
+                
+                
+                
+                	
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+</div>
+{{/if}}
+
+{{#if contestmerge}}
+<div class = "content">
+{{#showSuccess}}
+				{{#success}}
+				  <div id = "success" class="alert alert-danger">
+					{{.}} click <a href = "/dashboard/#merging"> here to see</a>
+				  </div>
+				{{/success}}
+			{{/showSuccess}}
+				{{#showErrors}}
+				{{#mergeerror}}
+				  <div id = "mergeerror" class="alert alert-danger">
+					{{.}}
+				  </div>
+				{{/mergeerror}}
+			{{/showErrors}}
+<div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                You claimed to pay  {{unconmerge.receiver_fullname}} the sum of N1000 however, {{contestmerge.receiver_fullname}} seems like he/she did not get the fund. You can still reach out to him or her. Meanwhile, Join the chat to resolve the issue</b>
+                </p>
+                <br>
+                {{#if chat}}
+                	<a href = "/chat/{{chat.id}}"><button type = "button" class = "btn btn-primary" >JOIN CHAT</button>
+                {{/if}}
               </div>
               <div class="card-footer ">
                 <hr>

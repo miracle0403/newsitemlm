@@ -1,0 +1,400 @@
+<div class="content">
+        <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+                    <div class="icon-big text-center icon-warning">
+                      <i class="nc-icon nc-globe text-warning"></i>
+                    </div>
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Feeder Earnings</p>
+                      <p class="card-title">Matrix: N{{feedmatrix}}<p>
+                       <p class="card-title">Sponsor Bonus: N{{feedbonus}}<p>
+                      <form class = "form-group" type = "submit" action = "/enter-feeder" method = "post"><button class = "btn btn-primary" type= "submit">Enter Feeder</button></form>
+                	</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-refresh"></i>
+                  Update Now
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+                    <div class="icon-big text-center icon-warning">
+                      <i class="nc-icon nc-globe text-warning"></i>
+                    </div>
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Total Earned</p>
+                      <p class="card-title">N{{totalEarned}}<p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-refresh"></i>
+                  Update Now
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+                    <div class="icon-big text-center icon-warning">
+                      <i class="nc-icon nc-money-coins text-success"></i>
+                    </div>
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Incoming Earnings</p>
+                      <p class="card-title">N{{expectedEarn}}<p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-calendar-o"></i>
+                  Last day
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-body ">
+                <div class="row">
+                  <div class="col-5 col-md-4">
+                    <div class="icon-big text-center icon-warning">
+                      <i class="nc-icon nc-favourite-28 text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="col-7 col-md-8">
+                    <div class="numbers">
+                      <p class="card-category">Total Paid</p>
+                      <p class="card-title">N{{totalPaid}} <p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-refresh"></i>
+                  Update now
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{#if nopop}}
+        {{#each nopop}}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                Pay {{nopop.payer_fullname}} N1000 before {{nopop.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                Account Name:  {{nopop.payer_account_name}}<br>
+                Account Number: {{nopop.payer_account_number}}<br>
+                Bank: {{nopop.payer_bank_name}}<br>
+                Amount: N1000<br>
+                Phone: {{nopop.payer_phone}}<br>
+                Status: {{nopop.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+               
+               
+                
+                	<div class = "form-group">
+                	<a href = "/iPaid/{{nopop.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	</div>
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+        {{/if}}
+        </div>
+        {{#if pop}}
+        {{#each pop}}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                Pay {{pop.payer_fullname}} N1000 before {{pop.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                Account Name:  {{pop.payer_account_name}}<br>
+                Account Number: {{pop.payer_account_number}}<br>
+                Bank: {{pop.payer_bank_name}}<br>
+                Amount: N1000<br>
+                Phone: {{pop.payer_phone}}<br>
+                Status: {{pop.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+               
+               
+                
+                
+                	<img src = "{{pop.pop}}" class = "img-fluid"
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+        {{/if}}
+      {{#if chat}}
+        {{#each chat}}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                Pay {{chat.payer_fullname}} N1000 before {{chat.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                Account Name:  {{chat.payer_account_name}}<br>
+                Account Number: {{chat.payer_account_number}}<br>
+                Bank: {{chat.payer_bank_name}}<br>
+                Amount: N1000<br>
+                Phone: {{chat.payer_phone}}<br>
+                Status: {{chat.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+              <div class = "form-group">
+                	<a href = "/chat/{{chat.id}}"><button class = "btn btn-primary" type= "button">CHAT</button></a>
+                	</div>
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+        {{/if}}
+        <div class="row">
+        
+      {{#if receivingact}}
+      {{#each receivingact}}
+      
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                You will receive payment from  {{receivingact.payer_fullname}} N1000 before {{receivingact.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                
+                Amount: N1000<br>
+                Phone: {{receivingact.payer_phone}}<br>
+                Status: {{receivingact.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+               
+                
+                
+                	<div class = "form-group">
+                	<a href = "/iPaid/{{receivingact.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	</div>
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+      {{/if}}
+       {{#if receivingbonus}}
+      {{#each receivingbonus}}
+      
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                You will receive payment from  {{receivingbonus.payer_fullname}} N1000 before {{receivingbonus.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                Purpose: {{receivingbonus.purpose}}<br>
+                Amount: N1000<br>
+                Phone: {{receivingbonus.payer_phone}}<br>
+                Status: {{receivingbonus.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+               
+                
+                
+                	<div class = "form-group">
+                	<a href = "/iPaid/{{receivingbonus.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	</div>
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+      {{/if}}
+       {{#if receivingmatrix}}
+      {{#each receivingmatrix}}
+      
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                You will receive payment from  {{receivingmatrix.payer_fullname}} N1000 before {{receivingmatrix.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                Purpose: {{receivingmatrix.purpose}}<br>
+                Amount: N1000<br>
+                Phone: {{receivingmatrix.payer_phone}}<br>
+                Status: {{receivingmatrix.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+               
+                
+                
+                	<div class = "form-group">
+                	<a href = "/iPaid/{{receivingmatrix.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	</div>
+                
+              </div>
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+      {{/if}}
+       {{#if receivinguser}}
+      {{#each receivinguser}}
+      
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header ">
+                <h5 class="card-title">Payment Details</h5>
+               
+              </div>
+              <div class="card-body ">
+                
+                <p class = "text-danger"><b>
+                You will receive payment from  {{receivinguser.payer_fullname}} N1000 before {{receivinguser.expire}}.</b>
+                </p>
+                <br>
+                <p>
+                Purpose: {{receivinguser.purpose}}<br>
+                Amount: N1000<br>
+                Phone: {{receivinguser.payer_phone}}<br>
+                Status: {{receivinguser.status}}<br>
+                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+                </p>
+               
+                
+                
+                	
+              <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                  <i class="fa fa-history"></i> Updated 3 minutes ago
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+      {{/if}}
+      </div>
+     </div>

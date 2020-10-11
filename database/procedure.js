@@ -1,17 +1,21 @@
-CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  BEGIN
+DELIMITER //
+CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  
+BEGIN
 
-SELECT @myLeft := lft FROM feeder_tree WHERE user = mother;
+SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
 
 UPDATE feeder_tree SET rgt = rgt + 2 WHERE rgt > @myLeft;
 UPDATE feeder_tree SET lft = lft + 2 WHERE lft > @myLeft;
 
 
-INSERT INTO feeder_tree(user, lft, rgt, status) VALUES(child, @myLeft + 1, @myLeft + 2, pending);
+INSERT INTO feeder_tree(username, lft, rgt, status) VALUES(child, @myLeft + 1, @myLeft + 2, pending);
+
+END //
 
 
-END$$
 
-CREATE PROCEDURE `leafdel` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255))  BEGIN
+CREATE PROCEDURE `leafdel` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
+)  BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE user = mother;
 
@@ -23,29 +27,44 @@ UPDATE feeder_tree SET lft = lft - 2 WHERE lft > @myLeft;
 
 UPDATE transactions SET status = 'expired'  WHERE order_id = order_id
 
-END$$
+END //
+DELIMETER;
 
-CREATE PROCEDURE `register` (`sponsor` VARCHAR(255), `full_name` VARCHAR(255), `phone` VARCHAR(255),  `username` VARCHAR(255), `email` VARCHAR(255), `password` VARCHAR(255), `status` VARCHAR(255), `verification` VARCHAR(255), `activation` VARCHAR(255) ) 
+CREATE PROCEDURE `register` (`sponsor` VARCHAR(255), `full_name` VARCHAR(255)
+, `phone` VARCHAR(255)
+,  `username` VARCHAR(255)
+, `email` VARCHAR(255)
+, `password` VARCHAR(255)
+, `status` VARCHAR(255)
+, `verification` VARCHAR(255)
+, `activation` VARCHAR(255)
+ ) 
 
 BEGIN
 
-INSERT INTO `user` (`sponsor`, `full_name`, `phone`, `username`, `email`, `password`, `status`, `verification`) VALUES ( sponsor, full_name, phone, username, email, password, 'active', 'no');
+INSERT INTO `user` (sponsor, `full_name`, `phone`, `username`, `email`, `password`, `status`, `verification`) VALUES ( sponsor, full_name, phone, username, email, password, 'active', 'no');
 
-END$$
+END //
+DELIMETER;
 
-CREATE PROCEDURE `placefeeder` (`mother` VARCHAR(255), `child` VARCHAR(255), `user` VARCHAR(255), `order_id` VARCHAR(255), `date` VARCHAR(255))  BEGIN
+DELIMITER //
+CREATE PROCEDURE `placefeeder` (`child` VARCHAR(255), `purpose` VARCHAR(255), `mother` VARCHAR(255), `user` VARCHAR(255)
+, `order_id` VARCHAR(255)
+, `date` VARCHAR(255)
+)  BEGIN
 
 SELECT @bankname := bank_name, @fullname := fullname, @accountname := account_name, @accountnumber := account_number, @phone := phone FROM user WHERE username = mother;
 
 SELECT @payerfullname := fullname, @payerphone := phone, @payerusername := username FROM user WHERE username = child;
 
 
-INSERT INTO transactions (user, payername, payerusername, payerphone, receivername, receiverusername, receiverphone, bankname, accountname, accountnumber, amount, status, order_id, expire) Values (user, @payername, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, accountnumber, 10000, 'pending', order_id, date);
+INSERT INTO transactions (user, purpose, payername, payerusername, payerphone, receivername, receiverusername, receiverphone, bankname, accountname, accountnumber, amount, status, order_id, expire) Values (user, purpose, @payername, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, accountnumber, 10000, 'pending', order_id, date);
 
 UPDATE feeder_tree SET amount = amount + 1 WHERE order_id = order_id;
 
 
-END$$
+END //
+DELIMETER;
 
 
 CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  BEGIN
@@ -53,9 +72,11 @@ CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `chil
 UPDATE feeder_entrance SET required_entrance = required_entrance - 1 WHERE user = child;
 UPDATE feeder_entrance SET required_entrance = required_entrance + 1 WHERE user = mother;
 
-END$$
+END //
+DELIMETER;
 
-CREATE PROCEDURE `denyactivationpayment` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255))  
+CREATE PROCEDURE `denyactivationpayment` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
+)  
 BEGIN
 
 SELECT @receiverusername := receiverusername, @payerusername := payerusername FROM transactions WHERE order_id = order_id;
@@ -70,9 +91,11 @@ INSERT INTO chat (agent, receiver, sender, order_id, status, lft, rgt, message) 
 INSERT INTO messages (user, message) VALUES (@receiverusername, 'You can not earn till you resolve the issue you have at hand.'), (@payerusername, 'You can not earn till you resolve the issue you have at hand.')
 
 
-END$$
+END //
+DELIMETER;
 
-CREATE PROCEDURE `confirmactivationpayment` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255))  
+CREATE PROCEDURE `confirmactivationpayment` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
+)  
 BEGIN
 
 UPDATE transactions SET status = 'confirmed' WHERE order_id = order_id;
@@ -84,7 +107,8 @@ UPDATE activation SET alloted = alloted - 1 WHERE username = mother;
 END
 
 
-CREATE PROCEDURE `denyfeeder` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255))  
+CREATE PROCEDURE `denyfeeder` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
+)  
 BEGIN
 
 SELECT @receiverusername := receiverusername, @payerusername := payerusername FROM transactions WHERE order_id = order_id;
@@ -104,7 +128,8 @@ INSERT INTO messages (user, message) VALUES (@receiverusername, 'You can not ear
 
 END
 
-CREATE PROCEDURE `confirmfeeder` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255))  
+CREATE PROCEDURE `confirmfeeder` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
+)  
 BEGIN
 
 UPDATE transactions SET status = 'confirmed' WHERE order_id = order_id;

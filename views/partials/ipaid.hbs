@@ -1,0 +1,69 @@
+{{> spageh}}
+{{> spagenav}}
+
+	<div class="content">
+	 {{#if errors}}
+  {{#each errors}}
+  <div class="alert alert-danger">
+    {{this.msg}}
+  </div>
+  {{/each}}
+{{/if}}
+   <div class="row">
+   <div class="col-md-3">
+            <div class="card card-user">
+              <div class="card-header">
+                <h5 class="card-title"> Upload POP </h5>
+              </div>
+              <div class="card-body">
+                <form enctype="multipart/form-data" action = "/uploadpop/{{order_id}}" method = "post">
+                
+
+			{{#if error}}
+			<div class="alert alert-danger">
+					{{error}}
+				  </div>
+			{{/if}}
+                  
+                      <div class="form-group">
+                        <label>sponsor </label>
+                        <input type="text" class="form-control" disabled="" placeholder="Company" value="{{bio.sponsor}}" readonly>
+                      
+                    </div>
+                    
+                      <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" placeholder="Username" value="{{bio.username}}" readonly>
+                      
+                    </div>
+                    
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Email</label>
+                        <input type="email" class="form-control" placeholder="Email" value = "{{bio.email}}" name = "email" readonly/>
+                      
+                    
+                  </div>
+                  
+                      <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" class="form-control" placeholder="Full Name" value = "{{bio.full_name}}" name = "fullname" readonly/>
+                      
+                    </div>
+                    
+                      <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" class="form-control" placeholder="Phone Number" name = "phone" value="{{bio.phone}}" readonly/>
+                      
+                    </div>
+                  
+                  
+                  
+                </form>
+              </div>
+            </div>
+            
+          </div>
+          </div>
+          </div>
+          </div>
+         {{> spagef}}

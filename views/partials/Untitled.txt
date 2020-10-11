@@ -1,0 +1,58 @@
+var flashMessages = res.locals.getMessages();
+  												if (flashMessages.mergeerror){
+  													res.render( 'dashboard', {
+  														mess: 'USER DASHBOARD',
+  														totalPaid: totalPaid,
+  														expectedEarn: expectedEarn,
+  														paying: paying,
+  														bio: bio,
+  														showErrors: true,
+  														mergeerror: flashMessages.mergeerror,
+  														activate: 'You are activated',
+  														actimatrix: actimatrix,
+  														feedbonus: feedbonus,
+  														feedmatrix: feedmatrix,
+  														totalEarned: totalEarned,
+  														receivingact: receivingact,
+  														receivingmatrix: receivingmatrix,
+  														receivingbonus: receivingbonus,
+  														receivinguser: receivinguser
+  														});
+														}else if (flashMessages.success){
+															res.render( 'dashboard', {
+  														mess: 'USER DASHBOARD',
+  														totalPaid: totalPaid,
+  														paying: paying,
+  														bio: bio,
+  														expectedEarn: expectedEarn,
+  														showSuccess: true,
+  														success: flashMessages.success,
+  														activate: 'You are activated',
+  														actimatrix: actimatrix,
+  														feedbonus: feedbonus,
+  														feedmatrix: feedmatrix,
+  														totalEarned: totalEarned,
+  														receivingact: receivingact,
+  														receivingmatrix: receivingmatrix,
+  														receivingbonus: receivingbonus,
+  														receivinguser: receivinguser
+  														});
+														}else{
+															res.render( 'dashboard', {
+  														mess: 'USER DASHBOARD',
+  														expectedEarn: expectedEarn,
+  														bio: bio,
+  														totalPaid: totalPaid,
+  														paying: paying,
+  														
+  														activate: 'You are activated',
+  														actimatrix: actimatrix,
+  														feedbonus: feedbonus,
+  														feedmatrix: feedmatrix,
+  														totalEarned: totalEarned,
+  														receivingact: receivingact,
+  														receivingmatrix: receivingmatrix,
+  														receivingbonus: receivingbonus,
+  														receivinguser: receivinguser
+  														});
+														}
