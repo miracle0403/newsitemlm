@@ -1,4 +1,5 @@
-var db = ('../db.js')
+var db = ('../db.js');
+var feederspill = require('./feederspill.js');
 var flash = require('express-flash-messages');
 
 exports.merge = function (receiver, bio, req, res){
@@ -372,13 +373,18 @@ exports.merge = function (receiver, bio, req, res){
 		});
 	}else if (receiver.a !== null && receiver.b !== null && receiver.c !== null && receiver.receive === 'yes' && receiver.spon_receive === 'yes'){
 		//spill over
+		feederspill.feederspill(receiver, bio, req, res);
 	}else if (receiver.a !== null && receiver.b === null && receiver.c !== null && receiver.receive === 'yes' && receiver.spon_receive !== 'yes'){
 		//spill over
+		feederspill.feederspill(receiver, bio, req, res);
 	}else if (receiver.a !== null && receiver.b !== null && receiver.c !== null && receiver.receive !== 'yes' && receiver.spon_receive === 'yes'){
 		//spill over
+		feederspill.feederspill(receiver, bio, req, res);
 	}else if (receiver.a !== null && receiver.b !== null && receiver.c !== null && receiver.receive === 'yes' && receiver.spon_receive !== 'yes'){
 		//spill over
+		feederspill.feederspill(receiver, bio, req, res);
 	}else if (receiver.a === null && receiver.b !== null && receiver.c === null && receiver.receive !== 'yes' && receiver.spon_receive === 'yes'){
 		//spill over
+		feederspill.feederspill(receiver, bio, req, res);
 	}
 }
