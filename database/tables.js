@@ -1,10 +1,12 @@
 var db = require('../db');
 
-
+/*
+insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfsazhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');
+*/
 
 CREATE TABLE `user` (
 	`user_id` INT(11) NOT NULL AUTO_INCREMENT,
-	`full_name` VARCHAR(50) NOT NULL DEFAULT '0',
+	`full_name` VARCHAR(50) NOT NULL,
 	`username` VARCHAR(255) NOT NULL,
 	`email` VARCHAR(255) NOT NULL,
 	`phone` VARCHAR(255) NOT NULL,
@@ -71,6 +73,7 @@ CREATE TABLE `feeder_tree` (
 	`receive` VARCHAR (255) NOT NULL,
 	`status` VARCHAR (255) NOT NULL,
 	`order_id` VARCHAR (255) NOT NULL,
+	`amount` INT (11) NOT NULL DEFAULT 0,
 	`lft` INT (11) NOT NULL,
 	`rgt` INT (11) NOT NULL,
 	`date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

@@ -1,4 +1,4 @@
-var db = ('../db.js');
+var db = require('../db.js');
 var feederspill = require('./feederspill.js');
 var flash = require('express-flash-messages');
 
