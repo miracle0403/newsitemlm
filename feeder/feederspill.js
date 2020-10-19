@@ -1,5 +1,5 @@
 var flash = require('express-flash-messages');
-
+var securePin = require('secure-pin');
 var db = require('../db.js');
 
 exports.feederspill = function(receiver, bio, req, res){
@@ -7,9 +7,11 @@ exports.feederspill = function(receiver, bio, req, res){
 	db.query('SELECT node.username,   (COUNT(parent.username) - (sub_tree.depth + 1)) AS depth FROM feeder_tree AS node, feeder_tree AS parent, feeder_tree AS sub_parent, ( SELECT node.username, (COUNT(parent.username) - 1) AS depth FROM feeder_tree AS node, feeder_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? GROUP BY node.username ORDER BY node.lft) AS sub_tree WHERE (node.receive = ? OR node.sponreceive = ?) AND node.amount < 3 node.status = ? AND node.lft BETWEEN parent.lft AND parent.rgt AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt AND sub_parent.username = sub_tree.username GROUP BY node.username HAVING depth > 0 ORDER BY depth', [receiver.username, 'yes', 'yes', 'confirmed'], function(err, results, fields){
 		if( err ) throw err;
 		var feederdepth = results[0].depth;
+		console.log(feederdepth);
 		db.query('SELECT node.a, node.b, node.c, node.receive, node.sponreceive, node.username,   (COUNT(parent.username) - (sub_tree.depth + 1)) AS depth FROM feeder_tree AS node, feeder_tree AS parent, feeder_tree AS sub_parent, ( SELECT node.a, node.b, node.c, node.receive, node.sponreceive, node.username, (COUNT(parent.username) - 1) AS depth FROM feeder_tree AS node, feeder_tree AS parent WHERE  node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? GROUP BY node.username ORDER BY node.lft) AS sub_tree WHERE (node.receive = ? OR node.sponreceive = ?) node.amount = ? node.status = ? AND node.lft BETWEEN parent.lft AND parent.rgt AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt AND sub_parent.username = sub_tree.username GROUP BY node.username HAVING depth > ? ORDER BY depth', [receiver.username, 'yes', 'yes',0, 'confirmed'], function(err, results, fields){
 			if( err ) throw err;
 			var feeder = results[0];
+			console.log(feeder);
 			 if(feederdepth === feeder.depth){
 			 		//check for empty a b c
 			 		if(feeder.a === null && feeder.receive === 'yes' && feeder.spon_receive === 'yes'){

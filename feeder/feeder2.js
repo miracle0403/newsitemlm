@@ -1,4 +1,7 @@
 var flash = require('express-flash-messages');
+var securePin = require('secure-pin');
+var charSet = new securePin.CharSet();
+charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 
 var db = require('../db.js');
 

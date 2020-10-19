@@ -188,7 +188,20 @@
               <div class="card-body">
                 <form action = "/bank" method = "post">
                   
-                    
+                    {{#showSuccess}}
+				{{#banksuccess}}
+				  <div id = "banksuccess" class="alert alert-success">
+					{{.}}
+				  </div>
+				{{/banksuccess}}
+			{{/showSuccess}}
+			{{#showErrors}}
+				{{#bankerror}}
+				  <div id = "bankerror" class="alert alert-danger">
+					{{.}}
+				  </div>
+				{{/bankerror}}
+			{{/showErrors}}
                       <div class="form-group">
                         <label>Full Name </label>
                         <input type="text" class="form-control"  placeholder="Full Name" value="{{bio.full_name}}" name = "fullname" />

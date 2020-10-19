@@ -1,16 +1,27 @@
 DELIMITER //
-CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  
+CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `order_id` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  
 BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
 
+
 UPDATE feeder_tree SET rgt = rgt + 2 WHERE rgt > @myLeft;
 UPDATE feeder_tree SET lft = lft + 2 WHERE lft > @myLeft;
 
+SELECT @sponreceive := receive FROM feeder_tree WHERE username = sponsor;
 
-INSERT INTO feeder_tree(username, lft, rgt, status) VALUES(child, @myLeft + 1, @myLeft + 2, pending);
+SELECT @count := COUNT(username),  @receive := receive, @requiredEntrance := requiredEntrance FROM feeder_tree WHERE username = child;
+
+
+INSERT INTO feeder_tree(username, sponreceive, receive, sponsor, requiredEntrance, lft, amount, rgt, status, order_id) VALUES(child, 'yes', @receive, sponsor, requiredEntrance, @myLeft + 1, 0, @myLeft + 2, 'pending', order_id);
+
+UPDATE feeder_tree SET receive = 'No', requiredEntrance = -2 WHERE @count = 0;
+
+
+UPDATE feeder_tree SET amount = amount + 1 WHERE username = mother;
 
 END //
+
 
 
 
@@ -53,14 +64,12 @@ CREATE PROCEDURE `placefeeder` (`child` VARCHAR(255), `purpose` VARCHAR(255), `m
 , `date` VARCHAR(255)
 )  BEGIN
 
-SELECT @bankname := bank_name, @fullname := fullname, @accountname := account_name, @accountnumber := account_number, @phone := phone FROM user WHERE username = mother;
+SELECT @bankname := bank_name, @fullname := full_name, @accountname := account_name, @accountnumber := account_number, @phone := phone FROM user WHERE username = mother;
 
-SELECT @payerfullname := fullname, @payerphone := phone, @payerusername := username FROM user WHERE username = child;
+SELECT @payerfullname := full_name, @payerphone := phone, @payerusername := username FROM user WHERE username = child;
 
 
-INSERT INTO transactions (user, purpose, payername, payerusername, payerphone, receivername, receiverusername, receiverphone, bankname, accountname, accountnumber, amount, status, order_id, expire) Values (user, purpose, @payername, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, accountnumber, 10000, 'pending', order_id, date);
-
-UPDATE feeder_tree SET amount = amount + 1 WHERE order_id = order_id;
+INSERT INTO transactions (user, purpose, payer_fullname, payer_username, payer_phone, receiver_fullname, receiver_username, receiver_phone, receiver_bank_name, receiver_account_name, receiver_account_number, status, order_id, expire) Values (user, purpose, @payerfullname, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, @accountnumber, 'pending', order_id, date);
 
 
 END //

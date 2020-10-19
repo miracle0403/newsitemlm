@@ -1,7 +1,9 @@
 var db = require('../db');
 
 /*
-insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfsazhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');
+drop table feeder_tree;//
+insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfsazhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');//
+drop procedure placefeeder;//
 */
 
 CREATE TABLE `user` (
@@ -70,7 +72,7 @@ CREATE TABLE `feeder_tree` (
 	`a` VARCHAR (255)  NULL,
 	`b` VARCHAR (255)  NULL,
 	`c` VARCHAR (255)  NULL,
-	`receive` VARCHAR (255) NOT NULL,
+	`receive` VARCHAR (255)  NULL,
 	`status` VARCHAR (255) NOT NULL,
 	`order_id` VARCHAR (255) NOT NULL,
 	`amount` INT (11) NOT NULL DEFAULT 0,

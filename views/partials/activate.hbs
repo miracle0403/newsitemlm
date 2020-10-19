@@ -11,7 +11,7 @@
                   </div>
                   <div class="col-7 col-md-8">
                     <div class="numbers">
-                      <p class="card-category">Feeder Earnings</p>
+                      <p class="card-category">Feeder qEarnings</p>
                       <p class="card-title">Matrix: N{{feedmatrix}}<p>
                        <p class="card-title">Sponsor Bonus: N{{feedbonus}}<p>
                       <form class = "form-group" type = "submit" action = "/enter-feeder" method = "post"><button class = "btn btn-primary" type= "submit">Enter Feeder</button></form>
@@ -121,23 +121,24 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                Pay {{nopop.payer_fullname}} N1000 before {{nopop.expire}}.</b>
+                Pay {{receiver_fullname}} N10000 before {{ expire}}.</b>
                 </p>
                 <br>
                 <p>
-                Account Name:  {{nopop.payer_account_name}}<br>
-                Account Number: {{nopop.payer_account_number}}<br>
-                Bank: {{nopop.payer_bank_name}}<br>
-                Amount: N1000<br>
-                Phone: {{nopop.payer_phone}}<br>
-                Status: {{nopop.status}}<br>
+                Account Name:  {{ receiver_account_name}}<br>
+                Account Number: {{ receiver_account_number}}<br>
+                Bank: {{ receiver_bank_name}}<br>
+
+                Amount: N10,000<br>
+                Phone: {{ receiver_phone}}<br>
+                Status: {{ status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
                
                 
                 	<div class = "form-group">
-                	<a href = "/iPaid/{{nopop.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	<a href = "/iPaid/{{ order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
                 	</div>
                 
               </div>
@@ -165,23 +166,23 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                Pay {{pop.payer_fullname}} N1000 before {{pop.expire}}.</b>
+                You claimed to pay {{ receiver_fullname}} N10,000  {{  expire}}.</b>
                 </p>
                 <br>
                 <p>
-                Account Name:  {{pop.payer_account_name}}<br>
-                Account Number: {{pop.payer_account_number}}<br>
-                Bank: {{pop.payer_bank_name}}<br>
+                Account Name:  {{ receiver_account_name}}<br>
+                Account Number: {{    receiver_account_number}}<br>
+                Bank: {{    receiver_bank_name}}<br>
                 Amount: N1000<br>
-                Phone: {{pop.payer_phone}}<br>
-                Status: {{pop.status}}<br>
+                Phone: {{    receiver_phone}}<br>
+                Status: {{  status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
                
                 
                 
-                	<img src = "{{pop.pop}}" class = "img-fluid"
+                	<img src = "{{  pop}}" class = "img-fluid"
                 
               </div>
               <div class="card-footer ">
@@ -207,15 +208,15 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                Pay {{chat.payer_fullname}} N1000 before {{chat.expire}}.</b>
+                Pay {{chat.  receiver_fullname}} N1000 before {{chat.expire}}.</b>
                 </p>
                 <br>
                 <p>
-                Account Name:  {{chat.payer_account_name}}<br>
-                Account Number: {{chat.payer_account_number}}<br>
-                Bank: {{chat.payer_bank_name}}<br>
+                Account Name:  {{chat.  receiver_account_name}}<br>
+                Account Number: {{chat.  receiver_account_number}}<br>
+                Bank: {{chat.  receiver_bank_name}}<br>
                 Amount: N1000<br>
-                Phone: {{chat.payer_phone}}<br>
+                Phone: {{chat.  receiver_phone}}<br>
                 Status: {{chat.status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
@@ -248,21 +249,22 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  {{receivingact.payer_fullname}} N1000 before {{receivingact.expire}}.</b>
+                You will receive payment from  {{   receiver_fullname}} N1000 before {{ expire}}.</b>
                 </p>
                 <br>
                 <p>
                 
                 Amount: N1000<br>
-                Phone: {{receivingact.payer_phone}}<br>
-                Status: {{receivingact.status}}<br>
+                Phone: {{   receiver_phone}}<br>
+                Status: {{ status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
                 
                 
                 	<div class = "form-group">
-                	<a href = "/iPaid/{{receivingact.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	<form action = "/confirm-payment/{{order_id}}" method = "post">
+                <button class = "btn btn-primary" type= "submit">Confirm payment</button></form>
                 	</div>
                 
               </div>
@@ -289,13 +291,13 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  {{receivingbonus.payer_fullname}} N1000 before {{receivingbonus.expire}}.</b>
+                You will receive payment from  {{receivingbonus.  receiver_fullname}} N1000 before {{receivingbonus.expire}}.</b>
                 </p>
                 <br>
                 <p>
                 Purpose: {{receivingbonus.purpose}}<br>
                 Amount: N1000<br>
-                Phone: {{receivingbonus.payer_phone}}<br>
+                Phone: {{receivingbonus.  receiver_phone}}<br>
                 Status: {{receivingbonus.status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
@@ -330,13 +332,13 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  {{receivingmatrix.payer_fullname}} N1000 before {{receivingmatrix.expire}}.</b>
+                You will receive payment from  {{receivingmatrix.  receiver_fullname}} N1000 before {{receivingmatrix.expire}}.</b>
                 </p>
                 <br>
                 <p>
                 Purpose: {{receivingmatrix.purpose}}<br>
                 Amount: N1000<br>
-                Phone: {{receivingmatrix.payer_phone}}<br>
+                Phone: {{receivingmatrix.  receiver_phone}}<br>
                 Status: {{receivingmatrix.status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
@@ -371,13 +373,13 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  {{receivinguser.payer_fullname}} N1000 before {{receivinguser.expire}}.</b>
+                You will receive payment from  {{receivinguser.  receiver_fullname}} N1000 before {{receivinguser.expire}}.</b>
                 </p>
                 <br>
                 <p>
                 Purpose: {{receivinguser.purpose}}<br>
                 Amount: N1000<br>
-                Phone: {{receivinguser.payer_phone}}<br>
+                Phone: {{receivinguser.  receiver_phone}}<br>
                 Status: {{receivinguser.status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>

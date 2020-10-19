@@ -8,7 +8,7 @@ exports.timer = function(now, distance){
 }
 
 exports.actimer = function(){
-	db.query( 'SELECT * FROM transactions', function ( err, results, fields ){
+	db.query( 'SELECT * FROM transactions WHERE status = ?', ['pending'], function ( err, results, fields ){
 		if (err) throw err;
 		
 		var trans = results;
