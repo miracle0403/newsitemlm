@@ -1,11 +1,11 @@
 var db = require('../db');
 
 /*
-drop table feeder_tree;//
+delete from feeder_tree;
 insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfsazhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');//
-drop procedure placefeeder;//
+drop procedure placefeeder;
 */
-
+	
 CREATE TABLE `user` (
 	`user_id` INT(11) NOT NULL AUTO_INCREMENT,
 	`full_name` VARCHAR(50) NOT NULL,
@@ -14,6 +14,8 @@ CREATE TABLE `user` (
 	`phone` VARCHAR(255) NOT NULL,
 	`password` TEXT NOT NULL,
 	`status` VARCHAR(255) NOT NULL DEFAULT 'free',
+	`lft` INT (11) NOT NULL,
+	`rgt` INT (11) NOT NULL,
 	`account_name` VARCHAR(255) NULL,
 	`bank_name` VARCHAR(255) NULL,
 	`account_number` BIGINT (10)  NULL,

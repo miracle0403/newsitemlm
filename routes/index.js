@@ -141,17 +141,21 @@ router.get('/promote_us/ref=:username', function(req, res, next) {
 
 	
 router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
-	func.actimer();
+	
+	//func.actimer();
 	var currentUser = req.session.passport.user.user_id;
+
 	db.query( 'SELECT * FROM user WHERE user_id = ?', [currentUser], function ( err, results, fields ){
   	if( err ) throw err;
   	var bio = results[0];
-  	func.spamActi(bio.username, req, res);
+ 		//func.spamActi(bio.username, req, res);
+ 			
   	if(bio.bank_name === null){
   		res.redirect('/profile');
   	}else{
   		if (bio.user_type === 'user' && bio.activated === 'No'){
-  			 console.log('not activated')
+  			
+  			 //console.log(bio.username + ' is not activated');
   			db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND (status = ? OR status = ? OR status = ?) ', [bio.username, 'Pending', 'UnConfirmed', 'in contest' ], function ( err, results, fields ){
   				if( err ) throw err;
   				if(results.length === 0){
@@ -274,9 +278,9 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
   					}
   				}
   			});
-  		}else if (bio.user_type === 'user' && bio.activated === 'Yes'){
+  		}else if (bio.user_type === 'user' && bio.activated === 'yes'){
   			
-  						 console.log(' activated')
+  						 //console.log(bio.username + ' is activated')
   			db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Pending', ], function ( err, results, fields ){
   				if( err ) throw err;
   				var nopop = results;console.log(nopop)
@@ -397,6 +401,9 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
   				});
   			});
   		}//if admin
+  		else{
+  			console.log( bio)
+  		}
   	}
  });
 });
@@ -465,6 +472,7 @@ router.get('/login', function(req, res, next) {
 });
 
 router.get('/login/ref=:username', function(req, res, next){
+	func.receive();
 	const flashMessages = res.locals.getMessages( );
 	func.actimer();
 	var username = req.params.username;
@@ -744,18 +752,19 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 										db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
 											if (err) throw err;
 											if(results.length === 0){
-												db.query('SELECT user FROM default_sponsor', function(err, results, fields){
+												db.query('SELECT user FROM default_sponsor order by number DESC', function(err, results, fields){
 													if (err) throw err;
 													var sponsor = results[0].user;
 											
 													//register user
 													bcrypt.hash(password, saltRounds, null, function(err, hash){
-													db.query( 'INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  password) VALUES (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+													db.query( 'CALL  register (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
 														if (err) throw err;
-														var success = 'Registration successful! please verify your email';
+														var success = 'Registration successful! please login';
 														
 														//mail
 														//verify.verifymail(email,   username, hash);
+														func.spon(sponsor);
 													res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
 													});
 												});
@@ -763,9 +772,9 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 										}else{
 											var sponsor = req.body.sponsor;
 											bcrypt.hash(password, saltRounds, null, function(err, hash){
-												db.query( 'INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  password) VALUES (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+												db.query( 'CALL  register (?, ?, ?, ?, ?, ?)', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
 													if (err) throw err;
-													var success = 'Registration successful! please verify your email';
+													var success = 'Registration successful! please login';
 														
 														//mail
 														//verify.verifymail(email,   username, hash);
@@ -868,7 +877,7 @@ router.post('/confirm-payment/:order_id', authentificationMiddleware(), functio
 		}else{
 			var trans = results[0];
 			if(trans.purpose === 'activation'){
-				db.query('UPDATE user SET activated = ? WHERE user_id = ?', ['yes', currentUser], function(err, results, fields){
+				db.query('UPDATE user SET activated = ? WHERE username = ?', ['yes', trans.payer_username], function(err, results, fields){
 					if (err) throw err;
 					db.query('UPDATE transactions SET status = ? WHERE order_id = ?', ['confirmed', order_id], function(err, results, fields){
 						if (err) throw err;
@@ -878,27 +887,24 @@ router.post('/confirm-payment/:order_id', authentificationMiddleware(), functio
 					});
 				});
 			}else{
-				db.query('UPDATE user SET staus = ? WHERE user_id = ? and status = ?', ['paid', currentUser, 'free'], function(err, results, fields){
+				db.query('UPDATE user SET status = ? WHERE user_id = ? and status = ?', ['paid', currentUser, 'free'], function(err, results, fields){
 					if (err) throw err;
 					db.query('UPDATE transactions SET status = ? WHERE order_id = ?', ['confirmed', order_id], function(err, results, fields){
 						if (err) throw err;
 						db.query('UPDATE feeder_tree SET status = ? WHERE order_id = ?', ['confirmed', order_id], function(err, results, fields){
 							if (err) throw err;
-							db.query('SELECT * FROM feeder_tree WHERE username = ?', [trans.receiver_username], function(err, results, fields){
+							db.query('SELECT * FROM feeder_tree WHERE username = ?', [trans.user], function(err, results, fields){
 								if (err) throw err;
 								var tu = results[0];
-								if(tu.a !== null && tu.b !== null && tu.c !== null){
 									db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ?', [tu.requiredEntrance + 1, trans.receiver_username], function(err, results, fields){
+										if (err) throw err;
+										db.query('UPDATE feeder_tree SET requiredEntrance = requiredEntrance -1 WHERE username = ?', [ trans.payer_username], function(err, results, fields){
 										if (err) throw err;
 										var success = 'Payment confirmation was successful!';
 										req.flash('success', success);
 										res.redirect('/dashboard/#success');
 									});
-								}else{
-									var success = 'Payment confirmation was successful!';
-									req.flash('success', success);
-									res.redirect('/dashboard/#success');
-								}
+								});
 							});
 						});
 					});
@@ -1047,28 +1053,32 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 		if (err) throw err;
 		var bio = results[0];
 		db.query('SELECT username FROM feeder_tree WHERE username = ? AND status = ?', [currentUser, 'pending'], function(err, results, fields){
-			if (err) throw err
+			if (err) throw err;
 			if(results.length > 0){
 				var error = 'Oooops! you have an unconfirmed feeder matrix transaction. Try again once it is confirmed.';
 				req.flash('meegeerror', error)
 				res.redirect('/dashboard')
 			}else{
-				db.query('SELECT username FROM feeder_tree WHERE username = ? ', [currentUser], function(err, results, fields){
-					if (err) throw err;
+				db.query('SELECT * FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
+					if (err) throw err
 					if(results.length === 0){
-						//place under sponsor
-						db.query('SELECT parent.a,  parent.sponsor, parent.b,  parent.c, parent.receive, parent.sponreceive, parent.username FROM feeder_tree AS node, feeder_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? AND parent.username is not null AND (parent.receive = ? OR parent.sponreceive = ?)  ORDER BY parent.lft', [bio.sponsor, 'yes', 'yes'], function(err, results, fields){
+						//put under bio.username 
+						db.query('SELECT parent.sponsor, parent.username FROM user AS node, user AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? AND parent.username is not null AND parent.status = ?  ORDER BY parent.lft', [bio.username, 'paid'], function(err, results, fields){
 							if( err ) throw err;
 							var receiver = results.slice(-1)[0];
-						console.log(receiver, results);	mergefeed1.merge(receiver, bio, req, res);
+						console.log(receiver, results);	
+						/*mergefeed1.merge(receiver, bio, req, res);*/
 						});
+					}else if(results.length === 1){
+						//put under self
+						var receiver = results[0];
+						console.log(receiver);	
+						/*mergefeed1.merge(receiver, bio, req, res);*/
 					}else{
-						//place under self
-						db.query('SELECT parent.a,  parent.sponsor, parent.b,  parent.c, parent.receive, parent.sponreceive, parent.username FROM feeder_tree AS node, feeder_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? AND parent.username is not null AND (parent.receive = ? OR parent.sponreceive = ?)  ORDER BY parent.lft', [bio.username, 'yes', 'yes'], function(err, results, fields){
-							if( err ) throw err;
-							var receiver = results.slice(-1)[0];
-						console.log(receiver, results);	mergefeed1.merge(receiver, bio, req, res);
-						});
+						//put under self
+						var receiver = results[0];
+						console.log(receiver);	
+						/*mergefeed1.merge(receiver, bio, req, res);*/
 					}
 				});
 			}

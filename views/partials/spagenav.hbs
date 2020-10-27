@@ -11,60 +11,54 @@
         <a href="https://www.creative-tim.com" class="simple-text logo-normal">
           Creative Tim
           <!-- <div class="logo-image-big">
-            <img src="./assets/img/logo-big.png">
+            <img src="/assets/img/logo-big.png">
           </div> -->
         </a>
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
           <li>
-            <a href="/dashboard.html">
+            <a href="/dashboard">
               <i class="nc-icon nc-bank"></i>
               <p>Dashboard</p>
             </a>
           </li>
-          <li>
-            <a href="/icons.html">
-              <i class="nc-icon nc-diamond"></i>
-              <p>Icons</p>
-            </a>
-          </li>
-          <li>
-            <a href="/map.html">
-              <i class="nc-icon nc-pin-3"></i>
-              <p>Maps</p>
-            </a>
-          </li>
-          <li>
-            <a href="/notifications.html">
-              <i class="nc-icon nc-bell-55"></i>
-              <p>Notifications</p>
-            </a>
-          </li>
+          
+          
           <li class="active ">
-            <a href="/user.html">
+            <a href="/profile">
               <i class="nc-icon nc-single-02"></i>
               <p>User Profile</p>
             </a>
           </li>
           <li>
-            <a href="/tables.html">
+            <a href="/referrals">
               <i class="nc-icon nc-tile-56"></i>
-              <p>Table List</p>
+              <p>Referrals</p>
             </a>
           </li>
+          {{#if admin}}
           <li>
-            <a href="/typography.html">
+            <a href="/allUsers">
               <i class="nc-icon nc-caps-small"></i>
-              <p>Typography</p>
+              <p>All Users</p>
             </a>
           </li>
           <li class="active-pro">
-            <a href="/upgrade.html">
+            <a href="/Admin">
               <i class="nc-icon nc-spaceship"></i>
-              <p>Upgrade to PRO</p>
+              <p>Admin Panel</p>
             </a>
           </li>
+          {{/if}}
+          {{#if isAuthenticated}}
+          <li class="active-pro">
+            <a href="/logout">
+              <i class="nc-icon nc-spaceship"></i>
+              <p>Log Out</p>
+            </a>
+          </li>
+          {{/if}}
         </ul>
       </div>
     </div>

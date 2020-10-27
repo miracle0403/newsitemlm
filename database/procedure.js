@@ -1,4 +1,19 @@
 DELIMITER //
+CREATE PROCEDURE `register` (`sponsor` VARCHAR(255), `fullname` VARCHAR(255), `phone` VARCHAR(255), `username` VARCHAR(255), `email` VARCHAR(255), `hash` VARCHAR(255))
+BEGIN
+
+SELECT @myLeft := lft FROM user WHERE username = sponsor;
+
+UPDATE user SET rgt = rgt + 2 WHERE rgt > @myLeft;
+UPDATE user SET lft = lft + 2 WHERE lft > @myLeft;
+
+INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  lft, rgt, password) VALUES (sponsor, fullname, phone, username, email, @myLeft + 1, @myLeft + 2, hash);
+
+END //
+
+
+
+DELIMITER //
 CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `order_id` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  
 BEGIN
 
@@ -15,7 +30,7 @@ SELECT @count := COUNT(username),  @receive := receive, @requiredEntrance := req
 
 INSERT INTO feeder_tree(username, sponreceive, receive, sponsor, requiredEntrance, lft, amount, rgt, status, order_id) VALUES(child, 'yes', @receive, sponsor, requiredEntrance, @myLeft + 1, 0, @myLeft + 2, 'pending', order_id);
 
-UPDATE feeder_tree SET receive = 'No', requiredEntrance = -2 WHERE @count = 0;
+UPDATE feeder_tree SET receive = 'No', requiredEntrance = 2 WHERE @count = 0 and username = child;
 
 
 UPDATE feeder_tree SET amount = amount + 1 WHERE username = mother;

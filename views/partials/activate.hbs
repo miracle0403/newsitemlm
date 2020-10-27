@@ -1,4 +1,18 @@
 <div class="content">
+	{{#showErrors}}
+				{{#mergeerror}}
+				  <div id = "mergeerror" class="alert alert-danger">
+					{{.}}
+				  </div>
+				{{/mergeerror}}
+			{{/showErrors}}
+			 	{{#showSuccess}}
+				{{#success}}
+				  <div id = "success" class="alert alert-success">
+					{{.}}
+				  </div>
+				{{/success}}
+			{{/showSuccess}}
         <div class="row">
           <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="card card-stats">
@@ -121,7 +135,7 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                Pay {{receiver_fullname}} N10000 before {{ expire}}.</b>
+                Pay {{receiver_username}} N10000 before {{ expire}}.</b>
                 </p>
                 <br>
                 <p>
@@ -182,7 +196,7 @@
                
                 
                 
-                	<img src = "{{  pop}}" class = "img-fluid"
+                	<img src = "{{pop}}" class = "img-fluid"
                 
               </div>
               <div class="card-footer ">
@@ -220,6 +234,7 @@
                 Status: {{chat.status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
+                <img src = "{{pop}}" class = "img-fluid">
               <div class = "form-group">
                 	<a href = "/chat/{{chat.id}}"><button class = "btn btn-primary" type= "button">CHAT</button></a>
                 	</div>
@@ -260,7 +275,7 @@
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
-                
+                <img src = "{{pop}}" class = "img-fluid">
                 
                 	<div class = "form-group">
                 	<form action = "/confirm-payment/{{order_id}}" method = "post">
@@ -302,10 +317,11 @@
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
-                
+                <img src = "{{pop}}" class = "img-fluid">
                 
                 	<div class = "form-group">
-                	<a href = "/iPaid/{{receivingbonus.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	<form action = "/confirm-payment/{{order_id}}" method = "post">
+                <button class = "btn btn-primary" type= "submit">Confirm payment</button></form>
                 	</div>
                 
               </div>
@@ -332,21 +348,24 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  {{receivingmatrix.  receiver_fullname}} N1000 before {{receivingmatrix.expire}}.</b>
+                You will receive payment from  {{ payer_username}} N10,000 before {{ expire}}.</b>
                 </p>
                 <br>
                 <p>
-                Purpose: {{receivingmatrix.purpose}}<br>
-                Amount: N1000<br>
-                Phone: {{receivingmatrix.  receiver_phone}}<br>
-                Status: {{receivingmatrix.status}}<br>
+                Purpose: {{ purpose}}<br>
+                Amount: N10,000<br>
+                Phone: {{   receiver_phone}}<br>
+                Status: {{ status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
                 
                 
+                	<img src = "{{pop}}" class = "img-fluid">
+                
                 	<div class = "form-group">
-                	<a href = "/iPaid/{{receivingmatrix.order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+                	<form action = "/confirm-payment/{{order_id}}" method = "post">
+                <button class = "btn btn-primary" type= "submit">Confirm payment</button></form>
                 	</div>
                 
               </div>
@@ -373,19 +392,21 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  {{receivinguser.  receiver_fullname}} N1000 before {{receivinguser.expire}}.</b>
+                You will receive payment from  {{    receiver_fullname}} N1000 before {{  expire}}.</b>
                 </p>
                 <br>
                 <p>
-                Purpose: {{receivinguser.purpose}}<br>
+                Purpose: {{  purpose}}<br>
                 Amount: N1000<br>
-                Phone: {{receivinguser.  receiver_phone}}<br>
-                Status: {{receivinguser.status}}<br>
+                Phone: {{    receiver_phone}}<br>
+                Status: {{  status}}<br>
                 Time Left: <span class = "text-danger"> {{timeleft}} .</span>
                 </p>
                
                 
+                <img src = "{{pop}}" class = "img-fluid">
                 
+                	
                 	
               <div class="card-footer ">
                 <hr>

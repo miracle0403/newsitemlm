@@ -68,6 +68,7 @@ hbs.registerPartial('spageh', mainfTemplate);
 var mainfTemplate = fs.readFileSync(__dirname + '/views/partials/spagenav.hbs', 'utf8');
 hbs.registerPartial('spagenav', mainfTemplate); 
 
+const used = process.memoryUsage().heapUsed / 1024 / 1024; console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
 
 var mainfTemplate = fs.readFileSync(__dirname + '/views/partials/mainf.hbs', 'utf8');
 hbs.registerPartial('mainf', mainfTemplate); 

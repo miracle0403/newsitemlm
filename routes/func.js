@@ -7,6 +7,18 @@ exports.timer = function(now, distance){
  return days + ' days ' + hours + ' hours ' + ' minutes ' + minutes + ' seconds ';
 }
 
+exports.spon = function(sponsor){
+	db.query( 'SELECT user, number FROM default_sponsor WHERE user = ?', [sponsor], function ( err, results, fields ){
+		if (err) throw err;
+		if (results.length > 0){
+			//add the amount
+			db.query('UPDATE default_sponsor SET number = ? WHERE user = ?', [results.number + 1, sponsor], function(err, results, fields){
+ 				if (err) throw err;
+ 			});
+		}
+	});
+}
+
 exports.actimer = function(){
 	db.query( 'SELECT * FROM transactions WHERE status = ?', ['pending'], function ( err, results, fields ){
 		if (err) throw err;
@@ -31,6 +43,21 @@ exports.actimer = function(){
  				});
  			}
 		}
+	});
+}
+
+exports.receive = function(){
+	db.query( 'UPDATE feeder_tree set receive = ? WHERE requiredEntrance < ?', ['yes', 1 ],function ( err, results, fields ){
+		if(err)throw err;
+		db.query( 'SELECT username FROM feeder_tree WHERE receive = ? ', ['yes' ],function ( err, results, fields ){
+			if (err) throw err;
+			var re = results;
+			for(var i = 0; i < results.length; i++){
+				db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['yes', re.sponsor[i]],function ( err, results, fields ){
+					if(err)throw err;
+				});
+			}
+		});
 	});
 }
 
