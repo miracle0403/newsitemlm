@@ -719,7 +719,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
     var fullname = req.body.fullname;
     
     var phone = req.body.phone;
-	var sponsor = '';
+	var sponsor = req.body.sponsor;
 	
 			var errors = validationResult(req).errors;
 			
@@ -752,6 +752,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 										db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
 											if (err) throw err;
 											if(results.length === 0){
+												console.log('spon not valid')
 												db.query('SELECT user FROM default_sponsor order by number DESC', function(err, results, fields){
 													if (err) throw err;
 													var sponsor = results[0].user;
@@ -771,6 +772,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 											});
 										}else{
 											var sponsor = req.body.sponsor;
+											console.log('spon is valid')
 											bcrypt.hash(password, saltRounds, null, function(err, hash){
 												db.query( 'CALL  register (?, ?, ?, ?, ?, ?)', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
 													if (err) throw err;

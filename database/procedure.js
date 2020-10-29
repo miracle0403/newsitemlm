@@ -1,13 +1,15 @@
 DELIMITER //
-CREATE PROCEDURE `register` (`sponsor` VARCHAR(255), `fullname` VARCHAR(255), `phone` VARCHAR(255), `username` VARCHAR(255), `email` VARCHAR(255), `hash` VARCHAR(255))
+CREATE PROCEDURE `register` (`regsponsor` VARCHAR(255), `regfullname` VARCHAR(255), `regphone` VARCHAR(255), `regusername` VARCHAR(255), `regemail` VARCHAR(255), `reghash` VARCHAR(255))
 BEGIN
 
-SELECT @myLeft := lft FROM user WHERE username = sponsor;
+SELECT @regLeft := lft FROM user_tree WHERE username = regsponsor;
 
-UPDATE user SET rgt = rgt + 2 WHERE rgt > @myLeft;
-UPDATE user SET lft = lft + 2 WHERE lft > @myLeft;
+UPDATE user_tree SET rgt = rgt + 2 WHERE rgt > @regLeft;
+UPDATE user_tree SET lft = lft + 2 WHERE lft > @regLeft;
 
-INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email ,  lft, rgt, password) VALUES (sponsor, fullname, phone, username, email, @myLeft + 1, @myLeft + 2, hash);
+INSERT INTO user_tree (sponsor,   username,  lft, rgt) VALUES (regsponsor, regusername, @regLeft + 1, @regLeft + 2);
+
+INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (regsponsor, regfullname, regphone, regusername, regemail, reghash);
 
 END //
 

@@ -12,7 +12,7 @@ exports.spon = function(sponsor){
 		if (err) throw err;
 		if (results.length > 0){
 			//add the amount
-			db.query('UPDATE default_sponsor SET number = ? WHERE user = ?', [results.number + 1, sponsor], function(err, results, fields){
+			db.query('UPDATE default_sponsor SET number = ? WHERE user = ?', [results[0].number + 1, sponsor], function(err, results, fields){
  				if (err) throw err;
  			});
 		}
