@@ -2,9 +2,13 @@ var db = require('../db');
 
 /*
 delete from feeder_tree;
-insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfsazhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');//
-insert into user (sponsor, full_name, phone, username, password, status, verification, activated, email) VALUES ('fgdgfgcssyvx', 'fgggg gkgg', 0987654321, 'fgfghbhufdx', 'vjdty5856cseAfx45ghvcjdhv', 'free', 'No', 'No', 'vjb@th.co');
-insert into user_tree (sponsor, username, lft, rgt) VALUES ('fgdgfgcssyvx', 'fgfghbhufdx', 1,2);
+insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfghbhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');//
+insert into user (sponsor, full_name, phone, username, password, status, verification, activated, email) VALUES ('fgdgfgcssyvx', 'fgggg gkgg', 0987654321, 'fgfghbhufdx', 'vjdty5856cseAfx45ghvcjdhv', 'paid', 'No', 'No', 'vjb@th.co');
+insert into user_tree (sponsor, username, lft, rgt, status, feeder) VALUES ('fgdgfgcssyvx', 'fgfghbhufdx', 1,2, 'paid', 'yes');
+update feeder_tree set requiredEntrance = 1, status = 'confirmed' where username = 'Miracle0403';//
+update user_tree set feeder = 'yes', status = 'paid' where username = 'Miracle0403';//
+
+update user set  status = 'paid' where username = 'Miracle0403';//
 */
 
 CREATE TABLE `user_tree` (
@@ -25,8 +29,7 @@ CREATE TABLE `user` (
 	`phone` VARCHAR(255) NOT NULL,
 	`password` TEXT NOT NULL,
 	`status` VARCHAR(255) NOT NULL DEFAULT 'free',
-	`lft` INT (11) NOT NULL,
-	`rgt` INT (11) NOT  NULL,
+	
 	`account_name` VARCHAR(255) NULL,
 	`bank_name` VARCHAR(255) NULL,
 	`account_number` BIGINT (10)  NULL,

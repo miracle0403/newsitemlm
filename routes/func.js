@@ -46,6 +46,21 @@ exports.actimer = function(){
 	});
 }
 
+exports.noreceive = function(){
+	db.query( 'UPDATE feeder_tree set receive = ? WHERE requiredEntrance > ?', ['No', 0 ],function ( err, results, fields ){
+		if(err)throw err;
+		db.query( 'SELECT username FROM feeder_tree WHERE receive = ? ', ['No' ],function ( err, results, fields ){
+			if (err) throw err;
+			var re = results;
+			for(var i = 0; i < results.length; i++){
+				db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['No', re.sponsor[i]],function ( err, results, fields ){
+					if(err)throw err;
+				});
+			}
+		});
+	});
+}
+
 exports.receive = function(){
 	db.query( 'UPDATE feeder_tree set receive = ? WHERE requiredEntrance < ?', ['yes', 1 ],function ( err, results, fields ){
 		if(err)throw err;

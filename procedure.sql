@@ -1,22 +1,28 @@
 DELIMITER //
-CREATE PROCEDURE `confirm-feeder`
-(`userId` INT(11), `orderId` INT(11), `mother` VARCHAR(255), `child` VARCHAR(255), `regusername` VARCHAR(255), `regemail` VARCHAR(255), `reghash` VARCHAR(255))
+CREATE PROCEDURE `confirm-feeder1`
+( `orderId` INT(11), `mother` VARCHAR(255), `child` VARCHAR(255))
 BEGIN
 
-UPDATE user SET status = 'paid' WHERE user_id = userId and status = 'free';
+
+
+END // 
+
+
+DELIMITER //
+CREATE PROCEDURE `confirm-feeder1`
+( `orderId` INT(11), `mother` VARCHAR(255), `child` VARCHAR(255))
+BEGIN
+
+UPDATE user SET status = 'paid' WHERE username = child and status = 'free';
 
 UPDATE transactions SET status = 'confirmed' WHERE order_id = orderId;
 
 UPDATE feeder_tree SET status = 'confirmed' WHERE order_id = orderId;
 
 
-UPDATE feeder_tree SET requiredEntrance = requiredEntrance + 1 WHERE username = mother;
+END // 
+	
 
-UPDATE feeder_tree SET  WHERE username = mother and order_id not orderId;
-
-UPDATE feeder_tree SET requiredEntrance = requiredEntrance + 1 WHERE username = child;
-
-END//
 
 
 DELIMITER //
