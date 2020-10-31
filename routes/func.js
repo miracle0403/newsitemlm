@@ -51,11 +51,13 @@ exports.noreceive = function(){
 		if(err)throw err;
 		db.query( 'SELECT username FROM feeder_tree WHERE receive = ? ', ['No' ],function ( err, results, fields ){
 			if (err) throw err;
-			var re = results;
-			for(var i = 0; i < results.length; i++){
-				db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['No', re.sponsor[i]],function ( err, results, fields ){
-					if(err)throw err;
-				});
+			if(results.length > 0){
+				var re = results;
+				for(var i = 0; i < results.length; i++){
+					db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['No', re[i].sponsor],function ( err, results, fields ){
+						if(err)throw err;
+					});
+				}
 			}
 		});
 	});
@@ -66,11 +68,14 @@ exports.receive = function(){
 		if(err)throw err;
 		db.query( 'SELECT username FROM feeder_tree WHERE receive = ? ', ['yes' ],function ( err, results, fields ){
 			if (err) throw err;
-			var re = results;
-			for(var i = 0; i < results.length; i++){
-				db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['yes', re.sponsor[i]],function ( err, results, fields ){
-					if(err)throw err;
-				});
+			if(results.length > 0){
+				var re = results;
+				console.log(re)
+				for(var i = 0; i < results.length; i++){
+					db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['yes', re[i].sponsor],function ( err, results, fields ){
+						if(err)throw err;
+					});
+				}
 			}
 		});
 	});

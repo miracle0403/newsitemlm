@@ -1,5 +1,5 @@
 DELIMITER //
-CREATE PROCEDURE `confirm-feeder1`
+CREATE PROCEDURE `confirm-feeder2`
 ( `orderId` INT(11), `mother` VARCHAR(255), `child` VARCHAR(255))
 BEGIN
 
@@ -43,7 +43,7 @@ END //
 
 
 DELIMITER //
-CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `order_id` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  
+CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `order_id` VARCHAR(255), `child` VARCHAR(255))  
 BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;

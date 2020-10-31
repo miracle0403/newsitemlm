@@ -64,10 +64,11 @@ router.get('/ref=:username', function(req, res, next) {
 		link.route(username, db, rout, req, res);
 });
 
-router.get('/iPaid/:order_id', ensureLoggedIn('/login'), function(req, res, next) {
+router.get('/iPaid/:order_id/', ensureLoggedIn('/login'), function(req, res, next) {
 	var currentUser = req.session.passport.user.user_id;
 	func.spamActi(currentUser, req, res);
-	var order_id = req.params.order_id;
+	var order_id = req.params.order_id;	
+
 	db.query( 'SELECT * FROM transactions WHERE order_id = ?', [order_id], function ( err, results, fields ){
   	if( err ) throw err;
   	if(results.length === 0){
@@ -81,10 +82,11 @@ router.get('/iPaid/:order_id', ensureLoggedIn('/login'), function(req, res, next
 							mess: 'Upload POP',
 							error: error,
 							order_id: order_id,
+							
 							showErrors: true,
 							error: flashMessages.error});
 				}else{
-					res.render('ipaid', {mess: 'Upload POP', order_id: order_id });
+					res.render('ipaid', {mess: 'Upload POP', order_id: order_id  });
 				}
   	}
  });
@@ -816,7 +818,7 @@ router.post('/register/ref=:username', function (req, res, next){
 });
 
 //upload pop
-router.post('/uploadpop/:order_id', function(req, res, next){
+router.post('/uploadpop/:order_id/', function(req, res, next){
 	var order_id = req.params.order_id;
 	var fd = path.join(__dirname + '').split('/');
 	var thrw = fd.pop();
@@ -871,7 +873,42 @@ router.post('/uploadpop/:order_id', function(req, res, next){
 });
 
 //confirm payment 
-router.post('/confirm-payment/:order_id', authentificationMiddleware(), function(req, res, next){
+
+router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware(), function(req, res, next){
+	var order_id = req.params.order_id;
+	var receive = req.params.receive;
+	var currentUser = req.session.passport.user.user_id;
+	db.query('SELECT * FROM transactions WHERE order_id = ?', [order_id], function(err, results, fields){
+		if (err) throw err;
+		if(results.length === 0){
+			var error = 'Something went wrong';
+			req.flash('mergeerror', error);
+			res.redirect('/dashboard/#mergeerror');
+		}else{
+			db.query('SELECT username FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
+				if (err) throw err;
+				var username = results[0].username;
+				db.query('SELECT * FROM feeder_tree WHERE order_id = ?', [receive], function(err, results, fields){
+					if (err) throw err;
+					if(results.length === 0){
+						var error = 'Something went wrong';
+						req.flash('mergeerror', error);
+						res.redirect('/dashboard/#mergeerror');
+					}else if(results[0].username !== username){
+						var error = 'Something went wrong';
+						req.flash('mergeerror', error);
+						res.redirect('/dashboard/#mergeerror');
+					}else{
+						
+					}
+				});
+			});
+		}
+	});
+});
+
+
+router.post('/confirm-payment-act/:order_id/', authentificationMiddleware(), function(req, res, next){
 	var order_id = req.params.order_id;
 	var currentUser = req.session.passport.user.user_id;
 	db.query('SELECT * FROM transactions WHERE order_id = ?', [order_id], function(err, results, fields){
@@ -887,82 +924,13 @@ router.post('/confirm-payment/:order_id', authentificationMiddleware(), functio
 					if (err) throw err;
 					db.query('UPDATE transactions SET status = ? WHERE order_id = ?', ['confirmed', order_id], function(err, results, fields){
 						if (err) throw err;
-						var success = 'Payment confirmation was successful!';
-						req.flash('success', success);
-						res.redirect('/dashboard/#success');
-					});
-				});
-			}else {
-				db.query('SELECT * FROM feeder_tree WHERE username = ? and (a = ? or b = ? or c = ?)', [trans.receiver_username, trans.payer_username, trans.payer_username, trans.payer_username], function(err, results, fields){
-					if (err) throw err;
-					if(results.length === 1){
-						//check if the user is the payer 
-						var tu = results[0];
-						if(trans.payer_username === trans.receiver_username){
-							console.log('same person')
-							db.query('CALL confirm-feeder1(?,?,?)', [trans.order_id, trans.receiver_username, trans.payer_username ], function(err, results, fields){
-								if (err) throw err;
-								db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [trans.requiredEntrance - 1, trans.receiver_username], function(err, results, fields){
-									if (err) throw err;
-									//function here
-									func.receive();
-									func.noreceive();
-									var success = 'Payment confirmation was successful!';
-										req.flash('success', success);
-										res.redirect('/dashboard/#success');
-								});
-							});
-						}else{
-							db.query('CALL confirm-feeder1(?,?,?)', [trans.order_id, trans.receiver_username, trans.payer_username ], function(err, results, fields){
-								if (err) throw err;
-								db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [trans.requiredEntrance - 1, trans.receiver_username], function(err, results, fields){
-									if (err) throw err;
-									if(tu.a !== null && tu.b !== null && tu.c !== null){
-										db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [tu.requiredEntrance + 1, trans.receiver_username], function(err, results, fields){
-											if (err) throw err;
-											func.receive();
-											func.noreceive();
-											var success = 'Payment confirmation was successful!';
-											req.flash('success', success);
-											res.redirect('/dashboard/#success');
-										});
-									}else{
-										func.receive();
-										func.noreceive();
-										var success = 'Payment confirmation was successful!';
-										req.flash('success', success);
-										res.redirect('/dashboard/#success');
-									}
-								});
-							});
-						}
-					}else if(results.length > 1){
-						
-					}else{
-						var tu = results[0];
-						db.query('CALL confirm-feeder1(?,?,?)', [trans.order_id, trans.receiver_username, trans.payer_username ], function(err, results, fields){
+						db.query('UPDATE user_tree SET activated = ? WHERE username = ?', ['yes', trans.payer_username], function(err, results, fields){
 							if (err) throw err;
-							db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [trans.requiredEntrance - 1, trans.receiver_username], function(err, results, fields){
-								if (err) throw err;
-								if(tu.a !== null && tu.b !== null && tu.c !== null){
-										db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [tu.requiredEntrance + 1, trans.receiver_username], function(err, results, fields){
-											if (err) throw err;
-											var success = 'Payment confirmation was successful!';
-											func.receive();
-											func.noreceive();
-											req.flash('success', success);
-											res.redirect('/dashboard/#success');
-										});
-									}else{
-										func.receive();
-										func.noreceive();
-										var success = 'Payment confirmation was successful!';
-										req.flash('success', success);
-										res.redirect('/dashboard/#success');
-									}
-							});
+							var success = 'Payment confirmation was successful!';
+							req.flash('success', success);
+							res.redirect('/dashboard/#success');
 						});
-					}
+					});
 				});
 			}
 		}
@@ -1122,7 +1090,7 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 							if( err ) throw err;
 							var receive = results.slice(-1)[0];
 							//console.log(receive)
-							db.query('SELECT * FROM feeder_tree WHERE (a is null OR b is null OR c is null) AND username = ?', [ receive.username], function(err, results, fields){
+							db.query('SELECT * FROM feeder_tree WHERE username = ?', [ receive.username], function(err, results, fields){
 								if (err) throw err;
 		var receiver	 = results[0];
 						console.log(receiver, 'result is 0');	
