@@ -3,7 +3,7 @@ var db = require('../db');
 /*
 delete from feeder_tree;
 insert into feeder_tree (sponsor, username, lft, rgt, requiredEntrance, status, receive, sponreceive, order_id) values('fgdgfgcssyvx', 'fgfghbhufdx', 1, 2, -6, 'confirmed', 'yes', 'yes', '4f4yxs5gx5td');//
-insert into user (sponsor, full_name, phone, username, password, status, verification, activated, email) VALUES ('fgdgfgcssyvx', 'fgggg gkgg', 0987654321, 'fgfghbhufdx', 'vjdty5856cseAfx45ghvcjdhv', 'paid', 'No', 'No', 'vjb@th.co');
+insert into user (sponsor, full_name, phone, username, bank_name, account_name, account_number, password, status, verification, activated, email) VALUES ('fgdgfgcssyvx', 'fgggg gkgg', 0987654321, 'fgfghbhufdx', 'diamond', 'hjgjgh ghvhhhh', 1234567890, 'vjdty5856cseAfx45ghvcjdhv', 'paid', 'No', 'No', 'vjb@th.co');
 insert into user_tree (sponsor, username, lft, rgt, status, feeder) VALUES ('fgdgfgcssyvx', 'fgfghbhufdx', 1,2, 'paid', 'yes');
 update feeder_tree set requiredEntrance = 1, status = 'confirmed' where username = 'Miracle0403';//
 update user_tree set feeder = 'yes', status = 'paid' where username = 'Miracle0403';//

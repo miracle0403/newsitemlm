@@ -885,6 +885,7 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 			req.flash('mergeerror', error);
 			res.redirect('/dashboard/#mergeerror');
 		}else{
+			var trans = results[0];
 			db.query('SELECT username FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
 				if (err) throw err;
 				var username = results[0].username;
@@ -899,7 +900,48 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 						req.flash('mergeerror', error);
 						res.redirect('/dashboard/#mergeerror');
 					}else{
-						
+						var ord = results[0];
+						if(trans.purpose === 'feeder_matrix' || trans.purpose === 'feeder_bonus'){
+							//check if its the same person.
+							console.log(trans)
+							db.query('CALL confirm_feeder1(?,?,?)', [trans.order_id, trans.receiver_username, trans.payer_username ], function(err, results, fields){
+								if (err) throw err;
+								if(ord.username === trans.user){
+									db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [ord.requiredEntrance - 1, trans.payer_username], function(err, results, fields){
+										if (err) throw err;
+										func.receive();
+										func.noreceive();
+										var success = 'Payment confirmation was successful!';
+										req.flash('success', success);
+										res.redirect('/dashboard/#success');
+									});
+								}else{
+									db.query('SELECT requiredEntrance FROM feeder_tree WHERE username = ?', [trans.payer_username], function(err, results, fields){
+										if (err) throw err;
+										var entrance = results[0].requiredEntrance;
+										if(ord.a !== null && ord.b !== null && ord.c !== null){
+											db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [ord.requiredEntrance + 1, ord.username], function(err, results, fields){
+												if (err) throw err;
+												func.receive();
+												func.noreceive();
+												var success = 'Payment confirmation was successful!';
+												req.flash('success', success);
+												res.redirect('/dashboard/#success');
+											});
+										}else{
+											db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [entrance - 1, trans.payer_username], function(err, results, fields){
+												if (err) throw err;
+												func.receive();
+												func.noreceive();
+												var success = 'Payment confirmation was successful!';
+													req.flash('success', success);
+												res.redirect('/dashboard/#success');
+											});
+										}
+									});
+								}
+							});
+						}//else if in case of new stages.
 					}
 				});
 			});

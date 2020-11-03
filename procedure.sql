@@ -9,8 +9,8 @@ END //
 
 
 DELIMITER //
-CREATE PROCEDURE `confirm-feeder1`
-( `orderId` INT(11), `mother` VARCHAR(255), `child` VARCHAR(255))
+CREATE PROCEDURE `confirm_feeder1`
+( `orderId` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))
 BEGIN
 
 UPDATE user SET status = 'paid' WHERE username = child and status = 'free';
@@ -43,7 +43,7 @@ END //
 
 
 DELIMITER //
-CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `order_id` VARCHAR(255), `child` VARCHAR(255))  
+CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `order_id` VARCHAR(255), `child` VARCHAR(255), `ordId` VARCHAR(255))  
 BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
@@ -52,23 +52,25 @@ SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
 UPDATE feeder_tree SET rgt = rgt + 2 WHERE rgt > @myLeft;
 UPDATE feeder_tree SET lft = lft + 2 WHERE lft > @myLeft;
 
-SELECT @sponreceive := receive FROM feeder_tree WHERE username = sponsor;
+UPDATE feeder_tree SET amount = amount + 1 WHERE order_id = ordId;
+
+SELECT @sponreceive := receive FROM feeder_tree WHERE username = mother;
 
 SELECT @count := COUNT(username),  @receive := receive, @requiredEntrance := requiredEntrance FROM feeder_tree WHERE username = child;
 
 
-INSERT INTO feeder_tree(username, sponreceive, receive, sponsor, requiredEntrance, lft, amount, rgt, status, order_id) VALUES(child, 'yes', @receive, sponsor, requiredEntrance, @myLeft + 1, 0, @myLeft + 2, 'pending', order_id);
+INSERT INTO feeder_tree(username, sponreceive, receive, sponsor, requiredEntrance, lft, amount, rgt, status, order_id) VALUES(child, 'yes', @receive, mother, requiredEntrance, @myLeft + 1, 0, @myLeft + 2, 'pending', order_id);
 
 UPDATE feeder_tree SET receive = 'No', requiredEntrance = 2 WHERE @count = 0 and username = child;
 
 
-UPDATE feeder_tree SET amount = amount + 1 WHERE username = mother and order_id = order_id ;
+UPDATE feeder_tree SET amount = amount + 1 WHERE username = mother and order_id = ordId ;
 
 END //
 
 
 
-
+p
 CREATE PROCEDURE `leafdel` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
 )  BEGIN
 
