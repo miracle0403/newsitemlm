@@ -145,6 +145,7 @@ router.get('/promote_us/ref=:username', function(req, res, next) {
 router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 	func.receive();
 	func.noreceive();
+	func.feedtimer()
 	//func.actimer();
 	var currentUser = req.session.passport.user.user_id;
 
@@ -462,6 +463,7 @@ router.get('/verify/:email/:link', function(req, res, next) {
 //get login
 router.get('/login', function(req, res, next) {
 	func.actimer();
+	func.feedtimer()
 	const flashMessages = res.locals.getMessages( );
 	if( flashMessages.error ){
 		res.render( 'login', {
@@ -499,10 +501,47 @@ router.get('/login/ref=:username', function(req, res, next){
 	});
 });
 
+//referrals
+router.get('/referrals', ensureLoggedIn('/login'), function(req, res, next) {
+	func.receive();
+	func.noreceive();
+	func.feedtimer()
+  var currentUser = req.session.passport.user.user_id;
+  //check for referrals.
+  db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
+		if (err) throw err;
+		//console.log(results)
+		if(results.user_type === 'user'){
+			var bio = results[0];
+			db.query('SELECT COUNT(*) FROM user WHERE sponsor = ? ', [bio.username], function(err, results, fields){
+				if (err) throw err;
+				var referrals = results;
+				db.query('SELECT a, b, c FROM feeder_tree WHERE (a is null or b is null or c is null) and username = ?', [bio.username], function(err, results, fields){
+					if (err) throw err;
+					var leg = results[0];
+					console.log(referrals, leg)
+					
+				});
+			});
+		}else if(results.user_type === 'admin'){
+			var admin = results[0];
+			db.query('SELECT * FROM user WHERE sponsor = ? ', [admin.username], function(err, results, fields){
+				if (err) throw err;
+				var referrals = results;
+				db.query('SELECT a, b, c FROM feeder_tree WHERE (a is null or b is null or c is null) and username = ?', [bio.username], function(err, results, fields){
+					if (err) throw err;
+					var leg = results[0];
+				});
+			});
+		}
+	});
+});
+
 //profile
 router.get('/profile', ensureLoggedIn('/login'), function(req, res, next) {
 	func.receive();
 	func.noreceive();
+	func.feedtimer()
   var currentUser = req.session.passport.user.user_id;
   db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
 		if (err) throw err;
@@ -1114,6 +1153,7 @@ passport.deserializeUser(function(user_id, done){
 
 router.post('/enter-feeder',authentificationMiddleware(), function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
+	func.feedtimer()
 	db.query('SELECT * FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
 		if (err) throw err;
 		var bio = results[0];

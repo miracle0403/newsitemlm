@@ -19,6 +19,23 @@ exports.spon = function(sponsor){
 	});
 }
 
+exports.feedtimer = function(){
+	db.query( 'SELECT * FROM transactions WHERE status = ? and purpose = ? or purpose = ?', ['pending', 'feeder_matrix', 'feeder_bonus'], function ( err, results, fields ){
+		if (err) throw err;
+		var trans = results;
+		var now = new Date()
+		for(var i = 0; i < trans.length; i++){
+			var cd = results[i].expire;
+			var receiver = trans[i];
+			if(now >= cd){
+				db.query('CALL leafdel(?,?,?,?)', [receiver.user, receiver.payer_username, receiver.order_id, receiver.receiving_order], function(err, results, fields){
+					if (err) throw err;
+				});
+			}
+		}
+	});
+}
+
 exports.actimer = function(){
 	db.query( 'SELECT * FROM transactions WHERE status = ?', ['pending'], function ( err, results, fields ){
 		if (err) throw err;

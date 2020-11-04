@@ -43,7 +43,7 @@ END //
 
 
 DELIMITER //
-CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `order_id` VARCHAR(255), `child` VARCHAR(255), `ordId` VARCHAR(255))  
+CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `order_d` VARCHAR(255), `child` VARCHAR(255), `ordId` VARCHAR(255))  
 BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
@@ -52,7 +52,6 @@ SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
 UPDATE feeder_tree SET rgt = rgt + 2 WHERE rgt > @myLeft;
 UPDATE feeder_tree SET lft = lft + 2 WHERE lft > @myLeft;
 
-UPDATE feeder_tree SET amount = amount + 1 WHERE order_id = ordId;
 
 SELECT @sponreceive := receive FROM feeder_tree WHERE username = mother;
 
@@ -64,15 +63,14 @@ INSERT INTO feeder_tree(username, sponreceive, receive, sponsor, requiredEntranc
 UPDATE feeder_tree SET receive = 'No', requiredEntrance = 2 WHERE @count = 0 and username = child;
 
 
-UPDATE feeder_tree SET amount = amount + 1 WHERE username = mother and order_id = ordId ;
+
 
 END //
 
 
-
-p
-CREATE PROCEDURE `leafdel` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
-)  BEGIN
+DELIMITER // 
+CREATE PROCEDURE `leafdel` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255), `ordId` VARCHAR(255))
+BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE user = mother;
 
@@ -82,7 +80,17 @@ UPDATE feeder_tree SET rgt = rgt - 2 WHERE rgt > @myLeft;
 
 UPDATE feeder_tree SET lft = lft - 2 WHERE lft > @myLeft;
 
-UPDATE transactions SET status = 'expired'  WHERE order_id = order_id
+UPDATE transactions SET status = 'expired'  WHERE order_id = order_id;
+
+UPDATE feeder_tree SET amount = amount -1  WHERE order_id = ordId;
+
+UPDATE feeder_tree SET a = null  WHERE a = child and order_id = ordId;
+
+
+UPDATE feeder_tree SET b = null WHERE b = child and order_id = ordId;
+
+
+UPDATE feeder_tree SET c = null WHERE c = child and order_id = ordId;
 
 END //
 DELIMETER;
