@@ -11,7 +11,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 //var expressValidator = require('express-validator');
 const { body, validationResult } = require('express-validator');
-var mysql = require('mysql');
+var sql = require('sql') || require('postgres');
 var hbs = require('hbs');
 var fs = require('fs');
 
@@ -22,6 +22,7 @@ var localStrategy = require('passport-local'),Strategy;
 var myConnection = require('express-myconnection');
 var session = require('express-session');
 var MySQLStore = require ('express-mysql-session')(session);
+var pgSession = require('connect-pg-simple')(session);
 var flash = require('express-flash-messages');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -93,11 +94,11 @@ var options = {
   user: "newuser",
   password: 'user_password',
   database: "newdb"
-};
+} 
 
-app.use(myConnection(mysql, options, 'pool')); 
+app.use(myConnection(sql, options, 'pool')); 
 
-var sessionStore = new MySQLStore(options);
+var sessionStore = new MySQLStore(options) || new pgStore(options);
   
 app.use(session({
   secret: 'keybaby',

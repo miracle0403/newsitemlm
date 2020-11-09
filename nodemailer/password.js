@@ -1,4 +1,8 @@
-function passReset(details, link, expire){
+var mailer = require('nodemailer');
+var hbsmail = require('nodemailer-express-handlebars');
+//var fs = require('fs');
+
+exports.passReset = function (email, link, expire){
 	
 	var transporter = mailer.createTransport({ 
 		host: '', 
@@ -9,18 +13,31 @@ function passReset(details, link, expire){
 			pass:  '' // generated ethereal password } }); 
 		  }
    });
-transporter.use('compile', hbsmail({ viewPath: '.../views/mail/', extName: '.hbs' })); 
+
+
+//hbs options
+const handlebarOptions = {
+	viewEngine: {
+		extName: '.hbs',
+		partialsDir: '../views/mail/paetials/',
+		layoutsDir: '',
+		defaultLayout: '',
+		
+	},
+		viewPath: './views/mail/', extName: '.hbs'
+};
+
+transporter.use('compile', hbsmail(handlebarOptions)); 
 
 //the message properties
 	var mailOptions = {
   		from: '',
-  		to: details.email,
+  		to: email,
   		subject: 'Password Reset',
 		template: 'PassReset',
   		context: {
   			expire: expire,
-  			email: details.email,
-  			username: details.username,
+  			email: email,
   			link: link
   		}
 	}

@@ -7,6 +7,25 @@ exports.timer = function(now, distance){
  return days + ' days ' + hours + ' hours ' + ' minutes ' + minutes + ' seconds ';
 }
 
+
+exports.preset = function(){
+	db.query( 'SELECT * FROM passwordReset', function ( err, results, fields ){
+		if (err) throw err;
+		if (results.length > 0){
+			var details = results;
+			var now = new Date();
+			for(var i = 0; i < details.length; i++){
+				if(details[i] <= now){
+					db.query('DELETE from passwordReset where link = ?', [details[i].link],function ( err, results, fields ){
+						if (err) throw err;
+					});
+				}
+			}
+		}
+	});
+}
+
+
 exports.spon = function(sponsor){
 	db.query( 'SELECT user, number FROM default_sponsor WHERE user = ?', [sponsor], function ( err, results, fields ){
 		if (err) throw err;
@@ -33,6 +52,14 @@ exports.feedtimer = function(){
 				});
 			}
 		}
+	});
+}
+
+exports.ref = function(user){
+	db.query( 'SELECT COUNT(username) AS count FROM user WHERE sponsor = ?', [user], function ( err, results, fields ){
+		if (err) throw err;
+		var coun = results[0].count;
+		return coun;
 	});
 }
 
@@ -107,7 +134,7 @@ exports.spamActi = function(currentUser, req, res){
 			if (results.length === 0 && count >= 3){
 				var error = 'You have been banned for spam';
 				req.flash('mergeerror', error);
-				res.redirect('/dashboard/#mergeerror');;
+				res.redirect('/dashboard/#mergeerror');
 			}
 		});
 	});

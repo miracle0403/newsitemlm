@@ -107,4 +107,10 @@ $(document).ready(function() {
 			$('#numberValid').hide();
 		}
 	});
+	
+	$("#resendPass").click(function(){
+		$.get("/resendPass", function(data){
+			$("#result").html(data);
+		});
+	});
 });

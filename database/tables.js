@@ -80,6 +80,13 @@ CREATE TABLE `activation` (
 	`alloted` VARCHAR (255) NOT NULL
 );
 
+CREATE TABLE `passwordReset` (
+	`email` VARCHAR (255) NOT NULL,
+	`link` VARCHAR (255) NOT NULL,
+	`date_entered` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	expire DATETIME NOT NULL
+);
+
 
 CREATE TABLE `feeder_tree` (
 	`sponsor` VARCHAR (255) NOT NULL,

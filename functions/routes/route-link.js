@@ -1,4 +1,4 @@
-exports.route = function (affiliate, db, route, req,res, message){
+/*exports.route = function (affiliate, db, route, req,res, message){
 	
 	this.route = route;
 	this.db = db;
@@ -15,7 +15,7 @@ exports.route = function (affiliate, db, route, req,res, message){
 			res.render(route + '/' + affiliate, {mess: message, sponsor: affiliate});
 		}
 	});
-}
+}*/
 
 exports.getProfile = function(currentUser, db, res){
 	

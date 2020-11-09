@@ -1,7 +1,7 @@
-var mysql = require ('mysql');
+var sql = require ('mysql') || require('postgres');
 var server = require ('./app.js');
 
-var pool  = mysql.createPool({
+var pool  = sql.createPool({
   multipleStatements: true,
   connectionLimit : 100,
   waitForConnections: true,

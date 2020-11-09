@@ -92,15 +92,95 @@ router.get('/iPaid/:order_id/', ensureLoggedIn('/login'), function(req, res, nex
  });
 });
 
+router.get('/passwordreset/:email/:str', function(req, res, next) {
+	var email = req.params.email;
+	var str = req.params.str;
+	var date = new Date();
+	db.query( 'SELECT * FROM passwordReset WHERE link = ? and email = ?', ['/' + email + '/' + str, email], function ( err, results, fields ){
+		if( err ) throw err;
+		if(results.length === 0){
+			res.redirect('/passwordreset');
+		}else{
+			var details = results[0];
+			if (details.expire <= date){
+				db.query('delete from passwordReset where link = ?', ['/' + email + '/' + str], function ( err, results, fields ){
+					var error = 'Link Expired!';
+					req.flash('error', error);
+					res.redirect('/passwordreset');
+				});
+			}else{
+				var flashMessages = res.locals.getMessages();
+				if (flashMessages.error){
+					res.render('passwordreset', { 
+						mess:  'Password Reset',
+						str: str, email: email,
+						showErrors: true,
+						error: flashMessages.error
+					});
+				}else if (flashMessages.success){
+					res.render('passwordreset', { 
+						mess: 'Password Reset',
+						str: str, email: email,
+						showSuccess: true,
+						success: flashMessages.success
+					});
+				}else{
+					res.render('passwordreset', { 
+						mess:  'Password Reset', str: str, email: email});
+				}
+			}
+		}
+	});
+});
 
 router.get('/passwordreset', function(req, res, next) {
 		var message = 'Site Name';
-  res.render('passwordreset', { mess: message + '  |  Password Reset'});
+		var flashMessages = res.locals.getMessages();
+		console.log(flashMessages)
+		if (flashMessages.error){
+			res.render('passwordreset', { 
+			mess: message + '  |  Password Reset',
+			showErrors: true,
+			error: flashMessages.error
+			});
+		}else if(flashMessages.success){
+			res.render('passwordreset', { 
+			mess: message + '  |  Password Reset',
+			success: flashMessages.success,
+			showSuccess: true
+			});
+		}else{
+			res.render('passwordreset', { 
+			mess: message + '  |  Password Reset'
+			});
+		}
 });
 
-router.get('/resendPass/email=:email/link=:link', function(req, res, next) {
+router.get('/resendPass/email=:email/str=:str', function(req, res, next) {
+	func.preset()
 	var details = req.params;
-	password.resendPass(details)
+	db.query( 'SELECT * FROM passwordReset WHERE email = ?', [details.email], function ( err, results, fields ){
+  	if( err ) throw err;
+  	if(results.length === 0){
+			res.redirect('/passwordreset');
+		}else{
+			var details = results[0];
+			var date = new Date();
+			if (details.expire <= date){
+				db.query('delete from passwordReset where link = ?', ['/' + details.email + '/' + details.str], function ( err, results, fields ){
+					var error = 'Link Expired!';
+					req.flash('error', error);
+					res.redirect('/passwordreset');
+				});
+			}else{
+				var success = 'Link resent!'
+				req.flash('success', success);
+				var mail = require('../nodemailer/password.js')
+				mail.passReset(details.email, details.link, details.expire);
+				res.redirect('/passwordreset')
+			}
+		}
+ });
 });
 
 router.get('/changePass/email=:email', function(req, res, next) {
@@ -419,10 +499,37 @@ router.get('/register', function(req, res, next) {
   res.render('register', { mess: message });
 });
 
+router.get('/register/ref=', function(req, res, next) {
+	res.redirect('/register')
+});
+
+router.get('/login/ref=', function(req, res, next) {
+	res.redirect('/login')
+});
+
+router.get('/ref=', function(req, res, next) {
+	res.redirect('/')
+});
+
+router.get('/faq/ref=', function(req, res, next) {
+	res.redirect('/faq')
+});
+
+router.get('/howitworks/ref=', function(req, res, next) {
+	res.redirect('/howitworks')
+});
+
 router.get('/register/ref=:username', function(req, res, next) {
-		var username = req.params.username;
-		var route = '/register';
-		link.route(username, db, route, req, res);
+	var username = req.params.username;
+	console.log(username)
+	db.query('SELECT username FROM user WHERE username = ?',[username], function(err, results, fields){
+			if (err) throw err;
+			if (results.length === 0){
+				res.redirect('/register')
+			}else{
+				res.render(route + '/' + username, {mess: message, sponsor: username});
+			}
+		});
 });
 
 //how it works
@@ -482,7 +589,7 @@ router.get('/login/ref=:username', function(req, res, next){
 	const flashMessages = res.locals.getMessages( );
 	func.actimer();
 	var username = req.params.username;
-	db.query('SELECT username FROM user WHEN username = ?', [username], function(err, results, fields){
+	db.query('SELECT username FROM user WHERE username = ?', [username], function(err, results, fields){
 		if (err) throw err;
 		if(results.length === 0){
 			res.redirect('/login');
@@ -505,32 +612,42 @@ router.get('/login/ref=:username', function(req, res, next){
 router.get('/referrals', ensureLoggedIn('/login'), function(req, res, next) {
 	func.receive();
 	func.noreceive();
-	func.feedtimer()
+	func.feedtimer();
   var currentUser = req.session.passport.user.user_id;
   //check for referrals.
   db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
 		if (err) throw err;
 		//console.log(results)
-		if(results.user_type === 'user'){
+		if(results[0].user_type === 'user'){
 			var bio = results[0];
-			db.query('SELECT COUNT(*) FROM user WHERE sponsor = ? ', [bio.username], function(err, results, fields){
+			db.query('SELECT  username, phone, email, status, activated, full_name FROM user WHERE sponsor = ? ', [bio.username], function(err, results, fields){
 				if (err) throw err;
 				var referrals = results;
 				db.query('SELECT a, b, c FROM feeder_tree WHERE (a is null or b is null or c is null) and username = ?', [bio.username], function(err, results, fields){
 					if (err) throw err;
 					var leg = results[0];
-					console.log(referrals, leg)
-					
+					db.query( 'SELECT COUNT(username) AS count FROM user WHERE sponsor = ?', [bio.username], function ( err, results, fields ){
+						if (err) throw err;
+						var count = results[0].count;
+						console.log(count)
+						res.render('referrals', {mess: 'MY REFERRALS', count: count, leg: leg, bio: bio, referrals: referrals})
+					});
 				});
 			});
 		}else if(results.user_type === 'admin'){
 			var admin = results[0];
-			db.query('SELECT * FROM user WHERE sponsor = ? ', [admin.username], function(err, results, fields){
+			db.query('SELECT  username, phone, email, status, activated, full_name FROM user WHERE sponsor = ? ', [admin.username], function(err, results, fields){
 				if (err) throw err;
 				var referrals = results;
-				db.query('SELECT a, b, c FROM feeder_tree WHERE (a is null or b is null or c is null) and username = ?', [bio.username], function(err, results, fields){
+				var count = func.ref(admin.username);
+				db.query('SELECT a, b, c FROM feeder_tree WHERE (a is null or b is null or c is null) and username = ?', [admin.username], function(err, results, fields){
 					if (err) throw err;
 					var leg = results[0];
+					db.query( 'SELECT COUNT(username) AS count FROM user WHERE sponsor = ?', [admin.username], function ( err, results, fields ){
+						if (err) throw err;
+						var count = results[0].count;
+						res.render('referrals', {mess: 'MY REFERRALS', count: count, admin: admin, leg: leg, referrals: referrals});
+					});
 				});
 			});
 		}
@@ -1019,9 +1136,38 @@ router.post('/confirm-payment-act/:order_id/', authentificationMiddleware(), fu
 });
 
 
-router.post('/passwordreset', function(req, res, next){
-	var details = req.body;
-	password.passwordreset(details)
+router.post('/passwordreset',[	 check('email', 'Email must be between 8 to 50 characters').isLength(8, 50).isEmail()], function(req, res, next){
+	var email = req.body.email
+	var errors = validationResult(req).errors;
+	if (errors.length > 0){
+		res.render('passwordreset', {mess: 'Password Reset Failed', errors: errors, email: email});
+	}else{
+		db.query('SELECT email FROM user WHERE email = ?', [email], function(err, results, fields){
+			if (err) throw err;
+			if(results.length === 0){
+				var error = 'There is no user associated with this email';
+				req.flash('error', error);
+				console.log(error)
+				res.redirect('/passwordreset');
+			}else{
+				var date = new Date();
+				date.setMinutes(date.getMinutes() + 20);
+				//generate pin
+				securePin.generateString(35, charSet, function(str){
+					var link =  '/'+ email + '/' + str;
+					db.query('INSERT INTO passwordReset (email, expire, link) VALUES (?,?,?)', [email, date, link], function(err, results, fields){
+						if(err) throw err;
+						var mail = require('../nodemailer/password.js')
+						mail.passReset(email, link, date);
+						func.preset()
+						var success = 'A link has been sent to your email... Check your spam if you did not see it in your inbox.';
+						req.flash('success', success);
+						res.redirect('/passwordreset/' + email + '/' + str);
+					});
+				});
+			}
+		});
+	}
 });
 
 router.post('/changepass', function(req, res, next){
