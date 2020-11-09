@@ -11,7 +11,7 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 //var expressValidator = require('express-validator');
 const { body, validationResult } = require('express-validator');
-var sql = require('sql') || require('postgres');
+var sql = require('mysql');// || require('postgres');
 var hbs = require('hbs');
 var fs = require('fs');
 
@@ -22,7 +22,7 @@ var localStrategy = require('passport-local'),Strategy;
 var myConnection = require('express-myconnection');
 var session = require('express-session');
 var MySQLStore = require ('express-mysql-session')(session);
-var pgSession = require('connect-pg-simple')(session);
+//var pgSession = require('connect-pg-simple')(session);
 var flash = require('express-flash-messages');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -90,15 +90,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 var options = {
   waitForConnections: true,
   connectionLimit : 100,
-  host: "localhost",
-  user: "newuser",
-  password: 'user_password',
-  database: "newdb"
+  host: "us-cdbr-east-02.cleardb.com",
+  user: "b2060941ee1661",
+  password: 'fca9cdb1',
+  database: "heroku_740c1559583a7cd"
 } 
+
+
 
 app.use(myConnection(sql, options, 'pool')); 
 
-var sessionStore = new MySQLStore(options) || new pgStore(options);
+var sessionStore = new MySQLStore(options); //|| new pgStore(options);
   
 app.use(session({
   secret: 'keybaby',
