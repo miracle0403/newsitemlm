@@ -6,7 +6,7 @@ var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 
 exports.merge = function (receiver, bio, req, res){
-	
+	console.log(receiver + 'receiver', bio)
 	if (receiver.a === null  && receiver.receive === 'yes'){
 		//inserts into a
 		securePin.generateString (10, charSet, function(str){
