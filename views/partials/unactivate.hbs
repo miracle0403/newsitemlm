@@ -5,6 +5,7 @@
 <div class = "alert alert-danger">
 <p > You are yet to activate your account. </p>
 </div>
+
 	{{#showErrors}}
 				{{#mergeerror}}
 				  <div id = "mergeerror" class="alert alert-danger">
@@ -25,9 +26,8 @@
                   <div class="col-7 col-md-8">
                   
                     <div class="numbers">
-                      <form method = "Post" action = "/activate">
-                      <button class = " btn btn-success" type = "submit">Activate</button>
-                      </form>
+                    <button class = " btn btn-success" type = "button" id = "activate">Activate</button>
+                      
                     </div>
                   </div>
                 </div>

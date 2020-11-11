@@ -235,7 +235,7 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
  		//func.spamActi(bio.username, req, res);
  			
   	if(bio.bank_name === null){
-  		res.redirect('/profile');
+  		res.redirect('/profile/#bank');
   	}else{
   		if (bio.user_type === 'user' && bio.activated === 'No'){
   			
@@ -499,6 +499,20 @@ router.get('/register', function(req, res, next) {
   res.render('register', { mess: message });
 });
 
+router.get('/register/ref=:username', function(req, res, next) {
+	var username = req.params.username;
+	console.log(username)
+	db.query('SELECT username FROM user WHERE username = ?',[username], function(err, results, fields){
+			if (err) throw err;
+			if (results.length === 0){
+				res.redirect('/register')
+			}else{
+				var message = 'Registration';
+				res.render('register', {mess: message, sponsor: username})
+			}
+		});
+});
+
 router.get('/register/ref=', function(req, res, next) {
 	res.redirect('/register')
 });
@@ -519,18 +533,7 @@ router.get('/howitworks/ref=', function(req, res, next) {
 	res.redirect('/howitworks')
 });
 
-router.get('/register/ref=:username', function(req, res, next) {
-	var username = req.params.username;
-	console.log(username)
-	db.query('SELECT username FROM user WHERE username = ?',[username], function(err, results, fields){
-			if (err) throw err;
-			if (results.length === 0){
-				res.redirect('/register')
-			}else{
-				res.render(route + '/' + username, {mess: message, sponsor: username});
-			}
-		});
-});
+
 
 //how it works
 router.get('/howitworks',  function (req, res, next){
@@ -604,6 +607,34 @@ router.get('/login/ref=:username', function(req, res, next){
 				var message = 'LOG IN';
 				res.render('login', { mess: message });
 			}
+		}
+	});
+});
+
+//transactions
+router.get('/transactions', ensureLoggedIn('/login'), function(req, res, next) {
+	func.receive();
+	func.noreceive();
+	func.feedtimer();
+  var currentUser = req.session.passport.user.user_id;
+  db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
+		if (err) throw err;
+		if (results[0].user_type === 'user'){
+			var bio = results[0];
+			db.query('SELECT * FROM transactions WHERE payer_username = ? or receiver_username = ? or user = ? ', [bio.username, bio.username, bio.username], function(err, results, fields){
+				if (err) throw err;
+				var transactions = results;
+				var message = 'My Transactions';
+				res.render('transactions', {mess: message, transactions: transactions});
+			});
+		}else{
+			var admin = results[0];
+			db.query('SELECT * FROM transactions WHERE payer_username = ? or receiver_username = ? or user = ? ', [admin.username, admin.username, admin.username], function(err, results, fields){
+				if (err) throw err;
+				var transactions = results;
+				var message = 'My Transactions';
+				res.render('transactions', {mess: message, transactions: transactions, admin: admin});
+			});
 		}
 	});
 });
@@ -923,6 +954,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 													bcrypt.hash(password, saltRounds, null, function(err, hash){
 													db.query( 'CALL  register (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
 														if (err) throw err;
+														console.log(phone)
 														var success = 'Registration successful! please login';
 														
 														//mail
@@ -1038,10 +1070,12 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 		if (err) throw err;
 		if(results.length === 0){
 			var error = 'Something went wrong';
+			console.log('wrong orderid')
 			req.flash('mergeerror', error);
 			res.redirect('/dashboard/#mergeerror');
 		}else{
 			var trans = results[0];
+			console.log(trans)
 			db.query('SELECT username FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
 				if (err) throw err;
 				var username = results[0].username;
@@ -1049,17 +1083,19 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 					if (err) throw err;
 					if(results.length === 0){
 						var error = 'Something went wrong';
+						console.log('wrong receive')
 						req.flash('mergeerror', error);
 						res.redirect('/dashboard/#mergeerror');
-					}else if(results[0].username !== username){
+					}else if(trans.user !== username && trans.receiver_username !== username){
 						var error = 'Something went wrong';
 						req.flash('mergeerror', error);
+						console.log(username, trans.receiver_username);
 						res.redirect('/dashboard/#mergeerror');
 					}else{
 						var ord = results[0];
-						if(trans.purpose === 'feeder_matrix' || trans.purpose === 'feeder_bonus'){
+						if(trans.purpose === 'feeder_bonus' || trans.purpose === 'feeder_matrix'){
 							//check if its the same person.
-							console.log(trans)
+							console.log(trans.purpose)
 							db.query('CALL confirm_feeder1(?,?,?)', [trans.order_id, trans.receiver_username, trans.payer_username ], function(err, results, fields){
 								if (err) throw err;
 								if(ord.username === trans.user){

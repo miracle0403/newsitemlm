@@ -3,13 +3,17 @@ var server = require ('./app.js');
 
 var pool  = sql.createPool({
   multipleStatements: true,
-  connectionLimit : 100,
+  connectionLimit : 0,
   waitForConnections: true,
-  host: "us-cdbr-east-02.cleardb.com",
-  user: "b2060941ee1661",
-  password: 'fca9cdb1',
-  database: "heroku_740c1559583a7cd"
-}) 
+  host: "localhost",
+  user: "root",
+  password: 'YOUR_ROOT_PASSWORD_HERE',
+  database: "newdb"
+});
+
+/*mysql -u root -p
+YOUR_ROOT_PASSWORD_HERE
+use newdb*/
 
 pool.getConnection( function ( err, con ){
 	if ( err ){

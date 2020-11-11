@@ -5,7 +5,7 @@ var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 
 exports.feederspill = function(receive, bio, req, res){
-	db.query('SELECT node.username, node.amount,  (COUNT(parent.username) - (sub_tree.depth + 1)) AS depth FROM  feeder_tree AS node, feeder_tree AS parent, feeder_tree AS sub_parent, ( SELECT node.username, (COUNT(parent.username) - 1) AS depth FROM feeder_tree AS node, feeder_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? and (node.receive = ? or node.sponreceive = ?) GROUP BY node.username ORDER BY node.lft) AS sub_tree WHERE node.amount < 3 AND node.lft BETWEEN parent.lft AND parent.rgt AND node.lft BETWEEN sub_parent.lft AND sub_parent.username = sub_tree.username GROUP BY node.username HAVING depth > 3 ORDER BY depth', [receive.username, 'yes', 'yes'], function(err, results, fields){
+	db.query('SELECT node.username, node.amount,  (COUNT(parent.username) - (sub_tree.depth + 1)) AS depth FROM  feeder_tree AS node, feeder_tree AS parent, feeder_tree AS sub_parent, ( SELECT node.username, (COUNT(parent.username) - 1) AS depth FROM feeder_tree AS node, feeder_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? and (node.receive = ? or node.sponreceive = ?) GROUP BY node.username ORDER BY node.lft) AS sub_tree WHERE node.amount < 3 AND node.lft BETWEEN parent.lft AND parent.rgt AND node.lft BETWEEN sub_parent.lft AND sub_parent.username = sub_tree.username GROUP BY node.username HAVING depth > 0 ORDER BY depth', [receive.username, 'yes', 'yes'], function(err, results, fields){
 		if( err ) throw err;
 		var feederdepth = results[0].depth;
 		console.log(feederdepth);

@@ -89,11 +89,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 //session
 var options = {
   waitForConnections: true,
-  connectionLimit : 100,
-  host: "us-cdbr-east-02.cleardb.com",
-  user: "b2060941ee1661",
-  password: 'fca9cdb1',
-  database: "heroku_740c1559583a7cd"
+  connectionLimit : 0,
+  host: "localhost",
+  user: "root",
+  password: 'YOUR_ROOT_PASSWORD_HERE',
+  database: "newdb"
 } 
 
 

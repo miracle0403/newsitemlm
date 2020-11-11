@@ -4,6 +4,7 @@ $(document).ready(function() {
 	$('#Ulettervalid').hide();
 	$('#Llettervalid').hide();
 	$('#matchvalid').hide();
+	new ClipboardJS('.btn');
 	var matched = $(':input#cpass');
 	console.log(matched)
 	
@@ -113,4 +114,59 @@ $(document).ready(function() {
 			$("#result").html(data);
 		});
 	});
+	
+	//activate
+	$("button#activate").click(function(){
+		if (confirm("Are you sure you want to activate your account?")) {
+  $.post("/activate", function(data, status){
+				//alert(data)
+				location.reload(true);
+  });;
+}
+	});
+	//enter feeder
+	$("button#enterFeeder").click(function(){
+		if (confirm("Are you sure you want to enter the feeder matrix?")){
+			$.post("/enter-feeder", function(data, status){
+				alert('You have been assigned to pay someone');
+				location.reload();
+			});
+		}
+	});
+	//confirm activation
+	$("button#confirmActivation").click(function(){
+		var name = $('#actName').text();
+		var link = $('#actLink').attr('href');
+		if (confirm("Are you sure you received N1,000 from " + name + '?')){
+			$.post(link, function(data, status){
+				//alert('Payment Was confirmed');
+				location.reload();
+			});
+		}
+	});
+	//confirm feeder
+	$("button#feedenter2").click(function(){
+		var name = $('#feedName2').text();
+		var link = $('#feedLink2').attr('href');
+		if (confirm("Are you sure you received N10,000 from " + name + '?')){
+			$.post(link, function(data, status){
+				//alert('Payment Was confirmed');
+				location.reload();
+			});
+		}
+	});
+	
+	//feeder bonus
+	$("button#feedenter").click(function(){
+		var name = $('#feedName').text();
+		var link = $('#feedLink').attr('href');
+		if (confirm("Are you sure you received N10,000 from " + name + '?')){
+			$.post(link, function(data, status){
+				alert(status);
+				location.reload();
+			});
+		}
+	});
+	
+	
 });
