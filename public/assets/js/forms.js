@@ -115,15 +115,7 @@ $(document).ready(function() {
 		});
 	});
 	
-	//activate
-	$("button#activate").click(function(){
-		if (confirm("Are you sure you want to activate your account?")) {
-  $.post("/activate", function(data, status){
-				//alert(data)
-				location.reload(true);
-  });;
-}
-	});
+	
 	//enter feeder
 	$("button#enterFeeder").click(function(){
 		if (confirm("Are you sure you want to enter the feeder matrix?")){
@@ -133,19 +125,26 @@ $(document).ready(function() {
 			});
 		}
 	});
-	//confirm activation
-	$("button#confirmActivation").click(function(){
-		var name = $('#actName').text();
-		var link = $('#actLink').attr('href');
-		if (confirm("Are you sure you received N1,000 from " + name + '?')){
-			$.post(link, function(data, status){
-				//alert('Payment Was confirmed');
-				location.reload();
-			});
-		}
+	
+	//activate
+	$("button#activate").click(function(){
+		if (confirm("Are you sure you want to activate your account?")) {
+  $.post("/activate", function(data, status){
+				//alert(data)
+				location.reload(true);
+  });;
+}
 	});
+	
+	//confirm activation
+$(".confirmActivation").click(function(){
+  var name = $(".confirmActivation").attr("name");
+var orderId = $(".confirmActivation").attr("value");
+	
+});
+
 	//confirm feeder
-	$("button#feedenter2").click(function(){
+/*"	$("button#feedenter2").click(function(){
 		var name = $('#feedName2').text();
 		var link = $('#feedLink2').attr('href');
 		if (confirm("Are you sure you received N10,000 from " + name + '?')){
@@ -167,6 +166,6 @@ $(document).ready(function() {
 			});
 		}
 	});
-	
+	*/
 	
 });

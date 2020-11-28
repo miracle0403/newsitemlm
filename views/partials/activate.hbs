@@ -265,7 +265,8 @@
               <div class="card-body ">
                 
                 <p class = "text-danger"><b>
-                You will receive payment from  <span id = "actName">{{   receiver_fullname}} </span>N1000 before {{ expire}}.</b>
+                <div id = "act"> 
+                You will receive payment from  <span class = "actName">{{   receiver_fullname}} </span>N1000 before {{ expire}}.</b>
                 </p>
                 <br>
                 <p>
@@ -279,9 +280,11 @@
                 <img src = "{{pop}}" class = "img-fluid">
                 
                 	<div class = "form-group">
-                	<a  href = "/confirm-payment-act/{{order_id}}" id = "actLink"></a>
-                <button class = "btn btn-primary" id = "confirmActivation" type= "button">Confirm payment</button>
-                
+                //**	<form action = "/confirm-payment-act/{{order_id}}" method = "post">
+                <button class = "btn btn-primary" id = "" type= "submit">Confirm payment</button></form>**/
+               <a href = "/confirm-payment-act/{{order_id}}" class = "actLink"></a>
+                <button class = "btn btn-primary confirmActivation" name = "{{order_id}}" value = "{{receiver_fullname}}" type= "button">Confirm payment</button>
+                </div>
                 	</div>
                 
               </div>
@@ -322,9 +325,9 @@
                 <img src = "{{pop}}" class = "img-fluid">
                 
                 	<div class = "form-group">
-                	<a  href = "/confirm-payment/{{order_id}}/{{receiving_order}}" id = "feedLink"></a>
+                	<form action = "/confirm-payment/{{order_id}}/{{receiving_order}}" method = "post">
                 	
-                <button class = "btn btn-primary" id = "feedenter" type= "button">Confirm payment</button>
+                <button class = "btn btn-primary" id = "" type= "submit">Confirm payment</button></form>
                 	</div>
                 
               </div>
@@ -367,8 +370,8 @@
                 	<img src = "{{pop}}" class = "img-fluid">
                 
                 	<div class = "form-group">
-                	<a  href = "/confirm-payment/{{order_id}}/{{receiving_order}}" id = "feedLink2"></a>
-                <button class = "btn btn-primary" id = "feedenter2" type= "button">Confirm payment</button>
+                	<form action = "/confirm-payment/{{order_id}}/{{receiving_order}}" method = "post">
+                <button class = "btn btn-primary" id = "feedenter2" type= "button">Confirm payment</button></post>
                 	</div>
                 
               </div>

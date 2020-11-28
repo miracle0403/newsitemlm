@@ -17,6 +17,7 @@ var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 var db = require('../db.js');
 var mergefeed1 = require('../feeder/merge.js');
+
 var mv = require('mv');
 var func = require('./func.js');
 //var password = require('../functions/profile/passwordreset');
@@ -894,6 +895,76 @@ router.post('/activate', authentificationMiddleware(), function(req, res, next) 
 								}
 							});
 						}//if number is an integer
+						else{
+							db.query('SELECT * FROM activation ORDER BY alloted WHERE username = ?', [details.username], function(err, results, fields){
+								if (err) throw err;
+								var alloted = results.slice(-1)[0];
+								if (alloted.alloted === 0){
+									//go to the normal section
+									db.query('SELECT * FROM activation ORDER BY alloted DESC', function(err, results, fields){
+								if (err) throw err;
+								if(results.length === 0){
+									var error = 'Take a chill pill. No one to receive from you... Try again';
+									req.flash('mergeerror', error);
+									res.redirect('/dashboard/#mergeerror');
+								}else {
+									var acti = results[0];
+									db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+										if (err) throw err;
+										var receiver = results[0];
+										db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
+											if (err) throw err;
+											db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
+												if (err) throw err;
+												securePin.generateString(15, charSet, function(str){
+													var order_id = 'act' + str;
+													var date = new Date();
+													var dt = new Date();
+													date.setHours(date.getHours() + 3);
+													console.log(dt, date, receiver, details)
+													
+													db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
+														if (err) throw err;
+														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+														req.flash('success', success);
+									res.redirect('/dashboard/#mergesuccess');
+													});
+												});
+											});
+										});
+									});
+								}
+							});
+								}else if (alloted.alloted > 0){
+									//take from sponsor.
+									var acti = alloted;
+									db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+										if (err) throw err;
+										var receiver = results[0];
+										db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
+											if (err) throw err;
+											db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
+												if (err) throw err;
+												securePin.generateString(15, charSet, function(str){
+													var order_id = 'act' + str;
+													var date = new Date();
+													var dt = new Date();
+													date.setHours(date.getHours() + 3);
+													console.log(dt, date, receiver, details)
+													
+													db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
+														if (err) throw err;
+														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+														req.flash('success', success);
+									res.redirect('/dashboard/#mergesuccess');
+													});
+												});
+											});
+										});
+									});
+								}
+							});
+						}
 					});
 				}
 			});
@@ -1145,7 +1216,8 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 router.post('/confirm-payment-act/:order_id/', authentificationMiddleware(), function(req, res, next){
 	var order_id = req.params.order_id;
 	var currentUser = req.session.passport.user.user_id;
-	db.query('SELECT * FROM transactions WHERE order_id = ?', [order_id], function(err, results, fields){
+	dialogs.confirm('Are you sure you want to confirm this payment?').ok(function(){
+		db.query('SELECT * FROM transactions WHERE order_id = ?', [order_id], function(err, results, fields){
 		if (err) throw err;
 		if(results.length === 0){
 			var error = 'Something went wrong';
@@ -1168,6 +1240,9 @@ router.post('/confirm-payment-act/:order_id/', authentificationMiddleware(), fu
 				});
 			}
 		}
+	});
+	}, function(){
+		res.redirect('/dashboard')
 	});
 });
 
@@ -1349,7 +1424,7 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 				db.query('SELECT * FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if (err) throw err
 					if(results.length === 0){
-						//put under bio.username 
+						//put under bio.sponsor 
 						db.query('SELECT parent.sponsor, parent.username FROM user_tree AS node, user_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? AND parent.username is not null AND parent.feeder = ?  ORDER BY parent.lft', [bio.username, 'yes'], function(err, results, fields){
 							if( err ) throw err;
 							var receive = results.slice(-1)[0];

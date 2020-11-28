@@ -69,18 +69,18 @@ END //
 
 
 DELIMITER // 
-CREATE PROCEDURE `leafdel` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255), `ordId` VARCHAR(255))
+CREATE PROCEDURE `leafdel` (`mother` VARCHAR(255), `child` VARCHAR(255), `orderId` VARCHAR(255), `ordId` VARCHAR(255))
 BEGIN
 
-SELECT @myLeft := lft FROM feeder_tree WHERE user = mother;
+SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
 
-DELETE FROM feeder_tree WHERE order_id = order_id;
+DELETE FROM feeder_tree WHERE order_id = orderId;
 
 UPDATE feeder_tree SET rgt = rgt - 2 WHERE rgt > @myLeft;
 
 UPDATE feeder_tree SET lft = lft - 2 WHERE lft > @myLeft;
 
-UPDATE transactions SET status = 'expired'  WHERE order_id = order_id;
+UPDATE transactions SET status = 'Not Paid'  WHERE order_id = orderId;
 
 UPDATE feeder_tree SET amount = amount -1  WHERE order_id = ordId;
 

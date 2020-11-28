@@ -72,7 +72,7 @@ exports.actimer = function(){
 		for(var i = 0; i < trans.length; i++){ 
 			
 			var cd = results[i].expire;
-			var countDown = cd
+			//var countDown = cd
 			var receiver = trans[i].receiver_username;
 			
 			//var distance = countDown - now;
