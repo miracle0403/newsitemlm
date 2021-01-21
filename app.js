@@ -92,8 +92,8 @@ var options = {
   waitForConnections: true,
   connectionLimit : 0,
   host: "localhost",
-  user: "root",
-  password: 'YOUR_ROOT_PASSWORD_HERE',
+  user: "newsitemlm",
+  password: '',
   database: "newdb"
 } 
 
@@ -177,4 +177,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+module.exports.dirname = path.dirname(__filename);
 module.exports = app;

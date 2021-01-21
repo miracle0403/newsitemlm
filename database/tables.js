@@ -45,8 +45,10 @@ CREATE TABLE `user` (
 )
 
 CREATE TABLE `default_sponsor` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
 	`user` VARCHAR (255) NOT NULL,
-	`number` INT (11) NOT NULL DEFAULT 0
+	`number` INT (11) NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `verifyemail` (
@@ -72,6 +74,7 @@ CREATE TABLE `transactions` (
 	`status` VARCHAR (255) NOT NULL DEFAULT 'PENDING',
 	`order_id` VARCHAR (255) NOT NULL,
 	`pop` VARCHAR (255) NULL,
+	`receiving_order` VARCHAR (255) NULL,
 	`date_entered` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

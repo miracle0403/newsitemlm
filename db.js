@@ -5,9 +5,9 @@ var pool  = sql.createPool({
   multipleStatements: true,
   connectionLimit : 0,
   waitForConnections: true,
-  host: "localhost",
-  user: "root",
-  password: 'YOUR_ROOT_PASSWORD_HERE',
+ host: "localhost",
+  user: "newsitemlm",
+  password: '',
   database: "newdb"
 });
 
@@ -24,10 +24,10 @@ pool.getConnection( function ( err, con ){
 			if ( err ) throw err;
 			else{
 			console.log( 'solution is ' + results[0].solution);
-			//console.log( 'i am collins love' );
 			pool.releaseConnection( con );
 			}
 		});
 	}
 });
-module.exports = pool;
+
+module.exports = pool

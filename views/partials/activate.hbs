@@ -1,429 +1,412 @@
 <div id = "content" class="content">
 	{{#showErrors}}
-				{{#mergeerror}}
-				  <div id = "mergeerror" class="alert alert-danger">
-					{{.}}
-				  </div>
-				{{/mergeerror}}
-			{{/showErrors}}
-			 	{{#showSuccess}}
-				{{#success}}
-				  <div id = "success" class="alert alert-success">
-					{{.}}
-				  </div>
-				{{/success}}
-			{{/showSuccess}}
-        <div class="row">
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-              <div class="card-body ">
-                <div class="row">
-                  <div class="col-5 col-md-4">
-                    <div class="icon-big text-center icon-warning">
-                      <i class="nc-icon nc-globe text-warning"></i>
-                    </div>
-                  </div>
-                  <div class="col-7 col-md-8">
-                    <div class="numbers">
-                      <p class="card-category">Feeder qEarnings</p>
-                      <p class="card-title">Matrix: N{{feedmatrix}}<p>
-                       <p class="card-title">Sponsor Bonus: N{{feedbonus}}<p>
-                       <button class = "btn btn-primary" id = "enterFeeder" type= "button">Enter Feeder</button>
-                    
-                	</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-refresh"></i>
-                  Update Now
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-              <div class="card-body ">
-                <div class="row">
-                  <div class="col-5 col-md-4">
-                    <div class="icon-big text-center icon-warning">
-                      <i class="nc-icon nc-globe text-warning"></i>
-                    </div>
-                  </div>
-                  <div class="col-7 col-md-8">
-                    <div class="numbers">
-                      <p class="card-category">Total Earned</p>
-                      <p class="card-title">N{{totalEarned}}<p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-refresh"></i>
-                  Update Now
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-              <div class="card-body ">
-                <div class="row">
-                  <div class="col-5 col-md-4">
-                    <div class="icon-big text-center icon-warning">
-                      <i class="nc-icon nc-money-coins text-success"></i>
-                    </div>
-                  </div>
-                  <div class="col-7 col-md-8">
-                    <div class="numbers">
-                      <p class="card-category">Incoming Earnings</p>
-                      <p class="card-title">N{{expectedEarn}}<p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-calendar-o"></i>
-                  Last day
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-              <div class="card-body ">
-                <div class="row">
-                  <div class="col-5 col-md-4">
-                    <div class="icon-big text-center icon-warning">
-                      <i class="nc-icon nc-favourite-28 text-primary"></i>
-                    </div>
-                  </div>
-                  <div class="col-7 col-md-8">
-                    <div class="numbers">
-                      <p class="card-category">Total Paid</p>
-                      <p class="card-title">N{{totalPaid}} <p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-refresh"></i>
-                  Update now
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{#if nopop}}
-        {{#each nopop}}
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                Pay {{receiver_username}} N10000 before {{ expire}}.</b>
-                </p>
-                <br>
-                <p>
-                Account Name:  {{ receiver_account_name}}<br>
-                Account Number: {{ receiver_account_number}}<br>
-                Bank: {{ receiver_bank_name}}<br>
+{{#mergeerror}}
+  <div id = "mergeerror" class="alert alert-danger">
+	{{.}}
+  </div>
+{{/mergeerror}}
+{{/showErrors}}
+	{{#showSuccess}}
+	{{#success}}
+	  <div id = "success" class="alert alert-success">
+		{{.}}
+	  </div>
+	{{/success}}
+{{/showSuccess}}
 
-                Amount: N10,000<br>
-                Phone: {{ receiver_phone}}<br>
-                Status: {{ status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-               
-               
-                
-                	<div class = "form-group">
-                	<a href = "/iPaid/{{ order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
-                	</div>
-                
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{/each}}
-        {{/if}}
-        </div>
-        {{#if pop}}
-        {{#each pop}}
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                You claimed to pay {{ receiver_fullname}} N10,000  {{  expire}}.</b>
-                </p>
-                <br>
-                <p>
-                Account Name:  {{ receiver_account_name}}<br>
-                Account Number: {{    receiver_account_number}}<br>
-                Bank: {{    receiver_bank_name}}<br>
-                Amount: N1000<br>
-                Phone: {{    receiver_phone}}<br>
-                Status: {{  status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-               
-               
-                
-                
-                	<img src = "{{pop}}" class = "img-fluid"
-                
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{/each}}
-        {{/if}}
-      {{#if chat}}
-        {{#each chat}}
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                Pay {{chat.  receiver_fullname}} N1000 before {{chat.expire}}.</b>
-                </p>
-                <br>
-                <p>
-                Account Name:  {{chat.  receiver_account_name}}<br>
-                Account Number: {{chat.  receiver_account_number}}<br>
-                Bank: {{chat.  receiver_bank_name}}<br>
-                Amount: N1000<br>
-                Phone: {{chat.  receiver_phone}}<br>
-                Status: {{chat.status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-                <img src = "{{pop}}" class = "img-fluid">
-              <div class = "form-group">
-                	<a href = "/chat/{{chat.id}}"><button class = "btn btn-primary" type= "button">CHAT</button></a>
-                	</div>
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{/each}}
-        {{/if}}
-        <div class="row">
-        
-      {{#if receivingact}}
-      {{#each receivingact}}
-      
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                <div id = "act"> 
-                You will receive payment from  <span class = "actName">{{   receiver_fullname}} </span>N1000 before {{ expire}}.</b>
-                </p>
-                <br>
-                <p>
-                
-                Amount: N1000<br>
-                Phone: {{   receiver_phone}}<br>
-                Status: {{ status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-               
-                <img src = "{{pop}}" class = "img-fluid">
-                
-                	<div class = "form-group">
-                //**	<form action = "/confirm-payment-act/{{order_id}}" method = "post">
-                <button class = "btn btn-primary" id = "" type= "submit">Confirm payment</button></form>**/
-               <a href = "/confirm-payment-act/{{order_id}}" class = "actLink"></a>
-                <button class = "btn btn-primary confirmActivation" name = "{{order_id}}" value = "{{receiver_fullname}}" type= "button">Confirm payment</button>
-                </div>
-                	</div>
-                
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {{/each}}
-      {{/if}}
-       {{#if receivingbonus}}
-      {{#each receivingbonus}}
-      
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                You will receive payment from <span id = "feedName"> {{ receiver_fullname}}</span> N10,000 before {{expire}}.</b>
-                </p>
-                <br>
-                <p>
-                Purpose: {{purpose}}<br>
-                Amount: N10,000<br>
-                Phone: {{ receiver_phone}}<br>
-                Status: {{status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-               
-                <img src = "{{pop}}" class = "img-fluid">
-                
-                	<div class = "form-group">
-                	<form action = "/confirm-payment/{{order_id}}/{{receiving_order}}" method = "post">
-                	
-                <button class = "btn btn-primary" id = "" type= "submit">Confirm payment</button></form>
-                	</div>
-                
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {{/each}}
-      {{/if}}
-       {{#if receivingmatrix}}
-      {{#each receivingmatrix}}
-      
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                You will receive payment from <span id = "feedName2">{{ payer_username}}</span> N10,000 before {{ expire}}.</b>
-                </p>
-                <br>
-                <p>
-                Purpose: {{ purpose}}<br>
-                Amount: N10,000<br>
-                Phone: {{   receiver_phone}}<br>
-                Status: {{ status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-               
-                
-                
-                	<img src = "{{pop}}" class = "img-fluid">
-                
-                	<div class = "form-group">
-                	<form action = "/confirm-payment/{{order_id}}/{{receiving_order}}" method = "post">
-                <button class = "btn btn-primary" id = "feedenter2" type= "button">Confirm payment</button></post>
-                	</div>
-                
-              </div>
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {{/each}}
-      {{/if}}
-       {{#if receivinguser}}
-      {{#each receivinguser}}
-      
-          <div class="col-md-12">
-            <div class="card ">
-              <div class="card-header ">
-                <h5 class="card-title">Payment Details</h5>
-               
-              </div>
-              <div class="card-body ">
-                
-                <p class = "text-danger"><b>
-                 {{receiver_fullname}} will receive N10,000 from {{payer_fullname}} on your behalf. This payment is {{receiver_fullname}} sponsor's bonus. This order will be shown to you so you can monitor the progress of the order but you cannot confirm this payment on behalf of {{receiver_fullname}}. </b>
-                </p>
-                <br>
-                <p>
-                Purpose: {{  purpose}}<br>
-                Amount: N10,000<br>
-                Phone: {{    receiver_phone}}<br>
-                Status: {{  status}}<br>
-                Time Left: <span class = "text-danger"> {{timeleft}} .</span>
-                </p>
-               
-                
-                <img src = "{{pop}}" class = "img-fluid">
-                
-                	
-                	
-              <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                  <i class="fa fa-history"></i> Updated 3 minutes ago
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {{/each}}
-      {{/if}}
-      </div>
-     </div>
+<div class="row">
+  <div class="col-lg-4 col-md-6 col-sm-6">
+	<div class="card card-stats">
+	  <div class="card-body ">
+		<div class="row">
+		  <div class="col-5 col-md-4">
+			<div class="icon-big text-center icon-warning">
+			  <i class="nc-icon nc-globe text-warning"></i>
+			</div>
+		  </div>
+		  <div class="col-7 col-md-8">
+			<div class="numbers">
+			  <p class="card-category">Feeder Earnings</p>
+			  <p class="card-title">N{{feedmatrix}}<p>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-refresh"></i>
+		  Update Now
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6">
+	<div class="card card-stats">
+	  <div class="card-body ">
+		<div class="row">
+		  <div class="col-5 col-md-4">
+			<div class="icon-big text-center icon-warning">
+			  <i class="nc-icon nc-money-coins text-success"></i>
+			</div>
+		  </div>
+		  <div class="col-7 col-md-8">
+			<div class="numbers">
+				<form action = "/enter-feeder" method = "POST">
+					<small><button class = "btn btn-primary" id = "enter-feeder" type "submit">Enter Feeder</button></small>
+				</form>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-calendar-o"></i>
+		  Last day
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6">
+	<div class="card card-stats">
+	  <div class="card-body ">
+		<div class="row">
+		  <div class="col-5 col-md-4">
+			<div class="icon-big text-center icon-warning">
+			  <i class="nc-icon nc-vector text-danger"></i>
+			</div>
+		  </div>
+		  <div class="col-7 col-md-8">
+			<div class="numbers">
+			  <p class="card-category">Feeder Bonus</p>
+			  <p class="card-title">N{{feedbonus}}<p>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-clock-o"></i>
+		  In the last hour
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6">
+	<div class="card card-stats">
+	  <div class="card-body ">
+		<div class="row">
+		  <div class="col-5 col-md-4">
+			<div class="icon-big text-center icon-warning">
+			  <i class="nc-icon nc-vector text-danger"></i>
+			</div>
+		  </div>
+		  <div class="col-7 col-md-8">
+			<div class="numbers">
+			  <p class="card-category">Expected Earnings</p>
+			  <p class="card-title">N{{expectedEarn}}<p>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-clock-o"></i>
+		  In the last hour
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6">
+	<div class="card card-stats">
+	  <div class="card-body ">
+		<div class="row">
+		  <div class="col-5 col-md-4">
+			<div class="icon-big text-center icon-warning">
+			  <i class="nc-icon nc-vector text-danger"></i>
+			</div>
+		  </div>
+		  <div class="col-7 col-md-8">
+			<div class="numbers">
+			  <p class="card-category">Total Paid</p>
+			  <p class="card-title">N{{totalPaid}}<p>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-clock-o"></i>
+		  In the last hour
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6">
+	<div class="card card-stats">
+	  <div class="card-body ">
+		<div class="row">
+		  <div class="col-5 col-md-4">
+			<div class="icon-big text-center icon-warning">
+			  <i class="nc-icon nc-favourite-28 text-primary"></i>
+			</div>
+		  </div>
+		  <div class="col-7 col-md-8">
+			<div class="numbers">
+			  <p class="card-category">Total Earned</p>
+			  <p class="card-title">N{{totalEarned}}<p>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-refresh"></i>
+		  Update now
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>
+
+<!-- sort out the merging section -->
+
+<div class="row">
+  <div class="col-md-12">
+	<div class="card ">
+	  <div class="card-header ">
+		<h5 class="card-title">MERGING</h5>
+		<p class="card-category">24 Hours performance</p>
+	  </div>
+	  <div class="card-body ">
+		
+		
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card ">
+			{{#if nopop}}
+					{{#each nopop}}
+				<div class="card-header ">
+					<h5 class="card-title">Payment Details</h5>
+		   
+				</div>
+				<div class="card-body ">
+				
+						<p class = "text-danger"><b>
+							Pay {{receiver_username}} N10000 before {{ expire}}.</b>
+						</p>
+						<br>
+						<p>
+							Account Name:  {{ receiver_account_name}}<br>
+							Account Number: {{ receiver_account_number}}<br>
+							Bank: {{ receiver_bank_name}}<br>
+
+							Amount: N10,000<br>
+							Phone: {{ receiver_phone}}<br>
+							Status: {{ status}}<br>
+							Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+						</p>						   
+				   
+					
+						<div class = "form-group">
+							<a href = "/iPaid/{{ order_id}}"><button class = "btn btn-primary" type= "button">I have paid</button></a>
+						</div>
+					{{/each}}
+				{{/if}}
+					
+			
+				{{#if pop}}
+					{{#each pop}}
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card ">
+									<div class="card-header ">
+										<h5 class="card-title">Payment Details</h5>
+							   
+									</div>
+								<div class="card-body ">									
+									<p class = "text-danger"><b>
+										You claimed to pay {{ receiver_fullname}} N10,000. Notify {{receiver_fullname}}  to confirm your payment before {{  expire}}.</b>
+									</p>
+									<br>
+									<p>
+										Account Name:  {{ receiver_account_name}}<br>
+										Account Number: {{ receiver_account_number}}<br>
+										Bank: {{ receiver_bank_name}}<br>
+										Purpose: {{purpose}}<br>
+										Amount: N10,000<br>
+										Phone: {{ receiver_phone}}<br>
+										Status: {{ status}}<br>
+										Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+										<img src = "{{pop}}" class = "img-fluid">
+									</p>
+								</div>
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+				{{#if chat}}
+					{{#each chat}}
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card ">
+									<div class="card-header ">
+										<h5 class="card-title">Payment Details</h5>
+							   
+									</div>
+								<div class="card-body ">									
+									<p class = "text-danger"><b>
+										There is an issue with this payment, please contact the admin with the payment's order_id.
+									</p>
+									<br>
+									<p>
+										Account Name:  {{ receiver_account_name}}<br>
+										Account Number: {{ receiver_account_number}}<br>
+										Bank: {{ receiver_bank_name}}<br>
+										Purpose: {{purpose}}<br>
+										Amount: N10,000<br>
+										Phone: {{ receiver_phone}}<br>
+										Status: {{ status}}<br>
+										Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+										<img src = "{{pop}}" class = "img-fluid">
+									</p>
+								</div>
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+				{{#if receivingact}}
+					{{#each receivingact}}
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card ">
+									<div class="card-header ">
+										<h5 class="card-title">Payment Details</h5>
+							   
+									</div>
+								<div class="card-body ">									
+									<p class = "text-danger"><b>
+										You will receive payment from {{payer_fullname}} before {{expire}}
+									<br>
+									<p>
+										Payer Name:  {{ payer_fullname}}<br>										
+										Amount: N1,000<br>
+										Phone: {{ payer_phone}}<br>
+										Status: {{ status}}<br>
+										Purpose: {{purpose}}<br>
+										Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+										Purpose: {{purpose}}
+										<div class = "form-group">
+											<form action = "/confirm-payment-act/{{order_id}}" method = "post">
+												<button class = "btn btn-primary" id = "feedenter2" type= "submit">Confirm payment</button></post>
+										</div>
+									</p>
+								</div>
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+				{{#if receivingbonus}}
+					{{#each receivingbonus}}
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card ">
+									<div class="card-header ">
+										<h5 class="card-title">Payment Details</h5>
+							   
+									</div>
+								<div class="card-body ">									
+									<p class = "text-danger"><b>
+										You will receive payment from {{payer_fullname}} before {{expire}}
+									<br>
+									<p>
+										Payer Name:  {{ payer_fullname}}<br>										
+										Amount: N10,000<br>
+										Phone: {{ payer_phone}}<br>
+										Status: {{ status}}<br>
+										Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+										Purpose: {{purpose}}
+										<div class = "form-group">
+											<form action = "/confirm-payment/{{order_id}}/{{receiving_order}}" method = "post">
+												<button class = "btn btn-primary" id = "feedenter2" type= "submit">Confirm payment</button></post>
+										</div>
+									</p>
+								</div>
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+				{{#if receivinguser}}
+					{{#each receivinguser}}
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card ">
+									<div class="card-header ">
+										<h5 class="card-title">Payment Details</h5>
+							   
+									</div>
+								<div class="card-body ">									
+									<p class = "text-danger"><b>
+										Your sponsor  will receive payment from {{payer_fullname}} before {{expire}} on your behalf
+									<br>
+									<p>
+										Payer Name:  {{ payer_fullname}}<br>										
+										Amount: N10,000<br>
+										Phone: {{ payer_phone}}<br>
+										Status: {{ status}}<br>
+										Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+										Purpose: {{purpose}}
+									</p>
+								</div>
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+				{{#if receivingmatrix}}
+					{{#each receivingmatrix}}
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card ">
+									<div class="card-header ">
+										<h5 class="card-title">Payment Details</h5>
+							   
+									</div>
+								<div class="card-body ">									
+									<p class = "text-danger"><b>
+										You will receive payment from {{payer_fullname}} before {{expire}}
+									<br>
+									<p>
+										Payer Name:  {{ payer_fullname}}<br>										
+										Amount: N10,000<br>
+										Phone: {{ payer_phone}}<br>
+										Status: {{ status}}<br>
+										Time Left: <span class = "text-danger"> {{timeleft}} .</span>
+										Purpose: {{purpose}}
+										<div class = "form-group">
+											<form action = "/confirm-payment/{{order_id}}/{{receiving_order}}" method = "post">
+												<button class = "btn btn-primary" id = "feedenter2" type= "submit">Confirm payment</button></post>
+										</div>
+									</p>
+								</div>
+							</div>
+						</div>
+					{{/each}}
+				{{/if}}
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <div class="card-footer ">
+		<hr>
+		<div class="stats">
+		  <i class="fa fa-history"></i> Updated 3 minutes ago
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>

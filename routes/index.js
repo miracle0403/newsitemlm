@@ -17,7 +17,7 @@ var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 var db = require('../db.js');
 var mergefeed1 = require('../feeder/merge.js');
-
+var genfunc = require('../functions.js');
 var mv = require('mv');
 var func = require('./func.js');
 //var password = require('../functions/profile/passwordreset');
@@ -28,7 +28,7 @@ var querystring = require('querystring');
 var { check, validationResult } = require('express-validator');
 
 
-var link = require('../functions/routes/route-link');
+var linke = require('../functions/routes/route-link');
 var bcrypt = require('bcrypt-nodejs');
 var verify = require('../nodemailer/verify');
 
@@ -53,8 +53,8 @@ const saltRounds = bcrypt.genSalt( 10, rounds);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-		var message = 'Site Name';
-  res.render('index', { mess: message });
+	
+	res.render('index', { mess: "SWIFT EMPOWER" });
 });
 
 
@@ -62,7 +62,7 @@ router.get('/ref=:username', function(req, res, next) {
 	var username = req.params.username;
 	
 		var rout = '/';
-		link.route(username, db, rout, req, res);
+		linke.route(username, db, rout, req, res);
 });
 
 router.get('/iPaid/:order_id/', ensureLoggedIn('/login'), function(req, res, next) {
@@ -222,29 +222,26 @@ router.get('/promote_us/ref=:username', function(req, res, next) {
 });
 
 
-	
+//dashboard
 router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 	func.receive();
 	func.noreceive();
 	func.feedtimer()
 	//func.actimer();
 	var currentUser = req.session.passport.user.user_id;
-
+	
 	db.query( 'SELECT * FROM user WHERE user_id = ?', [currentUser], function ( err, results, fields ){
-  	if( err ) throw err;
-  	var bio = results[0];
- 		//func.spamActi(bio.username, req, res);
- 			
-  	if(bio.bank_name === null){
-  		res.redirect('/profile/#bank');
-  	}else{
-  		if (bio.user_type === 'user' && bio.activated === 'No'){
-  			
-  			 //console.log(bio.username + ' is not activated');
-  			db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND (status = ? OR status = ? OR status = ?) ', [bio.username, 'Pending', 'UnConfirmed', 'in contest' ], function ( err, results, fields ){
-  				if( err ) throw err;
-  				if(results.length === 0){
-  					var flashMessages = res.locals.getMessages();
+		if( err ) throw err;
+		var bio = results[0];		
+		if(bio.bank_name === null){			
+			res.redirect('/profile/#bank');
+		}else if(bio.user_type === 'user' && bio.bank_name !== null){
+			if (bio.activated === 'No'){				
+				db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND (status = ? OR status = ? OR status = ?) ', [bio.username, 'pending', 'UnConfirmed', 'in contest' ], function ( err, results, fields ){
+					if( err ) throw err;					
+					if(results.length === 0){
+						console.log('nono')
+						var flashMessages = res.locals.getMessages();
 						if (flashMessages.mergeerror){
 							res.render( 'dashboard', {
 								mess: 'USER DASHBOARD',
@@ -263,20 +260,32 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 								noactimerge:'no merging',
 								unactivate: 'You are not yet activated'
 							});
+						}else if (flashMessages.error){
+							res.render( 'dashboard', {
+								mess: 'USER DASHBOARD',
+								bio: bio,
+								showErrors: true,
+								error: flashMessages.error,
+								noactimerge:'no merging',
+								unactivate: 'You are not yet activated'
+							});
 						}else{
 							res.render('dashboard', { mess: 'USER DASHBOARD', noactimerge:'no merging', unactivate: 'You are not yet activated'});
 						}
-  				}else{
-  					var trans = results[0];
-  					if(trans.status === 'PENDING'){
-  						var pendingmerge = results[0];
-  						var the = new Date(trans.expire);
-  						var now = new Date();
-  						var distance = the - now;
-  						var timeleft = func.timer(now, distance);
-  						console.log(timeleft, pendingmerge)
-  						var flashMessages = res.locals.getMessages();
-  						if (flashMessages.mergeerror){
+					}else{
+						//console.log('yeye')
+						var trans = results[0];						
+						if(trans.status === 'PENDING'){
+							console.log('yeye', trans, trans.status)
+							var pendingmerge = results[0];
+							console.log(trans)
+							var the = new Date(trans.expire);
+							var now = new Date();
+							var distance = the - now;
+							var timeleft = func.timer(now, distance);
+							console.log(timeleft, pendingmerge)
+							var flashMessages = res.locals.getMessages();
+							if (flashMessages.mergeerror){
 								res.render( 'dashboard', {
 									mess: 'USER DASHBOARD',
 									bio: bio,
@@ -284,7 +293,7 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 									mergeerror: flashMessages.mergeerror,
 									timeleft: timeleft,
 									pendingmerge: pendingmerge,
-									unactivate: 'You are not yet activated'
+									unactivate: 'You have a pending payment'
 								});
 							}else if (flashMessages.success){
 								res.render( 'dashboard', {
@@ -294,20 +303,20 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 									showSuccess: true,
 									success: flashMessages.success,
 									pendingmerge: pendingmerge,
-									unactivate: 'You are not yet activated'
+									unactivate: 'You have a pending payment'
 								});
 							}else{
-								res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, pendingmerge:pendingmerge, unactivate: 'You are not yet activated'});
+								res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, pendingmerge:pendingmerge, unactivate: 'You have a pending payment'});
 							}
-  					}else if(trans.status === 'unconfirmed'){
-  						var unconmerge = results[0];
-  						var the = new Date(trans.expire);
-  						var now = new Date();
-  						var distance = the - now;
-  						var timeleft = func.timer(now, distance);
-  						console.log(timeleft)
-  						var flashMessages = res.locals.getMessages();
-  						if (flashMessages.mergeerror){
+						}else if(trans.status === 'unconfirmed'){
+							var unconmerge = results[0];
+							var the = new Date(trans.expire);
+							var now = new Date();
+							var distance = the - now;
+							var timeleft = func.timer(now, distance);
+							console.log(timeleft)
+							var flashMessages = res.locals.getMessages();
+							if (flashMessages.mergeerror){
 								res.render( 'dashboard', {
 									mess: 'USER DASHBOARD',
 									bio: bio,
@@ -315,7 +324,7 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 									mergeerror: flashMessages.mergeerror,
 									timeleft: timeleft,
 									unconmerge: unconmerge,
-									unactivate: 'You are not yet activated'
+									unactivate: 'You have a Unconfirmed payment'
 								});
 							}else if (flashMessages.success){
 								res.render( 'dashboard', {
@@ -325,173 +334,295 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 									showSuccess: true,
 									success: flashMessages.success,
 									unconmerge: unconmerge,
-									unactivate: 'You are not yet activated'
+									unactivate: 'You have a Unconfirmed payment'
 								});
 							}else{
-								res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, unconmerge : unconmerge, unactivate: 'You are not yet activated'});
+								res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, unconmerge : unconmerge, unactivate: 'You have a Unconfirmed payment'});
 							}
-  					}else if (trans.status === 'In contest'){
-  						var contestmerge = results[0];
-  						var timeleft = new Date().getHours(contestmerge.expire) + 1;
-  						var flashMessages = res.locals.getMessages();
-  						if (flashMessages.mergeerror){
-								res.render( 'dashboard', {
-									mess: 'USER DASHBOARD',
-									bio: bio,
-									showErrors: true,
-									mergeerror: flashMessages.mergeerror,
-									timeleft: timeleft,
-									contestmerge: contestmerge,
-									unactivate: 'You are not yet activated'
-								});
-							}else if (flashMessages.success){
-								res.render( 'dashboard', {
-									mess: 'USER DASHBOARD',
-									bio: bio,
-									timeleft: timeleft,
-									showSuccess: true,
-									success: flashMessages.success,
-									contestmerge: contestmerge,
-									unactivate: 'You are not yet activated'
-								});
-							}else{
-								res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, contestmerge : contestmerge, unactivate: 'You are not yet activated'});
-							}
-  					}else{
-  						var error = 'Something went Wrong';
-  						res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, unactivate: 'You are not yet activated'});
-  					}
-  				}
-  			});
-  		}else if (bio.user_type === 'user' && bio.activated === 'yes'){
-  			
-  						 //console.log(bio.username + ' is activated')
-  			db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Pending', ], function ( err, results, fields ){
-  				if( err ) throw err;
-  				var nopop = results;console.log(nopop)
-  				
-  				db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Unconfirmed', ], function ( err, results, fields ){
-  				if( err ) throw err;
-  				var pop = results;
-  				db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'In contest', ], function ( err, results, fields ){
-  				if( err ) throw err;
-  				var chat = results;
-  				db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'activation'], function ( err, results, fields ){
-  					if( err ) throw err;
-  					var receivingact = results;
-  					db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_matrix'], function ( err, results, fields ){
-  						if( err ) throw err;
-  						var receivingmatrix = results;
-  						db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_bonus'], function ( err, results, fields ){
-  							if( err ) throw err;
-  							var receivingbonus = results;
-  							db.query( 'SELECT * FROM transactions WHERE NOT receiver_username = ? AND (user = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?)', [bio.username, bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_bonus'], function ( err, results, fields ){
-  								if( err ) throw err;
-  								var receivinguser = results;
-  								db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'feeder_bonus'], function ( err, results, fields ){
-  									if( err ) throw err;
-  									var feedbonus = results[0].count * 10000;
-  									db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'feeder_matrix'], function ( err, results, fields ){
-  										if( err ) throw err;
-  										var feedmatrix = results[0].count * 10000;
-  										db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'activation'], function ( err, results, fields ){
-  											if( err ) throw err;
-  											var actimatrix = results[0].count * 1000;
-  											db.query( 'SELECT COUNT(purpose) AS count FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND (purpose = ? OR purpose = ? ) ', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_matrix', 'feeder_bonus'], function ( err, results, fields ){
-  												if( err ) throw err;
-  												
-  												var expectedEarn = results[0].count * 10000;
-  												db.query( 'SELECT COUNT(purpose) AS count FROM transactions WHERE payer_username = ? AND status = ? and (purpose = ? or purpose = ?) ', [bio.username, 'confirmed', 'feeder_bonus', 'feeder_matrix'], function ( err, results, fields ){
-  												if( err ) throw err;
-  												var totalPaid = results[0].count * 10000;
-  												console.log(actimatrix , feedmatrix , feedbonus)
-  												var totalEarned = actimatrix + feedmatrix + feedbonus;
-  												var flashMessages = res.locals.getMessages();
-  												if (flashMessages.mergeerror){
-  													res.render( 'dashboard', {
-  														mess: 'USER DASHBOARD',
-  														chat: chat,
-  														pop: pop,
-  														nopop: nopop,
-  														totalPaid: totalPaid,
-  														expectedEarn: expectedEarn,
-  														
-  														bio: bio,
-  														showErrors: true,
-  														mergeerror: flashMessages.mergeerror,
-  														activate: 'You are activated',
-  														actimatrix: actimatrix,
-  														feedbonus: feedbonus,
-  														feedmatrix: feedmatrix,
-  														totalEarned: totalEarned,
-  														receivingact: receivingact,
-  														receivingmatrix: receivingmatrix,
-  														receivingbonus: receivingbonus,
-  														receivinguser: receivinguser
-  														});
-														}else if (flashMessages.success){
-															res.render( 'dashboard', {
-  														mess: 'USER DASHBOARD',
-  														totalPaid: totalPaid,
-  														
-  														bio: bio,
-  														expectedEarn: expectedEarn,
-  														showSuccess: true,
-  														success: flashMessages.success,
-  														chat: chat,
-  														pop: pop,
-  														nopop: nopop,
-  														activate: 'You are activated',
-  														actimatrix: actimatrix,
-  														feedbonus: feedbonus,
-  														feedmatrix: feedmatrix,
-  														totalEarned: totalEarned,
-  														receivingact: receivingact,
-  														receivingmatrix: receivingmatrix,
-  														receivingbonus: receivingbonus,
-  														receivinguser: receivinguser
-  														});
-														}else{
-															res.render( 'dashboard', {
-  														mess: 'USER DASHBOARD',
-  														expectedEarn: expectedEarn,
-  														chat: chat,
-  														pop: pop,
-  														nopop: nopop,
-  														bio: bio,
-  														totalPaid: totalPaid,
-  														
-  														
-  														activate: 'You are activated',
-  														actimatrix: actimatrix,
-  														feedbonus: feedbonus,
-  														feedmatrix: feedmatrix,
-  														totalEarned: totalEarned,
-  														receivingact: receivingact,
-  														receivingmatrix: receivingmatrix,
-  														receivingbonus: receivingbonus,
-  														receivinguser: receivinguser
-  														});
-														}
-  												});
-  												});
+						}else if (trans.status === 'In contest'){
+							var contestmerge = results[0];
+							var timeleft = new Date().getHours(contestmerge.expire) + 1;
+							var flashMessages = res.locals.getMessages();
+							if (flashMessages.mergeerror){
+									res.render( 'dashboard', {
+										mess: 'USER DASHBOARD',
+										bio: bio,
+										showErrors: true,
+										mergeerror: flashMessages.mergeerror,
+										timeleft: timeleft,
+										contestmerge: contestmerge,
+										unactivate: 'You have an issue with your payment'
+									});
+								}else if (flashMessages.success){
+									res.render( 'dashboard', {
+										mess: 'USER DASHBOARD',
+										bio: bio,
+										timeleft: timeleft,
+										showSuccess: true,
+										success: flashMessages.success,
+										contestmerge: contestmerge,
+										unactivate: 'You have an issue with your payment'
+									});
+								}else{
+									res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, contestmerge : contestmerge, unactivate: 'You have an issue with your payment'});
+								}
+						}else{
+							var error = 'Something went Wrong';
+							res.render('dashboard', { mess: 'USER DASHBOARD', timeleft: timeleft, unactivate: 'You are not yet activated'});
+						}
+					}
+				});
+			}else{
+				//user is activated
+				db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Pending', ], function ( err, results, fields ){
+					if( err ) throw err;
+					var nopop = results;
+					console.log(nopop);
+					db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Unconfirmed', ], function ( err, results, fields ){
+						if( err ) throw err;
+						var pop = results;
+						db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'In contest', ], function ( err, results, fields ){
+							if( err ) throw err;
+							var chat = results;
+							db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'activation'], function ( err, results, fields ){
+								if( err ) throw err;
+								var receivingact = results;
+								db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_matrix'], function ( err, results, fields ){
+									if( err ) throw err;
+									var receivingmatrix = results;
+									db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_bonus'], function ( err, results, fields ){
+										if( err ) throw err;
+										var receivingbonus = results;
+										db.query( 'SELECT * FROM transactions WHERE NOT receiver_username = ? AND (user = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?)', [bio.username, bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_bonus'], function ( err, results, fields ){
+											if( err ) throw err;
+											var receivinguser = results;
+											db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'feeder_bonus'], function ( err, results, fields ){
+											if( err ) throw err;
+											var feedbonus = results[0].count * 10000;
+												db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'feeder_matrix'], function ( err, results, fields ){
+													if( err ) throw err;
+													var feedmatrix = results[0].count * 10000;
+													db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'activation'], function ( err, results, fields ){
+														if( err ) throw err;
+														var actimatrix = results[0].count * 1000;
+														db.query( 'SELECT COUNT(purpose) AS count FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND (purpose = ? OR purpose = ? ) ', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_matrix', 'feeder_bonus'], function ( err, results, fields ){
+															if( err ) throw err;
+															var expectedEarn = results[0].count * 10000;
+															db.query( 'SELECT COUNT(purpose) AS count FROM transactions WHERE payer_username = ? AND status = ? and (purpose = ? or purpose = ?) ', [bio.username, 'confirmed', 'feeder_bonus', 'feeder_matrix'], function ( err, results, fields ){
+																if( err ) throw err;
+																var totalPaid = results[0].count * 10000;
+																console.log(actimatrix , feedmatrix , feedbonus);
+																var totalEarned = actimatrix + feedmatrix + feedbonus;
+																var flashMessages = res.locals.getMessages();
+																if (flashMessages.mergeerror){
+																	res.render( 'dashboard', {
+																		mess: 'USER DASHBOARD',
+																		chat: chat,
+																		pop: pop,
+																		nopop: nopop,
+																		totalPaid: totalPaid,
+																		expectedEarn: expectedEarn,
+																		
+																		bio: bio,
+																		showErrors: true,
+																		mergeerror: flashMessages.mergeerror,
+																		activate: 'You are activated',
+																		actimatrix: actimatrix,
+																		feedbonus: feedbonus,
+																		feedmatrix: feedmatrix,
+																		totalEarned: totalEarned,
+																		receivingact: receivingact,
+																		receivingmatrix: receivingmatrix,
+																		receivingbonus: receivingbonus,
+																		receivinguser: receivinguser
+																	});
+																}else if (flashMessages.success){
+																	res.render( 'dashboard', {
+																		mess: 'USER DASHBOARD',
+																		totalPaid: totalPaid,
+																		bio: bio,
+																		expectedEarn: expectedEarn,
+																		showSuccess: true,
+																		success: flashMessages.success,
+																		chat: chat,
+																		pop: pop,
+																		nopop: nopop,
+																		activate: 'You are activated',
+																		actimatrix: actimatrix,
+																		feedbonus: feedbonus,
+																		feedmatrix: feedmatrix,
+																		totalEarned: totalEarned,
+																		receivingact: receivingact,
+																		receivingmatrix: receivingmatrix,
+																		receivingbonus: receivingbonus,
+																		receivinguser: receivinguser
+																	});
+																}else{
+																	res.render( 'dashboard', {
+																		mess: 'USER DASHBOARD',
+																		expectedEarn: expectedEarn,
+																		chat: chat,
+																		pop: pop,
+																		nopop: nopop,
+																		bio: bio,
+																		totalPaid: totalPaid,
+																		
+																		
+																		activate: 'You are activated',
+																		actimatrix: actimatrix,
+																		feedbonus: feedbonus,
+																		feedmatrix: feedmatrix,
+																		totalEarned: totalEarned,
+																		receivingact: receivingact,
+																		receivingmatrix: receivingmatrix,
+																		receivingbonus: receivingbonus,
+																		receivinguser: receivinguser
+																	});
+																}
+															});
+														});
 													});
-  											});
-  										});
-  									});
-  								});
-  							});
-  						});
-  					});
-  				});
-  			});
-  		}//if admin
-  		else{
-  			console.log( bio)
-  		}
-  	}
- });
+												});
+											});
+										});
+									});
+								});
+							});
+						});
+					});
+				});
+			}
+		}else if(bio.user_type === 'admin' && bio.bank_name !== null){
+			var admin = bio;
+			db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) ', [admin.username, 'Pending', 'UnConfirmed', 'in contest' ], function ( err, results, fields ){
+				if( err ) throw err;
+				var actimerge = results;
+				db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Pending', ], function ( err, results, fields ){
+					if( err ) throw err;
+					var nopop = results;
+					console.log(nopop);
+					db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'Unconfirmed', ], function ( err, results, fields ){
+						if( err ) throw err;
+						var pop = results;
+						db.query( 'SELECT * FROM transactions WHERE payer_username = ? AND status = ? ', [bio.username, 'In contest', ], function ( err, results, fields ){
+							if( err ) throw err;
+							var chat = results;
+							db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'activation'], function ( err, results, fields ){
+								if( err ) throw err;
+								var receivingact = results;
+								db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_matrix'], function ( err, results, fields ){
+									if( err ) throw err;
+									var receivingmatrix = results;
+									db.query( 'SELECT * FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_bonus'], function ( err, results, fields ){
+										if( err ) throw err;
+										var receivingbonus = results;
+										db.query( 'SELECT * FROM transactions WHERE NOT receiver_username = ? AND (user = ? AND (status = ? OR status = ? OR status = ?) AND purpose = ?)', [bio.username, bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_bonus'], function ( err, results, fields ){
+											if( err ) throw err;
+											var receivinguser = results;
+											db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'feeder_bonus'], function ( err, results, fields ){
+												if( err ) throw err;
+												var feedbonus = results[0].count * 10000;
+												db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'feeder_matrix'], function ( err, results, fields ){
+													if( err ) throw err;
+													var feedmatrix = results[0].count * 10000;
+													db.query( 'SELECT count(purpose) AS count FROM transactions WHERE receiver_username = ? AND  status = ? AND purpose = ?', [bio.username,  'confirmed', 'activation'], function ( err, results, fields ){
+														if( err ) throw err;
+														var actimatrix = results[0].count * 1000;
+														db.query( 'SELECT COUNT(purpose) AS count FROM transactions WHERE receiver_username = ? AND (status = ? OR status = ? OR status = ?) AND (purpose = ? OR purpose = ? ) ', [bio.username, 'Pending', 'UnConfirmed', 'in contest', 'feeder_matrix', 'feeder_bonus'], function ( err, results, fields ){
+															if( err ) throw err;
+															var expectedEarn = results[0].count * 10000;
+															db.query( 'SELECT COUNT(purpose) AS count FROM transactions WHERE payer_username = ? AND status = ? and (purpose = ? or purpose = ?) ', [bio.username, 'confirmed', 'feeder_bonus', 'feeder_matrix'], function ( err, results, fields ){
+																if( err ) throw err;
+																var totalPaid = results[0].count * 10000;
+																console.log(actimatrix , feedmatrix , feedbonus);
+																var totalEarned = actimatrix + feedmatrix + feedbonus;
+																var flashMessages = res.locals.getMessages();
+																if (flashMessages.mergeerror){
+																	res.render( 'dashboard', {
+																		mess: 'USER DASHBOARD',
+																		chat: chat,
+																		pop: pop,
+																		nopop: nopop,
+																		totalPaid: totalPaid,
+																		expectedEarn: expectedEarn,
+																		admin: admin,
+																		actimerge: actimerge,
+																		showErrors: true,
+																		mergeerror: flashMessages.mergeerror,
+																		activate: 'You are activated',
+																		actimatrix: actimatrix,
+																		feedbonus: feedbonus,
+																		feedmatrix: feedmatrix,
+																		totalEarned: totalEarned,
+																		receivingact: receivingact,
+																		receivingmatrix: receivingmatrix,
+																		receivingbonus: receivingbonus,
+																		receivinguser: receivinguser
+																	});
+																}else if (flashMessages.success){
+																	res.render( 'dashboard', {
+																		mess: 'USER DASHBOARD',
+																		totalPaid: totalPaid,
+																		admin: admin,
+																		actimerge: actimerge,
+																		expectedEarn: expectedEarn,
+																		showSuccess: true,
+																		success: flashMessages.success,
+																		chat: chat,
+																		pop: pop,
+																		nopop: nopop,
+																		activate: 'You are activated',
+																		actimatrix: actimatrix,
+																		feedbonus: feedbonus,
+																		feedmatrix: feedmatrix,
+																		totalEarned: totalEarned,
+																		receivingact: receivingact,
+																		receivingmatrix: receivingmatrix,
+																		receivingbonus: receivingbonus,
+																		receivinguser: receivinguser
+																	});
+																}else{
+																	res.render( 'dashboard', {
+																		mess: 'USER DASHBOARD',
+																		expectedEarn: expectedEarn,
+																		chat: chat,
+																		pop: pop,
+																		nopop: nopop,
+																		admin: admin,
+																		actimerge: actimerge,
+																		totalPaid: totalPaid,																																	activate: 'You are activated',
+																		actimatrix: actimatrix,
+																		feedbonus: feedbonus,
+																		feedmatrix: feedmatrix,
+																		totalEarned: totalEarned,
+																		receivingact: receivingact,
+																		receivingmatrix: receivingmatrix,
+																		receivingbonus: receivingbonus,
+																		receivinguser: receivinguser
+																	});
+																}
+															});
+														});
+													});
+												});
+											});
+										});
+									});
+								});
+							});
+						});
+					});
+				});
+			});
+		}else{
+			var error = 'Something Went wrong';
+			console.log(error);
+			req.flash('error', error);
+			res.redirect('/404');
+		}
+	});
 });
+
 
 
 //register
@@ -700,7 +831,7 @@ router.get('/profile', ensureLoggedIn('/login'), function(req, res, next) {
 			console.log(bio)
 			if(bio.bank_name === null && bio.account_number === null && bio.account_name === null){
 				
-				var error = 'You have not updated your profile yet';
+				var error = 'You have not updated your bank details yet';
 				var flashMessages = res.locals.getMessages();
 				if (flashMessages.emailerror ){
 					res.render( 'profile', {
@@ -839,137 +970,130 @@ router.get('/profile', ensureLoggedIn('/login'), function(req, res, next) {
 
 router.post('/activate', authentificationMiddleware(), function(req, res, next) {
   var currentUser = req.session.passport.user.user_id;
-  console.log(currentUser)
-  if(currentUser === undefined){
-  		var error = 'You need to log in first';
-			req.flash('error', error);
-			res.redirect('/login');
-  }else{
-  	db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
+	db.query('SELECT * FROM user WHERE user_id = ? ', [currentUser], function(err, results, fields){
+		if (err) throw err;
+		var details = results[0];
+		db.query('SELECT user FROM transactions WHERE payer_username = ? AND (status = ? OR status = ?  OR status = ?)', [details.username, 'pending', 'in contest', 'unconfirmed'], function(err, results, fields){
 			if (err) throw err;
-			var details = results[0];
-			db.query('SELECT user FROM transactions WHERE payer_username = ? AND (status = ? OR status = ?  OR status = ?)', [details.username, 'pending', 'in contest', 'unconfirmed'], function(err, results, fields){
-				if (err) throw err;
-				if (results.length > 0){
-					var error = 'You still have a pending transaction.'
-					req.flash('mergeerror', error);
-					res.redirect('/dashboard/#mergeerror');
-				}else{
-					db.query('SELECT COUNT(username) AS count FROM user WHERE sponsor = ? AND activated = ?', [details.sponsor, 'Yes'], function(err, results, fields){
-						if (err ) throw err;
-						var count = results[0].count;
-						var amount = (count - 4) / 5;
-						if(Number.isInteger(amount) === false){
-							db.query('SELECT * FROM activation ORDER BY alloted DESC', function(err, results, fields){
-								if (err) throw err;
-								if(results.length === 0){
-									var error = 'Take a chill pill. No one to receive from you... Try again';
-									req.flash('mergeerror', error);
-									res.redirect('/dashboard/#mergeerror');
-								}else {
-									var acti = results[0];
-									db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+			if (results.length > 0){
+				var error = 'You still have a pending transaction.'
+				req.flash('mergeerror', error);
+				res.redirect('/dashboard/#mergeerror');
+			}else{
+				db.query('SELECT COUNT(username) AS count FROM user WHERE sponsor = ? AND activated = ?', [details.sponsor, 'Yes'], function(err, results, fields){
+					if (err ) throw err;
+					var count = results[0].count;
+					var amount = (count - 4) / 5;
+					if(Number.isInteger(amount) === false){
+						db.query('SELECT * FROM activation ORDER BY alloted DESC', function(err, results, fields){
+							if (err) throw err;
+							if(results.length === 0){
+								var error = 'Take a chill pill. No one to receive from you... Try again';								
+								req.flash('mergeerror', error);
+								res.redirect('/dashboard/#mergeerror');
+							}else {
+								var acti = results[0];
+								db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+									if (err) throw err;
+									var receiver = results[0];
+									db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
 										if (err) throw err;
-										var receiver = results[0];
-										db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
+										db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
 											if (err) throw err;
-											db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
-												if (err) throw err;
-												securePin.generateString(15, charSet, function(str){
-													var order_id = 'act' + str;
-													var date = new Date();
-													var dt = new Date();
-													date.setHours(date.getHours() + 3);
-													console.log(dt, date, receiver, details)
-													
-													db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
-														if (err) throw err;
-														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
-														req.flash('success', success);
-									res.redirect('/dashboard/#mergesuccess');
-													});
+											securePin.generateString(15, charSet, function(str){
+												var order_id = 'act' + str;
+												var date = new Date();
+												var dt = new Date();
+												date.setHours(date.getHours() + 3);
+												console.log(dt, date, receiver, details)
+												
+												db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
+													if (err) throw err;
+													var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+													req.flash('success', success);
+								res.redirect('/dashboard/#mergesuccess');
 												});
 											});
 										});
 									});
-								}
-							});
-						}//if number is an integer
-						else{
-							db.query('SELECT * FROM activation ORDER BY alloted WHERE username = ?', [details.username], function(err, results, fields){
-								if (err) throw err;
-								var alloted = results.slice(-1)[0];
-								if (alloted.alloted === 0){
-									//go to the normal section
-									db.query('SELECT * FROM activation ORDER BY alloted DESC', function(err, results, fields){
-								if (err) throw err;
-								if(results.length === 0){
-									var error = 'Take a chill pill. No one to receive from you... Try again';
-									req.flash('mergeerror', error);
-									res.redirect('/dashboard/#mergeerror');
-								}else {
-									var acti = results[0];
-									db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+								});
+							}
+						});
+					}//if number is an integer
+					else{
+						db.query('SELECT * FROM activation ORDER BY alloted WHERE username = ?', [details.username], function(err, results, fields){
+							if (err) throw err;
+							var alloted = results.slice(-1)[0];
+							if (alloted.alloted === 0){
+								//go to the normal section
+								db.query('SELECT * FROM activation ORDER BY alloted DESC', function(err, results, fields){
+							if (err) throw err;
+							if(results.length === 0){
+								var error = 'Take a chill pill. No one to receive from you... Try again';
+								req.flash('mergeerror', error);
+								res.redirect('/dashboard/#mergeerror');
+							}else {
+								var acti = results[0];
+								db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+									if (err) throw err;
+									var receiver = results[0];
+									db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
 										if (err) throw err;
-										var receiver = results[0];
-										db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
+										db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
 											if (err) throw err;
-											db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
-												if (err) throw err;
-												securePin.generateString(15, charSet, function(str){
-													var order_id = 'act' + str;
-													var date = new Date();
-													var dt = new Date();
-													date.setHours(date.getHours() + 3);
-													console.log(dt, date, receiver, details)
-													
-													db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
-														if (err) throw err;
-														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
-														req.flash('success', success);
-									res.redirect('/dashboard/#mergesuccess');
-													});
+											securePin.generateString(15, charSet, function(str){
+												var order_id = 'act' + str;
+												var date = new Date();
+												var dt = new Date();
+												date.setHours(date.getHours() + 3);
+												console.log(dt, date, receiver, details)
+												
+												db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
+													if (err) throw err;
+													var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+													req.flash('success', success);
+								res.redirect('/dashboard/#mergesuccess');
 												});
 											});
 										});
 									});
-								}
-							});
-								}else if (alloted.alloted > 0){
-									//take from sponsor.
-									var acti = alloted;
-									db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+								});
+							}
+						});
+							}else if (alloted.alloted > 0){
+								//take from sponsor.
+								var acti = alloted;
+								db.query('SELECT username, full_name, phone, bank_name, account_name, account_number FROM user WHERE username = ?', [acti.username], function(err, results, fields){
+									if (err) throw err;
+									var receiver = results[0];
+									db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
 										if (err) throw err;
-										var receiver = results[0];
-										db.query('UPDATE activation SET alloted = ? WHERE username = ? ', [acti.alloted - 1, acti.username], function(err, results, fields){
+										db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
 											if (err) throw err;
-											db.query('DELETE FROM activation WHERE alloted = ?', [0], function(err, results, fields){
-												if (err) throw err;
-												securePin.generateString(15, charSet, function(str){
-													var order_id = 'act' + str;
-													var date = new Date();
-													var dt = new Date();
-													date.setHours(date.getHours() + 3);
-													console.log(dt, date, receiver, details)
-													
-													db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
-														if (err) throw err;
-														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
-														req.flash('success', success);
-									res.redirect('/dashboard/#mergesuccess');
-													});
+											securePin.generateString(15, charSet, function(str){
+												var order_id = 'act' + str;
+												var date = new Date();
+												var dt = new Date();
+												date.setHours(date.getHours() + 3);
+												console.log(dt, date, receiver, details)
+												
+												db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
+													if (err) throw err;
+													var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+													req.flash('success', success);
+								res.redirect('/dashboard/#mergesuccess');
 												});
 											});
 										});
 									});
-								}
-							});
-						}
-					});
-				}
-			});
+								});
+							}
+						});
+					}
+				});
+			}
 		});
-	}
+	});
 });
 
 //post register
@@ -985,9 +1109,9 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
     var phone = req.body.phone;
 	var sponsor = req.body.sponsor;
 	
-			var errors = validationResult(req).errors;
-			
-			if (errors.length > 0){
+	var errors = validationResult(req).errors;
+	
+	if (errors.length > 0){
 		res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor});
 	}else{
 		if (cpass !== password){
@@ -1017,22 +1141,26 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 											if (err) throw err;
 											if(results.length === 0){
 												console.log('spon not valid')
-												db.query('SELECT user FROM default_sponsor order by number DESC', function(err, results, fields){
+												db.query('SELECT id, user, number FROM default_sponsor order by number DESC', function(err, results, fields){
 													if (err) throw err;
 													var sponsor = results[0].user;
-											
-													//register user
-													bcrypt.hash(password, saltRounds, null, function(err, hash){
-													db.query( 'CALL  register (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+													var number = results[0].number;
+													var id = results[0].id;
+													db.query('UPDATE default_sponsor SET number = ? WHERE id = ?', [number - 1, id], function(err, res, next){
 														if (err) throw err;
-														console.log(phone)
-														var success = 'Registration successful! please login';
-														
-														//mail
-														//verify.verifymail(email,   username, hash);
-														func.spon(sponsor);
-													res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
-													});
+														//register user
+														bcrypt.hash(password, saltRounds, null, function(err, hash){
+														db.query( 'CALL  register (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+															if (err) throw err;
+															console.log(phone)
+															var success = 'Registration successful! please login';
+															
+															//mail
+															//verify.verifymail(email,   username, hash);
+															//func.spon(sponsor);
+															res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+														});
+													});													
 												});
 											});
 										}else{
@@ -1079,11 +1207,10 @@ router.post('/register/ref=:username', function (req, res, next){
 //upload pop
 router.post('/uploadpop/:order_id/', function(req, res, next){
 	var order_id = req.params.order_id;
-	var fd = path.join(__dirname + '').split('/');
-	var thrw = fd.pop();
-	var fr = fd.join('/');
-	var g5 = '/public/assets/img/pop/';
-	var gt = fr + g5;
+	var rootdir = genfunc.dirname(path);
+	var subdir = '/public/assets/img/pop/';
+	var dir  = path.join(rootdir + subdir);
+	console.log(dir)
 	var maxFileSize = 2 * 1024 * 1024
 	var form = formidable({ multiples: true});
 	form.parse(req, function(err, fields, files){
@@ -1096,7 +1223,7 @@ router.post('/uploadpop/:order_id/', function(req, res, next){
 			console.log(file)
 			if (file.type === 'image/jpeg' || file.type === 'image/png'){
 					if(file.size <= maxFileSize){
-						mv(file.path, gt + file.name, function (err) {
+						mv(file.path, dir + file.name, function (err) {
 							if (err) throw err;
 							var date = new Date();
 							var dt = new Date();
@@ -1172,6 +1299,7 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 								if(ord.username === trans.user){
 									db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [ord.requiredEntrance - 1, trans.payer_username], function(err, results, fields){
 										if (err) throw err;
+										func.norec(ord.order_id);
 										func.receive();
 										func.noreceive();
 										var success = 'Payment confirmation was successful!';
@@ -1216,8 +1344,7 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 router.post('/confirm-payment-act/:order_id/', authentificationMiddleware(), function(req, res, next){
 	var order_id = req.params.order_id;
 	var currentUser = req.session.passport.user.user_id;
-	dialogs.confirm('Are you sure you want to confirm this payment?').ok(function(){
-		db.query('SELECT * FROM transactions WHERE order_id = ?', [order_id], function(err, results, fields){
+	db.query('SELECT * FROM transactions WHERE order_id = ?', [order_id], function(err, results, fields){
 		if (err) throw err;
 		if(results.length === 0){
 			var error = 'Something went wrong';
@@ -1230,19 +1357,14 @@ router.post('/confirm-payment-act/:order_id/', authentificationMiddleware(), fu
 					if (err) throw err;
 					db.query('UPDATE transactions SET status = ? WHERE order_id = ?', ['confirmed', order_id], function(err, results, fields){
 						if (err) throw err;
-						db.query('UPDATE user_tree SET activated = ? WHERE username = ?', ['yes', trans.payer_username], function(err, results, fields){
-							if (err) throw err;
-							var success = 'Payment confirmation was successful!';
-							req.flash('success', success);
-							res.redirect('/dashboard/#success');
-						});
+						var success = 'Payment confirmation was successful!';
+						req.flash('success', success);
+						res.redirect('/dashboard/#success');
+						
 					});
 				});
 			}
 		}
-	});
-	}, function(){
-		res.redirect('/dashboard')
 	});
 });
 
@@ -1410,7 +1532,7 @@ passport.deserializeUser(function(user_id, done){
 
 router.post('/enter-feeder',authentificationMiddleware(), function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
-	func.feedtimer()
+	func.feedtimer();
 	db.query('SELECT * FROM user WHERE user_id = ?', [currentUser], function(err, results, fields){
 		if (err) throw err;
 		var bio = results[0];
@@ -1422,38 +1544,51 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 				res.redirect('/dashboard')
 			}else{
 				db.query('SELECT * FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
-					if (err) throw err
+					if (err) throw err;
 					if(results.length === 0){
-						//put under bio.sponsor 
-						db.query('SELECT parent.sponsor, parent.username FROM user_tree AS node, user_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.username = ? AND parent.username is not null AND parent.feeder = ?  ORDER BY parent.lft', [bio.username, 'yes'], function(err, results, fields){
+						//get general leg
+						db.query('SELECT username FROM mainleg ',  function(err, results, fields){
 							if( err ) throw err;
-							var receive = results.slice(-1)[0];
-							//console.log(receive)
-							db.query('SELECT * FROM feeder_tree WHERE username = ?', [ receive.username], function(err, results, fields){
-								if (err) throw err;
-		var receiver	 = results[0];
-						console.log(receiver, 'result is 0');	
-						mergefeed1.merge(receiver, bio, req, res);
-							});
+							var receiver = results[0].username;
+							mergefeed1.merge(receiver, bio, req, res);
 						});
 					}else if(results.length === 1){
-						//put under self
-						var receiver = results[0];
-						console.log(receiver, 'result is 1');	
-						
+						var receiver = bio.username;
 						mergefeed1.merge2(receiver, bio, req, res);
-					}else{
-						//put under self
-						var receiver = results[0];
-						console.log(receiver, 'result is > 1');	
-						mergefeed1.merge(receiver, bio, req, res);
+					}else if(results.length > 1){
+						db.query('SELECT user FROM default_sponsor WHERE user = ?', [bio.username], function(err, results, fields){
+							if( err ) throw err;
+							if(results.length === 0){
+								//get general leg
+								db.query('SELECT username FROM mainleg ',  function(err, results, fields){
+									if( err ) throw err;
+									var receiver = results[0].username;
+									mergefeed1.merge(receiver, bio, req, res);
+								});
+							}else{
+								//check if the user has an empty leg
+								db.query('SELECT username FROM feeder_tree WHERE username = ? and (a is null or b is null or c is null)', [bio.username], function(err, results, fields){
+									if( err ) throw err;
+									if(results.length === 0){
+										db.query('SELECT username FROM mainleg ',  function(err, results, fields){
+											if( err ) throw err;
+											var receiver = results[0].username;
+											mergefeed1.merge(receiver, bio, req, res);
+										});
+									}else{
+										//take under self
+										var receiver = bio.username;
+										mergefeed1.merge(receiver, bio, req, res);
+									}
+								});
+							}
+						});
 					}
 				});
 			}
 		});
 	});
 });
-
 
 
 

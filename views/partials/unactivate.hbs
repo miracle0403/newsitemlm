@@ -13,6 +13,13 @@
 				  </div>
 				{{/mergeerror}}
 			{{/showErrors}}
+			{{#showErrors}}
+				{{#error}}
+				  <div id = "error" class="alert alert-danger">
+					{{.}}
+				  </div>
+				{{/error}}
+			{{/showErrors}}
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12">
             <div class="card card-stats">
@@ -26,9 +33,9 @@
                   <div class="col-7 col-md-8">
                   
                     <div class="numbers">
-                    
-                    <button class = " btn btn-success" type = "button" id = "activate">Activate</button>
-                      
+                    <form action = "/activate" method = "POST">
+                    <button class = " btn btn-success" type = "submit" id = "activate">Activate</button>
+                    </form>
                     </div>
                   </div>
                 </div>
@@ -49,7 +56,7 @@
 <div class = "content">
 {{#showSuccess}}
 				{{#success}}
-				  <div id = "success" class="alert alert-danger">
+				  <div id = "success" class="alert alert-success">
 					{{.}} click <a href = "/dashboard/#merging"> here to see</a>
 				  </div>
 				{{/success}}

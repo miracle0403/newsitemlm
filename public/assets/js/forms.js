@@ -8,6 +8,8 @@ $(document).ready(function() {
 	var matched = $(':input#cpass');
 	console.log(matched)
 	
+	//console.log('ready')
+	
 	$('#password').keyup(function() {
 		var pswd = $(this).val();
 		var matched = $('#cpass');
@@ -129,11 +131,11 @@ $(document).ready(function() {
 	//activate
 	$("button#activate").click(function(){
 		if (confirm("Are you sure you want to activate your account?")) {
-  $.post("/activate", function(data, status){
-				//alert(data)
+  			$.post("/activate", function(data, status){
+				alert(data)
 				location.reload(true);
-  });;
-}
+  			});;
+		}
 	});
 	
 	//confirm activation

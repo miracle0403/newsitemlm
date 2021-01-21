@@ -1,4 +1,9 @@
 var db = require('../db.js');
+
+exports.sponsor = function(){
+	
+}
+
 exports.timer = function(now, distance){
 	var days = Math.floor(distance / (1000 * 60 * 60 * 24));
   var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -86,6 +91,18 @@ exports.actimer = function(){
  					});
  				});
  			}
+		}
+	});
+}
+
+exports.norec = function(order_id){
+	db.query( 'SELECT a, b, c, requiredEntrance FROM feeder_tree WHERE order_id = ? ', [order_id ],function ( err, results, fields ){
+		if (err) throw err;
+		var resu = results[0]
+		if(resu.a !== null && resu.b !== null && resu.c !== null){
+			db.query( 'UPDATE feeder_tree set  requiredEntrance = ? WHERE order_id = ?', [resu.requiredEntrance - 1, order_id ],function ( err, results, fields ){
+				if(err)throw err;
+			});
 		}
 	});
 }
