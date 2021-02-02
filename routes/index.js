@@ -134,6 +134,28 @@ router.get('/passwordreset/:email/:str', function(req, res, next) {
 	});
 });
 
+//all users
+router.get('/all-users', ensureLoggedIn('/login'), function(req, res, next) {
+	var currentUser = req.session.passport.user.user_id;
+	getfunc.admin(currentUser, db);
+	db.query('SELECT * FROM user ', function ( err, results, fields ){
+		if( err ) throw err;
+		var users = results;
+		res.render('allusers', {mess: 'SWIFT EMPOWER  All Users '});
+	});
+}
+
+//all transactions
+router.get('/all-transactions', ensureLoggedIn('/login'), function(req, res, next) {
+	var currentUser = req.session.passport.user.user_id;
+	getfunc.admin(currentUser, db);
+	db.query('SELECT * FROM transactions ', function ( err, results, fields ){
+		if( err ) throw err;
+		var transactions = results;
+		res.render('alltransactions', {mess: 'SWIFT EMPOWER  Transactions '});
+	});
+});
+
 router.get('/passwordreset', function(req, res, next) {
 		var message = 'Site Name';
 		var flashMessages = res.locals.getMessages();
@@ -1600,6 +1622,138 @@ function authentificationMiddleware(){
   res.redirect('/login'); 
   } 
 }
+
+//admin post
+
+//add admin
+router.post('/addadmin', authentificationMiddleware(), [ check ('username', 'Username must be between 8 to 15 characters').isLength(8, 15) ], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var username = req.body.username;
+	db.query('SELECT * FROM user WHERE username  = ?', [username], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			var error = 'This user does not exist!';
+			req.flash('error', error);
+			res.redirect('/admin-dashboard/#addadmin');
+		}else{
+			if(results[0].user_type === 'admin'){
+				var error = 'This user is already an admin!';
+			req.flash('error', error);
+			res.redirect('/admin-dashboard/#addadmin');
+			}else{
+				db.query('UPDATE  user SET user_type = ? WHERE username  = ?', ['admin', username], function(err, results, fields){
+					if( err ) throw err;
+					var success = 'Admin was added'
+					req.flash('success', success)
+					res.redirect('/admin-dashboard/#addadmin');
+				});
+			}
+		}
+	});
+});
+
+//search by username
+router.post('/searchUser', authentificationMiddleware(), [ check ('username', 'Username must be between 8 to 15 characters').isLength(8, 15) ], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var username = req.body.username;
+	db.query('SELECT * FROM user WHERE username = ?', [username], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			var error = 'Sorry, this username does not exist';
+			req.flash('error', error);
+			res.redirect('/admin-dashboard/#search');
+		}else{
+			var usernameSearch = results[0];
+			res.render('admin', {mess: 'Admin Dashboard', usernameSearch: UsernameSearch});
+		}
+	});
+});
+
+//search by email
+router.post('/searchUser', authentificationMiddleware(), [ check ('email', 'Email must be between 8 to 15 characters').isLength(8, 15).isEmail() ], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var email = req.body.email;
+	db.query('SELECT * FROM user WHERE email = ?', [email], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			var error = 'Sorry, this Email does not exist';
+			req.flash('error', error);
+			res.redirect('/admin-dashboard/#search');
+		}else{
+			var emailSearch = results[0];
+			res.render('admin', {mess: 'Admin Dashboard', emailSearch: emailSearch});
+		}
+	});
+});
+  
+//restrictUser
+router.post('/restrict', authentificationMiddleware(), [ check ('username', 'Username must be between 8 to 15 characters').isLength(8, 15)], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var username = req.body.username;
+	db.query('SELECT * FROM user WHERE username = ?', [username], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			var error = 'Sorry, this username does not exist';
+			req.flash('error', error);
+			res.redirect('/admin-dashboard/#restrict');
+		}else{
+			db.query('SELECT username FROM restrict WHERE username = ?', [username], function(err, results, fields){
+				if( err ) throw err;
+				if(results.length > 0){
+					var error = 'This user is restricted already';
+					req.flash('error', error);
+					res.redirect('/admin-dashboard/#restrict');
+				} else {
+					db.query('INSERT INTO restrict (username) VALUES (?)', [username], function(err, results, fields){
+						if( err ) throw err;
+						db.query('UPDATE feeder_tree SET receive = ? WHERE username = ?', ['No', username], function(err, results, fields){
+							if( err ) throw err;
+							db.query('UPDATE feeder_tree SET sponreceive = ? WHERE sponsor = ?', ['No', username], function(err, results, fields){
+								if( err ) throw err;
+								var success = 'This user has been restricted successfully';
+								req.flash('error', error);
+								res.redirect('/admin-dashboard/#restrict');
+							});
+						});
+					});
+				}
+			});
+		}
+	});
+});
+
+//UnrestrictUser
+router.post('/unrestrict', authentificationMiddleware(), [ check ('username', 'Username must be between 8 to 15 characters').isLength(8, 15)], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var username = req.body.username;
+	db.query('SELECT * FROM user WHERE username = ?', [username], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			var error = 'Sorry, this username does not exist';
+			req.flash('error', error);
+			res.redirect('/admin-dashboard/#restrict');
+		}else{
+			db.query('SELECT username FROM restrict WHERE username = ?', [username], function(err, results, fields){
+				if( err ) throw err;
+				if(results.length === 0){
+					var error = 'This user was never restricted!';
+					req.flash('error', error);
+					res.redirect('/admin-dashboard/#restrict');
+				} else {
+					db.query('DELETE FROM restrict WHERE username = ?', [username], function(err, results, fields){
+						if( err ) throw err;
+						func.receive()
+						func.sponreceive
+						var success = 'This user has been unrestricted successfully';
+						req.flash('error', error);
+						res.redirect('/admin-dashboard/#restrict');
+					});
+				}
+			});
+		}
+	});
+});
+
 
 router.get( '*', function ( req, res, next ){
 	var error = 'PAGE NOT FOUND!';
