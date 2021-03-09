@@ -3,7 +3,7 @@ exports.dirname = function(path){
 	return path.dirname(__filename);
 } 
 
-exports.admin = function (user, db){
+exports.admin = function (user, db, req, res){
 	db.query('SELECT user_type FROM user WHERE user_id = ? ', [user], function ( err, results, fields ){
 		if( err ) throw err;
 		var user_type = results[0].user_type;

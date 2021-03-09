@@ -1,0 +1,87 @@
+{{> spageh}}
+{{> spagenav}}
+
+<div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title"> ALL USERS</h4>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead class=" text-primary">
+                      <th>
+                        User ID
+                      </th>
+                      <th>
+                        Username
+                      </th>
+					  <th>
+                        Full Name
+                      </th>
+                      <th>
+                        Phone Number
+                      </th>
+                      <th class="text-right">
+                        Email
+                      </th>
+                      <th class="text-right">
+                        Status
+                      </th>
+					  <th>
+                        Verification
+                      </th><th>
+                        Activation
+                      </th><th>
+                        Date Joined
+                      </th>
+                    </thead>
+                    <tbody>
+                    {{#if users}}
+                    {{#each users }}
+                    <tr>
+                        <td>
+                          {{user_id}} 
+                        </td>
+                        <td>
+                          {{username}}
+                        </td>
+                        <td>
+                          {{full_name}}
+                        </td>
+						 <td>
+                          {{phone}}
+                        </td>
+                        <td class="text-right">
+                          {{email}}
+                        </td>
+                        <td class="text-right">
+                          {{status}}
+                        </td>
+						<td>
+                          {{verification}} 
+                        </td>
+						<td>
+                          {{activated}} 
+                        </td>
+						<td>
+                          {{date_joined}} 
+                        </td>
+                      </tr>
+                    
+                     {{/each}}
+                    {{/if}}
+                      
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+         </div>
+        </div>
+
+{{> spagef}}

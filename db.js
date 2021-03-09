@@ -6,7 +6,7 @@ var pool  = sql.createPool({
   connectionLimit : 0,
   waitForConnections: true,
  host: "localhost",
-  user: "newsitemlm",
+  user: "root",
   password: '',
   database: "newdb"
 });

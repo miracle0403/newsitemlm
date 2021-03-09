@@ -1,0 +1,184 @@
+{{> spageh}}
+{{> spagenav}}
+
+<div id = "content" class="content">
+
+{{#showErrors}}
+{{#error}}
+  <div id = "error" class="alert alert-danger">
+	{{.}}
+  </div>
+{{/error}}
+{{/showErrors}}
+{{#showSuccess}}
+{{#success}}
+  <div id = "success" class="alert alert-success">
+	{{.}}
+  </div>
+{{/success}}
+{{/showSuccess}}
+
+	<div class="row">
+		<div class="col-md-3">
+			<div class="card card-user">
+				<div class="card-header">
+					<h5 class="card-title"> ADD ADMIN </h5>
+				</div>
+				<div class="card-body">
+					<form action = "/addadmin" method = "POST">
+						{{#showErrors}}
+						{{#adderror}}
+							<div id = "adderror" class="alert alert-danger">
+								{{.}}
+							</div>
+						{{/adderror}}
+						{{/showErrors}}
+						{{#showSuccess}}
+						{{#addsuccess}}
+							<div id = "success" class="alert alert-success">
+								{{.}}
+							</div>
+						{{/addsuccess}}
+						{{/showSuccess}}
+						<div class="form-group">
+							<label>Username</label>
+							<input type="text" name = "username" class="form-control" placeholder="Username" value="{{bio.username}}" required/>
+							<small><button class = "btn btn-primary" id = "add-admin" type "submit">SUBMIT</button></small>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card card-user">
+				<div class="card-header">
+					<h5 class="card-title"> Delete Admin </h5>
+				</div>
+				<div class="card-body">
+					<form action = "/deladmin" method = "POST">
+						{{#showErrors}}
+						{{#delerror}}
+							<div id = "delerror" class="alert alert-danger">
+								{{.}}
+							</div>
+						{{/delerror}}
+						{{/showErrors}}
+						{{#showSuccess}}
+						{{#delsuccess}}
+							<div id = "delsuccess" class="alert alert-success">
+								{{.}}
+							</div>
+						{{/delsuccess}}
+						{{/showSuccess}}
+						<div class="form-group">
+							<label>Username</label>
+							<input type="text" name = "username" class="form-control" placeholder="Username" value="{{bio.username}}" required/>
+							<small><button class = "btn btn-primary" id = "del-admin" type "submit">SUBMIT</button></small>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card card-user">
+				<div class="card-header">
+					<h5 class="card-title"> Search Username </h5>
+				</div>
+				<div class="card-body">
+					<form action = "/searchUser" method = "POST">
+						
+						<div class="form-group">
+							<label>Username</label>
+							<input type="text" name = "username" class="form-control" placeholder="Username" value="{{bio.username}}" required/>
+							<small><button class = "btn btn-primary" id = "search-user" type "submit">SUBMIT</button></small>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card card-user">
+				<div class="card-header">
+					<h5 class="card-title"> Search Email </h5>
+				</div>
+				<div class="card-body">
+					<form action = "/searchemail" method = "POST">
+						
+						<div class="form-group">
+							<label>Username</label>
+							<input type="text" name = "username" class="form-control" placeholder="Username" value="{{bio.username}}" required/>
+							<small><button class = "btn btn-primary" id = "search-user" type "submit">SUBMIT</button></small>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class = "row">
+		<div class="col-md-3">
+			<div class="card card-user">
+				<div class="card-header">
+					<h5 class="card-title"> Restrict User </h5>
+				</div>
+				<div class="card-body">
+					<form action = "/restrict" method = "POST">
+						{{#showErrors}}
+						{{#restricterror}}
+							<div id = "restricterror" class="alert alert-danger">
+								{{.}}
+							</div>
+						{{/restricterror}}
+						{{/showErrors}}
+						{{#showSuccess}}
+						{{#restrictsuccess}}
+							<div id = "restrictsuccess" class="alert alert-success">
+								{{.}}
+							</div>
+						{{/restrictsuccess}}
+						{{/showSuccess}}
+						<div class="form-group">
+							<label>Username</label>
+							<input type="text" name = "username" class="form-control" placeholder="Username" value="{{bio.username}}" required/>
+							<small><button class = "btn btn-primary" id = "restrict" type "submit">SUBMIT</button></small>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card card-user">
+				<div class="card-header">
+					<h5 class="card-title"> Unrestrict User </h5>
+				</div>
+				<div class="card-body">
+					<form action = "/unrestrict" method = "POST">
+						{{#showErrors}}
+						{{#unrestricterror}}
+							<div id = "unrestricterror" class="alert alert-danger">
+								{{.}}
+							</div>
+						{{/unrestricterror}}
+						{{/showErrors}}
+						{{#showSuccess}}
+						{{#unrestrictsuccess}}
+							<div id = "unrestrictsuccess" class="alert alert-success">
+								{{.}}
+							</div>
+						{{/unrestrictsuccess}}
+						{{/showSuccess}}
+						<div class="form-group">
+							<label>Username</label>
+							<input type="text" name = "username" class="form-control" placeholder="Username" value="{{bio.username}}" required/>
+							<small><button class = "btn btn-primary" id = "unrestrict" type "submit">SUBMIT</button></small>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	
+	</div>
+	<!-- end of content-->
+</div>
+
+{{> spagef}}

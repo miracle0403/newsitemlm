@@ -92,7 +92,7 @@ var options = {
   waitForConnections: true,
   connectionLimit : 0,
   host: "localhost",
-  user: "newsitemlm",
+  user: "root",
   password: '',
   database: "newdb"
 } 
@@ -148,9 +148,9 @@ passport.use(new localStrategy(function(username, password, done){
    		if (response === true){
    			console.log('logged in')
    			return done(null, {user_id: results[0].user_id});
-     }else{
-     		return done(null, false,{
-     			message:'Invalid Password'
+		}else{
+			return done(null, false,{
+				message:'Invalid Password'
        });
       }
     });

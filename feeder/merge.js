@@ -4,7 +4,7 @@ var flash = require('express-flash-messages');
 var securePin = require('secure-pin');
 var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
-var func = require('../feeder/func.js');
+var func = require('../routes/func.js');
 
 exports.merge = function (receive, bio, req, res){
 	console.log(receive + ' receiver');

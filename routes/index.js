@@ -17,8 +17,8 @@ var charSet = new securePin.CharSet();
 charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
 var db = require('../db.js');
 var mergefeed1 = require('../feeder/merge.js');
-var genfunc = require('../functions.js');
-var mv = require('mv');
+var getfunc = require('../functions.js');
+var mv = require('mv');
 var func = require('./func.js');
 //var password = require('../functions/profile/passwordreset');
 var querystring = require('querystring');
@@ -137,22 +137,29 @@ router.get('/passwordreset/:email/:str', function(req, res, next) {
 //all users
 router.get('/all-users', ensureLoggedIn('/login'), function(req, res, next) {
 	var currentUser = req.session.passport.user.user_id;
-	getfunc.admin(currentUser, db);
+	getfunc.admin(currentUser, db, req, res);
 	db.query('SELECT * FROM user ', function ( err, results, fields ){
 		if( err ) throw err;
 		var users = results;
-		res.render('allusers', {mess: 'SWIFT EMPOWER  All Users '});
+		res.render('all-users', {mess: 'SWIFT EMPOWER  All Users ', users: users, admin: currentUser});
 	});
-}
+});
+
+//admin dashboard
+router.get('/admin-dashboard', authentificationMiddleware(), ensureLoggedIn('/login'), function(req, res, next) {
+	var currentUser = req.session.passport.user.user_id;
+	getfunc.admin(currentUser, db, req, res);
+	res.render('admin-dashboard',{mess: 'Admin Dashboard', admin: currentUser});
+});
 
 //all transactions
 router.get('/all-transactions', ensureLoggedIn('/login'), function(req, res, next) {
 	var currentUser = req.session.passport.user.user_id;
-	getfunc.admin(currentUser, db);
+	getfunc.admin(currentUser, db, req, res);
 	db.query('SELECT * FROM transactions ', function ( err, results, fields ){
 		if( err ) throw err;
 		var transactions = results;
-		res.render('alltransactions', {mess: 'SWIFT EMPOWER  Transactions '});
+		res.render('all-transactions', {mess: 'SWIFT EMPOWER  Transactions ', transactions: transactions, admin: currentUser});
 	});
 });
 
@@ -1569,7 +1576,7 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 					if (err) throw err;
 					if(results.length === 0){
 						//get general leg
-						db.query('SELECT username FROM mainleg ',  function(err, results, fields){
+						db.query('SELECT username FROM mainleg',  function(err, results, fields){
 							if( err ) throw err;
 							var receiver = results[0].username;
 							mergefeed1.merge(receiver, bio, req, res);
@@ -1633,24 +1640,52 @@ router.post('/addadmin', authentificationMiddleware(), [ check ('username', 'Use
 		if( err ) throw err;
 		if(results.length === 0){
 			var error = 'This user does not exist!';
-			req.flash('error', error);
-			res.redirect('/admin-dashboard/#addadmin');
+			req.flash('adderror', error);
+			res.redirect('/admin-dashboard/#adderror');
 		}else{
 			if(results[0].user_type === 'admin'){
 				var error = 'This user is already an admin!';
-			req.flash('error', error);
-			res.redirect('/admin-dashboard/#addadmin');
+			req.flash('adderror', error);
+			res.redirect('/admin-dashboard/#adderror');
 			}else{
 				db.query('UPDATE  user SET user_type = ? WHERE username  = ?', ['admin', username], function(err, results, fields){
 					if( err ) throw err;
 					var success = 'Admin was added'
-					req.flash('success', success)
-					res.redirect('/admin-dashboard/#addadmin');
+					req.flash('addsuccess', success)
+					res.redirect('/admin-dashboard/#addsuccess');
 				});
 			}
 		}
 	});
 });
+
+//DELETE ADMIN
+router.post('/deladmin', authentificationMiddleware(), [ check ('username', 'Username must be between 8 to 15 characters').isLength(8, 15) ], function(req, res, next){
+	var currentUser = req.session.passport.user.user_id;
+	var username = req.body.username;
+	db.query('SELECT * FROM user WHERE username  = ?', [username], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			var error = 'This user does not exist!';
+			req.flash('delerror', error);
+			res.redirect('/admin-dashboard/#deladmin');
+		}else{
+			if(results[0].user_type === 'user'){
+				var error = 'This user is NOT an admin!';
+			req.flash('delerror', error);
+			res.redirect('/admin-dashboard/#deladmin');
+			}else{
+				db.query('UPDATE  user SET user_type = ? WHERE username  = ?', ['user', username], function(err, results, fields){
+					if( err ) throw err;
+					var success = 'Admin was deleted'
+					req.flash('delsuccess', success)
+					res.redirect('/admin-dashboard/#deladmin');
+				});
+			}
+		}
+	});
+});
+
 
 //search by username
 router.post('/searchUser', authentificationMiddleware(), [ check ('username', 'Username must be between 8 to 15 characters').isLength(8, 15) ], function(req, res, next){
@@ -1664,13 +1699,13 @@ router.post('/searchUser', authentificationMiddleware(), [ check ('username', 'U
 			res.redirect('/admin-dashboard/#search');
 		}else{
 			var usernameSearch = results[0];
-			res.render('admin', {mess: 'Admin Dashboard', usernameSearch: UsernameSearch});
+			res.render('search', {mess: 'SEACH USER', usernameSearch: UsernameSearch, search: 'Your search by username is ready'});
 		}
 	});
 });
 
 //search by email
-router.post('/searchUser', authentificationMiddleware(), [ check ('email', 'Email must be between 8 to 15 characters').isLength(8, 15).isEmail() ], function(req, res, next){
+router.post('/searchEmail', authentificationMiddleware(), [ check ('email', 'Email must be between 8 to 15 characters').isLength(8, 15).isEmail() ], function(req, res, next){
 	var currentUser = req.session.passport.user.user_id;
 	var email = req.body.email;
 	db.query('SELECT * FROM user WHERE email = ?', [email], function(err, results, fields){
@@ -1681,7 +1716,7 @@ router.post('/searchUser', authentificationMiddleware(), [ check ('email', 'Emai
 			res.redirect('/admin-dashboard/#search');
 		}else{
 			var emailSearch = results[0];
-			res.render('admin', {mess: 'Admin Dashboard', emailSearch: emailSearch});
+			res.render('search', {mess: 'Admin Dashboard', emailSearch: emailSearch, search: 'Your search by email is ready'});
 		}
 	});
 });
@@ -1695,14 +1730,14 @@ router.post('/restrict', authentificationMiddleware(), [ check ('username', 'Use
 		if(results.length === 0){
 			var error = 'Sorry, this username does not exist';
 			req.flash('error', error);
-			res.redirect('/admin-dashboard/#restrict');
+			res.redirect('/admin-dashboard/#restricterror');
 		}else{
 			db.query('SELECT username FROM restrict WHERE username = ?', [username], function(err, results, fields){
 				if( err ) throw err;
 				if(results.length > 0){
 					var error = 'This user is restricted already';
 					req.flash('error', error);
-					res.redirect('/admin-dashboard/#restrict');
+					res.redirect('/admin-dashboard/#restricterror');
 				} else {
 					db.query('INSERT INTO restrict (username) VALUES (?)', [username], function(err, results, fields){
 						if( err ) throw err;
@@ -1712,7 +1747,7 @@ router.post('/restrict', authentificationMiddleware(), [ check ('username', 'Use
 								if( err ) throw err;
 								var success = 'This user has been restricted successfully';
 								req.flash('error', error);
-								res.redirect('/admin-dashboard/#restrict');
+								res.redirect('/admin-dashboard/#restricterror');
 							});
 						});
 					});
