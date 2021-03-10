@@ -1037,10 +1037,15 @@ router.post('/activate', authentificationMiddleware(), function(req, res, next) 
 												console.log(dt, date, receiver, details)
 												
 												db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
-													if (err) throw err;
-													var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
-													req.flash('success', success);
-								res.redirect('/dashboard/#mergesuccess');
+													if (err){
+														var error = 'something went wrong';
+														req.flash('error', error);
+														res.redirect('/dashboard/#mergeerror');
+													}else{
+														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+														req.flash('success', success);
+														res.redirect('/dashboard/#success');
+													}
 												});
 											});
 										});
@@ -1078,10 +1083,15 @@ router.post('/activate', authentificationMiddleware(), function(req, res, next) 
 												console.log(dt, date, receiver, details)
 												
 												db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
-													if (err) throw err;
-													var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
-													req.flash('success', success);
-								res.redirect('/dashboard/#mergesuccess');
+													if (err){
+														var error = 'something went wrong';
+														req.flash('error', error);
+														res.redirect('/dashboard/#mergeerror');
+													}else{
+														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+														req.flash('success', success);
+														res.redirect('/dashboard/#mergesuccess');
+													}
 												});
 											});
 										});
@@ -1107,10 +1117,15 @@ router.post('/activate', authentificationMiddleware(), function(req, res, next) 
 												console.log(dt, date, receiver, details)
 												
 												db.query('INSERT INTO transactions (user, receiver_username, receiver_phone, receiver_fullname, receiver_bank_name, receiver_account_name, receiver_account_number, payer_username, payer_phone, payer_fullname, order_id, date_entered, expire, purpose) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [details.username, receiver.username, receiver.phone, receiver.full_name, receiver.bank_name, receiver.account_name, receiver.account_number, details.username, details.phone, details.full_name, order_id, dt, date, 'activation'], function(err, results, fields){
-													if (err) throw err;
-													var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
-													req.flash('success', success);
-								res.redirect('/dashboard/#mergesuccess');
+													if (err){
+														var error = 'something went wrong';
+														req.flash('error', error);
+														res.redirect('/dashboard/#mergeerror');
+													}else{
+														var success = 'Someone is ready to receive from you. You have only 2 hours to complete payment';
+														req.flash('success', success);
+														res.redirect('/dashboard/#mergesuccess');
+													}
 												});
 											});
 										});
@@ -1125,8 +1140,10 @@ router.post('/activate', authentificationMiddleware(), function(req, res, next) 
 	});
 });
 
+
+
 //post register
-router.post('/register', [	check('username', 'Username must be between 8 to 25 characters').isLength(8,25),	check('fullname', 'Full Name must be between 8 to 25 characters').isLength(8,25),	check('password', 'Password must be between 8 to 15 characters').isLength(8,15),	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),	check('email', 'Invalid Email').isEmail(),		check('phone', 'Phone Number must be eleven characters').isLength(11)], function (req, res, next) {	 
+router.post('/register', [	check('username', 'Username must be between 8 to 25 numbers').isLength(8,25),	check('fullname', 'Full Name must be between 8 to 25 characters').isLength(8,25),	check('password', 'Password must be between 8 to 15 characters').isLength(8,15),	 check('email', 'Email must be between 8 to 105 characters').isLength(8,105),	check('email', 'Invalid Email').isEmail(),		check('phone', 'Phone Number must be eleven characters').isLength(11)], function (req, res, next) {	 
 	console.log(req.body)
 	
 	var username = req.body.username;
@@ -1165,43 +1182,36 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 								if (results.length > 0){
 									var error = "Sorry, this phone number is taken";
 									res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
-									}else{
-										db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
-											if (err) throw err;
-											if(results.length === 0){
-												console.log('spon not valid')
-												db.query('SELECT id, user, number FROM default_sponsor order by number DESC', function(err, results, fields){
+								}else{
+									db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
+										if (err) throw err;
+										if(results.length === 0){
+											console.log('spon not valid');
+											db.query('SELECT * FROM default_sponsor order by amount DESC', function(err, results, fields){
+												if (err) throw err;
+												console.log(results);
+												var sponsor = results[0].username;
+												var amount = results[0].amount;
+												db.query('UPDATE default_sponsor SET amount = ? WHERE username = ?', [amount - 1, sponsor], function(err, results, next){
 													if (err) throw err;
-													var sponsor = results[0].user;
-													var number = results[0].number;
-													var id = results[0].id;
-													db.query('UPDATE default_sponsor SET number = ? WHERE id = ?', [number - 1, id], function(err, res, next){
-														if (err) throw err;
-														//register user
-														bcrypt.hash(password, saltRounds, null, function(err, hash){
-														db.query( 'CALL  register (?, ?, ?, ?, ?, ?) ', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+													//register user
+													bcrypt.hash(password, saltRounds, null, function(err, hash){
+														db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 															if (err) throw err;
-															console.log(phone)
 															var success = 'Registration successful! please login';
-															
-															//mail
-															//verify.verifymail(email,   username, hash);
-															//func.spon(sponsor);
 															res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
 														});
-													});													
+													});	
 												});
 											});
+											
 										}else{
 											var sponsor = req.body.sponsor;
-											console.log('spon is valid')
+											console.log('spon is valid');
 											bcrypt.hash(password, saltRounds, null, function(err, hash){
-												db.query( 'CALL  register (?, ?, ?, ?, ?, ?)', [sponsor, fullname, phone, username, email, hash ], function(err, result, fields){
+												db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 													if (err) throw err;
 													var success = 'Registration successful! please login';
-														
-														//mail
-														//verify.verifymail(email,   username, hash);
 													res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
 												});
 											});
@@ -1219,19 +1229,6 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 c
 
 
 
-router.post('/register/ref=:username', function (req, res, next){
-	var username = req.params.username;
-	var username = req.body.username;
-    var password = req.body.pass1;
-    var cpass = req.body.pass2;
-    var email = req.body.email;
-    var fullname = req.body.fullname;
-    var code = req.body.code;
-    var phone = req.body.phone;
-    var sponsor = req.params.sponsor;
-    
-    reg.register(db, req, res, bcrypt, username, fullname, phone, password, cpass, sponsor, email, code);
-});
 
 //upload pop
 router.post('/uploadpop/:order_id/', function(req, res, next){
@@ -1529,13 +1526,13 @@ router.post('/phonechange', [	 check('phone', 'Phone Number must be between 11 c
 			if (results.length > 0){
 				var error = "Sorry, this Phone number is taken";
 				req.flash('phoneerror', error);
-			res.redirect('/profile/#phoneerror');
+				res.redirect('/profile/#phoneerror');
 			}else{
 				db.query('UPDATE user SET phone = ? WHERE user_id = ?', [bio.phone, currentUser], function(err, results, fields){
 					if (err) throw err;
 					var success = 'Phone number update was successful!';
 					req.flash('phonesuccess', success);
-			res.redirect('/profile/#phonesuccess');
+					res.redirect('/profile/#phonesuccess');
 				}); 
 			}
 		});
@@ -1577,9 +1574,14 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 					if(results.length === 0){
 						//get general leg
 						db.query('SELECT username FROM mainleg',  function(err, results, fields){
-							if( err ) throw err;
-							var receiver = results[0].username;
-							mergefeed1.merge(receiver, bio, req, res);
+							if( err ){
+								var error = 'something went wrong';
+								req.flash('mergeerror', error);
+								res.redirect('/dashboard/#mergeerror');
+							}else{
+								var receiver = results[0].username;
+								mergefeed1.merge(receiver, bio, req, res);
+							}
 						});
 					}else if(results.length === 1){
 						var receiver = bio.username;

@@ -74,6 +74,7 @@ UPDATE transactions SET status = 'expired'  WHERE order_id = order_id;
 END //
 DELIMETER;
 
+DELIMITER //
 CREATE PROCEDURE `register` (`sponsor` VARCHAR(255), `full_name` VARCHAR(255)
 , `phone` VARCHAR(255)
 ,  `username` VARCHAR(255)

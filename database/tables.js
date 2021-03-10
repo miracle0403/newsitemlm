@@ -45,10 +45,10 @@ CREATE TABLE `user` (
 )
 
 CREATE TABLE `default_sponsor` (
-	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`user` VARCHAR (255) NOT NULL,
-	`number` INT (11) NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`)
+	
+	`username` VARCHAR (255) NOT NULL,
+	`amount` INT (11) NOT NULL DEFAULT 0
+	
 );
 
 CREATE TABLE `verifyemail` (
