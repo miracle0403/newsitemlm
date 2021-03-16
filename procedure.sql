@@ -21,6 +21,8 @@ UPDATE feeder_tree SET status = 'confirmed' WHERE order_id = orderId;
 
 
 END // 
+
+ALTER TABLE `feeder_tree` ADD `restricted` VARCHAR(255) NOT NULL DEFAULT 'No' AFTER `c`;
 	
 
 

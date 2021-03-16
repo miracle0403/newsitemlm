@@ -1,3 +1,9 @@
+delete from feeder_tree;
+INSERT INTO `feeder_tree` (`sponsor`, `username`, `sponreceive`, `requiredEntrance`, `a`, `b`, `c`, `restricted`, `receive`, `status`, `order_id`, `amount`, `lft`, `rgt`, `date`) VALUES ('default_user', 'default_user', 'yes', '-8', NULL, NULL, NULL, 'No', 'yes', 'confirmed', '453trt4ret5464rt56', '0', '1', '2', current_timestamp());
+ALTER TABLE `feeder_tree` CHANGE `sponreceive` `sponreceive` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL, CHANGE `requiredEntrance` `requiredEntrance` INT(11) NULL;
+ALTER TABLE `user` ADD `lft` INT(11) NOT NULL AFTER `activated`, ADD `rgt` INT(11) NOT NULL AFTER `lft`; 
+
+
 DELIMITER //
 CREATE PROCEDURE `confirm-feeder`
 (`userId` INT(11), `orderId` INT(11), `mother` VARCHAR(255), `child` VARCHAR(255), `regusername` VARCHAR(255), `regemail` VARCHAR(255), `reghash` VARCHAR(255))
@@ -14,7 +20,7 @@ UPDATE feeder_tree SET requiredEntrance = requiredEntrance + 1 WHERE username = 
 
 UPDATE feeder_tree SET  WHERE username = mother and order_id not orderId;
 
-UPDATE feeder_tree SET requiredEntrance = requiredEntrance + 1 WHERE username = child;
+UPDATE feeder_tree SET requiredEntrance = requiredEntrance - 1 WHERE username = child;
 
 END//
 
@@ -23,15 +29,20 @@ DELIMITER //
 CREATE PROCEDURE `register` (`regsponsor` VARCHAR(255), `regfullname` VARCHAR(255), `regphone` VARCHAR(255), `regusername` VARCHAR(255), `regemail` VARCHAR(255), `reghash` VARCHAR(255))
 BEGIN
 
+SELECT @myLeft := lft FROM user WHERE username = regsponsor;
 
-INSERT INTO user (sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (regsponsor, regfullname, regphone, regusername, regemail, reghash);
+
+UPDATE user SET rgt = rgt + 2 WHERE rgt > @myLeft;
+UPDATE user SET lft = lft + 2 WHERE lft > @myLeft;
+
+INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (@myLeft + 1, @myLeft + 2, regsponsor, regfullname, regphone, regusername, regemail, reghash);
 
 END //
 
 
 
 DELIMITER //
-CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `orderId` VARCHAR(255), `child` VARCHAR(255), `oldOrder` VARCHAR(255))  
+CREATE PROCEDURE `leafadd` (`mother` VARCHAR(255), `orderId` VARCHAR(255), `child` VARCHAR(255),  `spon` VARCHAR(255))  
 BEGIN
 
 SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
@@ -40,17 +51,10 @@ SELECT @myLeft := lft FROM feeder_tree WHERE username = mother;
 UPDATE feeder_tree SET rgt = rgt + 2 WHERE rgt > @myLeft;
 UPDATE feeder_tree SET lft = lft + 2 WHERE lft > @myLeft;
 
-SELECT @sponreceive := receive FROM feeder_tree WHERE username = mother;
-sELECT @spon := sponsor FROM user WHERE username = child;
-SELECT @count := COUNT(username),  @receive := receive, @requiredEntrance := requiredEntrance FROM feeder_tree WHERE username = child;
+
+INSERT INTO feeder_tree(username, sponsor,  lft, rgt, status, order_id) VALUES(child, spon, @myLeft + 1,  @myLeft + 2, 'pending', orderId);
 
 
-INSERT INTO feeder_tree(username, sponreceive, receive, sponsor, requiredEntrance, lft, amount, rgt, status, order_id) VALUES(child, 'yes', @receive, @spon, requiredEntrance, @myLeft + 1, 0, @myLeft + 2, 'pending', orderId);
-
-UPDATE feeder_tree SET receive = 'No', requiredEntrance = 2 WHERE @count = 0 and username = child;
-
-
-UPDATE feeder_tree SET amount = amount + 1 WHERE username = mother and order_id = orderId ;
 
 END //
 
@@ -92,11 +96,11 @@ INSERT INTO `user` (sponsor, `full_name`, `phone`, `username`, `email`, `passwor
 END //
 DELIMETER;
 
+
 DELIMITER //
-DELIMITER //
-CREATE PROCEDURE `placefeeder` (`child` VARCHAR(255), `reason` VARCHAR(255), `mother` VARCHAR(255), `person` VARCHAR(255)
+CREATE PROCEDURE `placefeeder` (`child` VARCHAR(255), `reason` VARCHAR(255), `spon` VARCHAR(255), `mother` VARCHAR(255)
 , `orderId` VARCHAR(255)
-, `dateEntered` VARCHAR(255)
+, `dateEntered` VARCHAR(255), `oldId` VARCHAR(255)
 )  BEGIN
 
 SELECT @bankname := bank_name, @fullname := full_name, @accountname := account_name, @accountnumber := account_number, @phone := phone FROM user WHERE username = mother;
@@ -104,20 +108,13 @@ SELECT @bankname := bank_name, @fullname := full_name, @accountname := account_n
 SELECT @payerfullname := full_name, @payerphone := phone, @payerusername := username FROM user WHERE username = child;
 
 
-INSERT INTO transactions (user, purpose, payer_fullname, payer_username, payer_phone, receiver_fullname, receiver_username, receiver_phone, receiver_bank_name, receiver_account_name, receiver_account_number, status, order_id, expire) Values (person, reason, @payerfullname, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, @accountnumber, 'pending', orderId, dateEntered);
+INSERT INTO transactions (receiving_order, user, purpose, payer_fullname, payer_username, payer_phone, receiver_fullname, receiver_username, receiver_phone, receiver_bank_name, receiver_account_name, receiver_account_number, status, order_id, expire, receiving_order) Values (oldId, mother, reason, @payerfullname, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, @accountnumber, 'pending', orderId, dateEntered, oldId);
 
 
 END //
 DELIMETER;
 
 
-CREATE PROCEDURE `leafadd` (`sponsor` VARCHAR(255), `mother` VARCHAR(255), `child` VARCHAR(255))  BEGIN
-
-UPDATE feeder_entrance SET required_entrance = required_entrance - 1 WHERE user = child;
-UPDATE feeder_entrance SET required_entrance = required_entrance + 1 WHERE user = mother;
-
-END //
-DELIMETER;
 
 CREATE PROCEDURE `denyactivationpayment` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
 )  

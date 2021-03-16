@@ -1,0 +1,48 @@
+
+db.query('SELECT username FROM feeder_tree WHERE username = ?', [bio.sponsor], function(err, results, fields){
+				if(err) throw err;
+				if(results.length === 0){
+					//the sponsor is not in the feeder_matrix matrix... take to the default sponsor for now.
+					db.query('SELECT username FROM default_sponsor', function(err, results, fields){
+						if(err) throw err;
+						var sponsor = results[0].sponsor;
+						//fill in the empty slots...
+						if(receiver.a === null && receiver.receive === 'yes' && receiver.restricted === 'No'){
+							//adds a
+						}else if(receiver.b === null  && receiver.receive !== 'yes' && receiver.sponreceive === 'yes' && receiver.restricted === 'No'){
+							//adds b
+						}else if(receiver.a !== null && receiver.b === null  &&  receiver.sponreceive === 'yes'){
+							//adds b
+						}else if (receiver.a !== null && receiver.c === null  && receiver.receive === 'yes' && receiver.sponreceive !== 'yes' && receiver.restricted === 'No'){
+							//adds c
+						}else if (receiver.a !== null && receiver.b !== null && receiver.c === null  &&  receiver.receive === 'yes' && receiver.restricted === 'No'){
+							
+						}else{
+							console.log('spillover')
+							feederspill.feederspill(receiver, bio, req, res)
+						}
+					});
+				}else{
+					//fill in the empty slots...
+					//console.log(receiver)
+					if(receiver.a === null && receiver.receive === 'yes' && receiver.restricted === 'No'){
+							//adds a
+						var purpose = 'feeder_matrix';
+						
+					}else if(receiver.b === null  && receiver.receive !== 'yes' && receiver.sponreceive === 'yes' && receiver.restricted === 'No'){
+						//adds b
+						console.log('b')
+					}else if(receiver.a !== null && receiver.b === null  &&  receiver.sponreceive === 'yes'){
+						//adds b
+						console.log('b')
+					}else if (receiver.a !== null && receiver.c === null  && receiver.receive === 'yes' && receiver.sponreceive !== 'yes' && receiver.restricted === 'No'){
+						//adds c
+						console.log('c')
+					}else if (receiver.a !== null && receiver.b !== null && receiver.c === null  &&  receiver.receive === 'yes' && receiver.restricted === 'No'){
+						console.log('c')
+					}else{
+						console.log('spillover')
+						feederspill.feederspill(receiver, bio, req, res)
+					}
+				}
+			});

@@ -98,7 +98,8 @@ exports.actimer = function(){
 exports.norec = function(order_id){
 	db.query( 'SELECT a, b, c, requiredEntrance FROM feeder_tree WHERE order_id = ? ', [order_id ],function ( err, results, fields ){
 		if (err) throw err;
-		var resu = results[0]
+		var resu = results[0];
+		console.log(results);
 		if(resu.a !== null && resu.b !== null && resu.c !== null){
 			db.query( 'UPDATE feeder_tree set  requiredEntrance = ? WHERE order_id = ?', [resu.requiredEntrance - 1, order_id ],function ( err, results, fields ){
 				if(err)throw err;
@@ -108,39 +109,59 @@ exports.norec = function(order_id){
 }
 
 exports.noreceive = function(){
-	db.query( 'UPDATE feeder_tree set receive = ? WHERE requiredEntrance > ?', ['No', 0 ],function ( err, results, fields ){
-		if(err)throw err;
-		db.query( 'SELECT username FROM feeder_tree WHERE receive = ? ', ['No' ],function ( err, results, fields ){
-			if (err) throw err;
-			if(results.length > 0){
-				var re = results;
-				for(var i = 0; i < results.length; i++){
-					db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['No', re[i].sponsor],function ( err, results, fields ){
-						if(err)throw err;
+	db.query( 'SELECT * FROM feeder_tree WHERE receive = ? and requiredEntrance > ?', ['yes', 0 ],function ( err, results, fields ){
+		if (err) throw err;
+		if(results.length > 0){
+			var re = results;
+		//	console.log(re)
+			for(var i = 0; i < re.length; i++){
+				console.log(re[i]);
+				db.query( 'UPDATE feeder_tree set receive = ? WHERE username = ?', ['No', re[i].username], function ( err, results, fields ){
+					if(err)throw err;
+					//check if the sponsor is present
+					db.query( 'SELECT sponsor FROM feeder_tree WHERE sponsor = ?', [re[i].username], function ( err, results, fields ){
+						if (err) throw err;
+						if(results.length > 0){
+							db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor = ?', ['No', re[i].sponsor],function ( err, results, fields ){
+								if(err)throw err;
+							});
+						}
 					});
-				}
+				});
 			}
-		});
+		}
+	
 	});
 }
 
+
+
 exports.receive = function(){
-	db.query( 'UPDATE feeder_tree set receive = ? WHERE requiredEntrance < ?', ['yes', 1 ],function ( err, results, fields ){
-		if(err)throw err;
-		db.query( 'SELECT username FROM feeder_tree WHERE receive = ? ', ['yes' ],function ( err, results, fields ){
-			if (err) throw err;
-			if(results.length > 0){
-				var re = results;
-			//	console.log(re)
-				for(var i = 0; i < results.length; i++){
-					db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor < ?', ['yes', re[i].sponsor],function ( err, results, fields ){
-						if(err)throw err;
+	db.query( 'SELECT * FROM feeder_tree WHERE receive = ? and restricted = ? and requiredEntrance < ?', ['No', 'No', 1 ],function ( err, results, fields ){
+		if (err) throw err;
+		if(results.length > 0){
+			var re = results;
+		//	console.log(re)
+			for(var i = 0; i < re.length; i++){
+				console.log(re[i]);
+				db.query( 'UPDATE feeder_tree set receive = ? WHERE username = ?', ['yes', re[i].username], function ( err, results, fields ){
+					if(err)throw err;
+					//check if the sponsor is present
+					db.query( 'SELECT sponsor FROM feeder_tree WHERE sponsor = ?', [re[i].username], function ( err, results, fields ){
+						if (err) throw err;
+						if(results.length > 0){
+							db.query( 'UPDATE feeder_tree set sponreceive = ? WHERE sponsor = ?', ['yes', re[i].sponsor],function ( err, results, fields ){
+								if(err)throw err;
+							});
+						}
 					});
-				}
+				});
 			}
-		});
+		}
+	
 	});
 }
+
 
 exports.spamActi = function(currentUser, req, res){
 	db.query( 'SELECT COUNT(payer_username) AS count FROM transactions WHERE status = ? AND payer_username = ?', ['Not Paid', currentUser ],function ( err, results, fields ){

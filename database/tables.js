@@ -11,14 +11,8 @@ update user_tree set feeder = 'yes', status = 'paid' where username = 'Miracle04
 update user set  status = 'paid' where username = 'Miracle0403';//
 */
 
-CREATE TABLE `user_tree` (
-	`username` VARCHAR(255) NOT NULL,
-	`sponsor` TEXT NULL DEFAULT NULL,
-	`activated` VARCHAR(255) NOT NULL DEFAULT 'No',
-	`feeder` VARCHAR(255) NOT NULL DEFAULT 'No',
-	`status` VARCHAR(255) NOT NULL DEFAULT 'free',
-	`lft` INT (11) NOT NULL,
-	`rgt` INT (11) NOT NULL
+CREATE TABLE `mainleg` (
+	`username` VARCHAR(255) NOT NULL
 );
 	
 CREATE TABLE `user` (
@@ -48,6 +42,12 @@ CREATE TABLE `default_sponsor` (
 	
 	`username` VARCHAR (255) NOT NULL,
 	`amount` INT (11) NOT NULL DEFAULT 0
+	
+);
+
+CREATE TABLE `restrict` (
+	`username` VARCHAR (255) NOT NULL,
+	`date_entered`DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	
 );
 
