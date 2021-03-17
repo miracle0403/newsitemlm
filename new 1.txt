@@ -1,300 +1,188 @@
-var db = require('../db.js');
-var feederspill = require('./feederspill.js');
-var flash = require('express-flash-messages');
-var securePin = require('secure-pin');
-var charSet = new securePin.CharSet();
-charSet.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize();
-var func = require('../routes/func.js');
-
-exports.merge = function (receive, bio, req, res){
-	console.log(receive + ' receiver');
-	db.query('SELECT * FROM feeder_tree WHERE username = ?', [receive], function(err, results, fields){
-		if(err) throw err;
-		var receiver = results[0];
-		console.log(results);
-		if (receiver.a === null  && receiver.receive === 'yes'){
-			//inserts into a
-			securePin.generateString (10, charSet, function(str){
-				var date = new Date();
-				date.setHours(date.getHours() + 3);
-				var year = date.getFullYear();
-				var month = date.getMonth() + 1;
-				var day = date.getDate() + 1;
-				var order_id = 'fe' + str + year + month + day;
-				db.query('SELECT order_id, amount FROM feeder_tree WHERE username = ?', [receiver.username], function(err, results, fields){
+exports.feeder2spill = function(){
+	
+	db.query('SELECT node.user,   (COUNT(parent.user) - (sub_tree.depth + 1)) AS depth FROM feeder_tree AS node, feeder_tree AS parent, feeder_tree AS sub_parent, ( SELECT node.user, (COUNT(parent.user) - 1) AS depth FROM feeder_tree AS node, feeder_tree AS parent WHERE node.lft BETWEEN parent.lft AND parent.rgt AND node.user = ? GROUP BY node.user ORDER BY node.lft) AS sub_tree WHERE node.amount < 3 node.status = ? AND node.receive = ? AND node.sponreceive = ?  AND  node.lft BETWEEN parent.lft AND parent.rgt AND node.lft BETWEEN sub_parent.lft AND sub_parent.rgt AND sub_parent.user = sub_tree.user GROUP BY node.user HAVING depth > 0 ORDER BY depth', [details.user, 'confirmed', 'yes', 'yes'], function(err, results, fields){
+		if( err ) throw err;
+		if(results.length === 0){
+			res.redirect('/dashboard/#merging');
+		}else{
+			var second = {
+				user: results.[0].user,
+				sponsor: results.[0].sponsor,
+				a: results.[0].a,
+				b: results.[0].b,
+				c: results.[0].c,
+				receive: results.[0].receive,
+				spon_receive: results.[0].spon_receive 
+			}
+			
+			if (second.a === null && second.b === null && second.c === null){
+				//place in a
+				db.query('UPDATE feeder_tree SET a = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
 					if(err) throw err;
-					var ord = receiver.order_id;
-					var amount = results[0].amount;
-					console.log(ord)
-					db.query('UPDATE feeder_tree SET a = ?, amount = ? WHERE order_id = ?', [bio.username, amount + 1, ord], function(err, results, fields){
-						if(err) throw err;
-						var purpose = 'feeder_matrix';
-						if(receiver.username === bio.sponsor){
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-							if (err) throw err;					
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});
-						}else{
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-							if (err) throw err;
-						
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});
-						}
-					});
-				});
-			});
-		}else if (receiver.b === null  && receiver.receive !== 'yes' && receiver.sponreceive === 'yes'){
-			securePin.generateString (10, charSet, function(str){
-				var date = new Date();
-				date.setHours(date.getHours() + 3);
-				var year = date.getFullYear();
-				var month = date.getMonth() + 1;
-				var day = date.getDate() + 1;
-				var order_id = 'fe' + str + year + month + day;
-				db.query('SELECT order_id, amount FROM feeder_tree WHERE username = ?', [receiver.username], function(err, results, fields){
-					if(err) throw err;
-					var ord = receiver.order_id;
-					var amount = results[0].amount;
-					db.query('UPDATE feeder_tree SET b = ?, amount = ? WHERE order_id = ?', [bio.username, amount + 1, ord], function(err, results, fields){
-						if(err) throw err;
-						var purpose = 'feeder_bonus';
-						if(receiver.username === bio.sponsor){
-							db.query('CALL leafadd(?,?,?,?)', [bio.sponsor, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;						
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});
-						}else{
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;						
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});
-						}
-					});
-				});
-			});
-		}else if (receiver.a !== null && receiver.b === null  &&  receiver.sponreceive === 'yes'){
-			securePin.generateString (10, charSet, function(str){
-				var date = new Date();
-				date.setHours(date.getHours() + 3);
-				var year = date.getFullYear();
-				var month = date.getMonth() + 1;
-				var day = date.getDate() + 1;
-				var order_id = 'fe' + str + year + month + day;
-				db.query('SELECT order_id, amount FROM feeder_tree WHERE username = ?', [receiver.username], function(err, results, fields){
-					if(err) throw err;
-					var amount = results[0].amount;
-					var ord = receiver.order_id;
-					db.query('UPDATE feeder_tree SET b = ? WHERE username = ? and order_id = ?', [bio.username, receiver.username, ord], function(err, results, fields){
-						if(err) throw err;
-						var purpose = 'feeder_bonus';					
-						db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-							if (err) throw err;					
-							db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date], function(err, results, fields){
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
 								if (err) throw err;
-								db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-									if(err) throw err;
-									var success = 'You have been assigned to pay someone';
-									req.flash('success', success);
-									res.redirect('/dashboard')
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
+									if (err) throw err;
+									res.redirect('dashboard/#merging');
 								});
 							});
 						});
 					});
 				});
-			});
-		}else if (receiver.a !== null && receiver.c === null  && receiver.receive === 'yes' && receiver.sponreceive !== 'yes'){
-			//c
-			securePin.generateString (10, charSet, function(str){
-				var date = new Date();
-				date.setHours(date.getHours() + 3);
-				var year = date.getFullYear();
-				var month = date.getMonth() + 1;
-				var day = date.getDate() + 1;
-				var order_id = 'fe' + str + year + month + day;
-				db.query('SELECT order_id, amount FROM feeder_tree WHERE username = ?', [receiver.username], function(err, results, fields){
+			}
+			if (second.a !== null && second.b === null && second.c === null){
+				//place in b
+				db.query('UPDATE feeder_tree SET b = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
 					if(err) throw err;
-					var amount = results[0].amount;
-					var ord = receiver.order_id;
-					db.query('UPDATE feeder_tree SET c = ?, amount = ? WHERE order_id = ?', [bio.username, amount + 1, ord], function(err, results, fields){
-						if(err) throw err;
-						var purpose = 'feeder_matrix';
-						if(receiver.username === bio.sponsor){
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;					
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, receiver.username, receiver.username, order_id, date], function(err, results, fields){
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
+								if (err) throw err;
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
 									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										db.query('UPDATE feeder_tree SET amount = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-											if(err) throw err;
-											var success = 'You have been assigned to pay someone';
-											req.flash('success', success);
-											res.redirect('/dashboard')
-										});
-									});
+									res.redirect('dashboard/#merging');
 								});
 							});
-						}else{
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;					
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, receiver.username, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord,	 order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});
-						}
+						});
 					});
 				});
-			});
-		}else if (receiver.a !== null && receiver.b !== null && receiver.c === null  &&  receiver.receive === 'yes'){
-			//c
-			console.log('c')
-			securePin.generateString (10, charSet, function(str){
-				var date = new Date();
-				date.setHours(date.getHours() + 3);
-				var year = date.getFullYear();
-				var month = date.getMonth() + 1;
-				var day = date.getDate() + 1;
-				var order_id = 'fe' + str + year + month + day;
-				db.query('SELECT order_id, amount FROM feeder_tree WHERE username = ?', [receiver.username], function(err, results, fields){
+			}
+			if (second.a !== null && second.b !== null && second.c === null){
+				//place in c
+				db.query('UPDATE feeder_tree SET c = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
 					if(err) throw err;
-					var amount = results[0].amount;
-					var ord = receiver.order_id;
-					db.query('UPDATE feeder_tree SET c = ?, amount = ? WHERE order_id = ?', [bio.username, amount + 1, ord], function(err, results, fields){
-						if(err) throw err;
-						var purpose = 'feeder_matrix';
-						if(receiver.username === bio.sponsor){
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;					
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, receiver.username, receiver.username, order_id, date], function(err, results, fields){
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
+								if (err) throw err;
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
 									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										db.query('UPDATE feeder_tree SET amount = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-											if(err) throw err;
-											var success = 'You have been assigned to pay someone';
-											req.flash('success', success);
-											res.redirect('/dashboard')
-										});
-									});
+									res.redirect('dashboard/#merging');
 								});
 							});
-						}else{
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;					
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, receiver.username, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord,	 order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});	
-						}
+						});
 					});
 				});
-			});
-		}else{
-			console.log('spillover')
-			feederspill.feederspill(receiver, bio, req, res)
-		}
-	});
-}
-
-
-
-exports.merge2 = function (receive, bio, req, res){
-	db.query('SELECT * FROM feeder_tree WHERE username = ?', [receive], function(err, results, fields){
-		if(err) throw err;
-		var receiver = results[0];
-		console.log(results);
-		if (receiver.a === null){
-			//inserts into a
-			securePin.generateString (10, charSet, function(str){
-				var date = new Date();
-				date.setHours(date.getHours() + 3);
-				var year = date.getFullYear();
-				var month = date.getMonth() + 1;
-				var day = date.getDate() + 1;
-				var order_id = 'fe' + str + year + month + day;
-				db.query('SELECT order_id, amount FROM feeder_tree WHERE username = ?', [receiver.username], function(err, results, fields){
+			}
+			if (second.a === null && second.b !== null && second.c === null){
+				//place in a
+				db.query('UPDATE feeder_tree SET a = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
 					if(err) throw err;
-					var ord = receiver.order_id;
-					var amount = results[0].amount;
-					console.log(ord)
-					db.query('UPDATE feeder_tree SET a = ?, amount = ? WHERE order_id = ?', [bio.username, amount + 1, ord], function(err, results, fields){
-						if(err) throw err;
-						var purpose = 'feeder_matrix';
-						if(receiver.username === bio.sponsor){
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;					
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, receiver.username, receiver.username, order_id, date], function(err, results, fields){
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
+								if (err) throw err;
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
 									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
+									res.redirect('dashboard/#merging');
 								});
 							});
-						}else{
-							db.query('CALL leafadd(?,?,?,?)', [receiver.username, order_id, bio.username, ord], function(err, results, fields){
-								if (err) throw err;				
-								db.query('CALL placefeeder(?,?,?,?,?,?)', [bio.username, purpose, receiver.username, receiver.username, order_id, date], function(err, results, fields){
-									if (err) throw err;
-									db.query('UPDATE transactions SET receiving_order = ? WHERE order_id = ?', [ord, order_id], function(err, results, fields){
-										if(err) throw err;
-										var success = 'You have been assigned to pay someone';
-										req.flash('success', success);
-										res.redirect('/dashboard')
-									});
-								});
-							});
-						}
+						});
 					});
 				});
-			});
+			}
+			if (second.a === null && second.b === null && second.c !== null){
+				//place in a
+				db.query('UPDATE feeder_tree SET a = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
+					if(err) throw err;
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
+								if (err) throw err;
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
+									if (err) throw err;
+									res.redirect('dashboard/#merging');
+								});
+							});
+						});
+					});
+				});
+			}
+			if (second.a === null && second.b !== null && second.c !== null){
+				//place in a
+				db.query('UPDATE feeder_tree SET a = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
+					if(err) throw err;
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
+								if (err) throw err;
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
+									if (err) throw err;
+									res.redirect('dashboard/#merging');
+								});
+							});
+						});
+					});
+				});
+			}
+			if (second.a !== null && second.b === null && second.c !== null){
+				//place in b
+				db.query('UPDATE feeder_tree SET b = ? WHERE user = ?', [details.username, second.user], function(err, results, fields){
+					if(err) throw err;
+					var purpose = 'matrix'
+					db.query('CALL leafadd(?,?,?)', [details.sponsor, details.user, username], function(err, results, fields){
+						if (err) throw err;
+						securePin.generateString (10, charSet, function(str){
+							var date = new Date();
+							date.setHours(date.getHours() + 3);							var year = date.getFullYear();
+							var month = date.getMonth() + 1;
+							var day = date.getDate() + 1;
+							var order_id = 'fe' + str + year + month + day;
+							db.query('CALL placefeeder(?,?,?,?,?)', [details.user, username, details.sponsor, order_id, date], function(err, results, fields){
+								if (err) throw err;
+								db.query('UPDATE transactions SET purpose = ? WHERE order_id = ? ', [purpose, order_id], function(err, results, fields){
+									if (err) throw err;
+									res.redirect('dashboard/#merging');
+								});
+							});
+						});
+					});
+				});
+			}
 		}
 	});
 }

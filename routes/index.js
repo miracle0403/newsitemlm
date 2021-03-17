@@ -2,6 +2,7 @@
 
 var paystack = require('paystack')('pk_test_a4e3579de9e0ee17f9bb6fcc79653ab81da4d895');
 var fs = require('fs');
+//var Math = require('Math');
 const nodemailer =  require('nodemailer');
 var ensureLoggedIn = require( 'connect-ensure-login' ).ensureLoggedIn
 var express = require('express');
@@ -1617,6 +1618,7 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 				//check if the user has entered the matrix before now
 				db.query('SELECT * FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if (err) throw err;
+					//console.log(bio)
 					if(results.length === 0){
 						//get from sponsor
 						mergefeed1.merge(bio, req, res);

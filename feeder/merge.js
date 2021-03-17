@@ -26,6 +26,7 @@ exports.merge = function (bio, req, res){
 					db.query('SELECT * FROM feeder_tree WHERE username = ?', [sponsor], function(err, results, fields){
 						if(err) throw err;
 						var receiver = results[0];
+						console.log('its here')
 					});
 				});
 			}else{
@@ -213,6 +214,9 @@ exports.merge = function (bio, req, res){
 							});
 						});
 					});
+				}else if (receiver.a !== null && receiver.c !== null && receiver.b !== null  ){
+					console.log('spillover');
+					feederspill.feederspill(bio, req, res, order_id);
 				}else{
 					console.log('spillover');
 					feederspill.feederspill(bio, req, res, order_id);
@@ -263,6 +267,8 @@ exports.merge2 = function (bio, req, res){
 											if(err) throw err;
 											db.query('CALL placefeeder(?,?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date, receiver.order_id], function(err, results, fields){
 												if (err) throw err;
+												func.receive();
+												func.noreceive();
 												var success = 'You have been assigned to pay someone';
 												req.flash('success', success);
 												res.redirect('/dashboard')
@@ -290,6 +296,8 @@ exports.merge2 = function (bio, req, res){
 									if(err) throw err;
 									db.query('CALL placefeeder(?,?,?,?,?,?,?)', [bio.username, purpose, bio.sponsor, receiver.username, order_id, date, receiver.order_id], function(err, results, fields){
 										if (err) throw err;
+										func.receive();
+										func.noreceive();
 										var success = 'You have been assigned to pay someone';
 										req.flash('success', success);
 										res.redirect('/dashboard')
