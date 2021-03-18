@@ -2,7 +2,7 @@
 
 var paystack = require('paystack')('pk_test_a4e3579de9e0ee17f9bb6fcc79653ab81da4d895');
 var fs = require('fs');
-//var Math = require('Math');
+var Math = require('mathjs');
 const nodemailer =  require('nodemailer');
 var ensureLoggedIn = require( 'connect-ensure-login' ).ensureLoggedIn
 var express = require('express');
@@ -150,7 +150,41 @@ router.get('/all-users', ensureLoggedIn('/login'), function(req, res, next) {
 router.get('/admin-dashboard', authentificationMiddleware(), ensureLoggedIn('/login'), function(req, res, next) {
 	var currentUser = req.session.passport.user.user_id;
 	getfunc.admin(currentUser, db, req, res);
-	res.render('admin-dashboard',{mess: 'Admin Dashboard', admin: currentUser});
+	var flashMessages = res.locals.getMessages();
+	if (flashMessages.adderror){
+		res.render( 'admin-dashboard', {
+			mess: 'ADMIN DASHBOARD',
+			admin: currentUser,
+			showErrors: true,
+			adderror: flashMessages.adderror
+		});
+	}else if (flashMessages.delerror){
+		res.render( 'admin-dashboard', {
+			mess: 'ADMIN DASHBOARD',
+			admin: currentUser,
+			showErrors: true,
+			delerror: flashMessages.delerror
+		});
+	}else if (flashMessages.addsuccess) {
+		res.render( 'admin-dashboard', {
+			mess: 'ADMIN DASHBOARD',
+			admin: currentUser,
+			showSuccess: true,
+			addsuccess: flashMessages.addsuccess
+		});
+	}else if (flashMessages.delsuccess) {
+		res.render( 'admin-dashboard', {
+			mess: 'ADMIN DASHBOARD',
+			admin: currentUser,
+			showSuccess: true,
+			delsuccess: flashMessages.delsuccess
+		});
+	}else{
+		res.render( 'admin-dashboard', {
+			mess: 'ADMIN DASHBOARD',
+			admin: currentUser
+		});
+	}
 });
 
 //all transactions
@@ -1364,7 +1398,7 @@ router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware()
 										if (err) throw err;
 										var add = results[0];
 										if(ord.username === trans.user){
-											db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [add.requiredEntrance - 1, add.username], function(err, results, fields){
+											db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [add.requiredEntrance - 1, trans.payer_username], function(err, results, fields){
 												if (err) throw err;
 												if(ord.a !== null && ord.b !== null && ord.c !== null){
 													db.query('UPDATE feeder_tree SET requiredEntrance = ? WHERE username = ? ' , [ord.requiredEntrance + 1, ord.username], function(err, results, fields){
@@ -1733,8 +1767,8 @@ router.post('/searchUser', authentificationMiddleware(), [ check ('username', 'U
 			req.flash('error', error);
 			res.redirect('/admin-dashboard/#search');
 		}else{
-			var usernameSearch = results[0];
-			res.render('search', {mess: 'SEACH USER', usernameSearch: UsernameSearch, search: 'Your search by username is ready'});
+			var Search = results[0];
+			res.render('usersearch', {mess: 'SEACH USER', Search: Search, search: 'Your search by username is ready'});
 		}
 	});
 });

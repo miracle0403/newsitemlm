@@ -27,6 +27,8 @@ exports.merge = function (bio, req, res){
 						if(err) throw err;
 						var receiver = results[0];
 						console.log('its here')
+						
+						
 					});
 				});
 			}else{
@@ -216,10 +218,10 @@ exports.merge = function (bio, req, res){
 					});
 				}else if (receiver.a !== null && receiver.c !== null && receiver.b !== null  ){
 					console.log('spillover');
-					feederspill.feederspill(bio, req, res, order_id);
+					feederspill.feederspill(bio, req, res, order_id, date);
 				}else{
 					console.log('spillover');
-					feederspill.feederspill(bio, req, res, order_id);
+					feederspill.feederspill(bio, req, res, order_id, date);
 				}
 			}
 		});

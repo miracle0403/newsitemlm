@@ -108,13 +108,29 @@ SELECT @bankname := bank_name, @fullname := full_name, @accountname := account_n
 SELECT @payerfullname := full_name, @payerphone := phone, @payerusername := username FROM user WHERE username = child;
 
 
-INSERT INTO transactions (receiving_order, user, purpose, payer_fullname, payer_username, payer_phone, receiver_fullname, receiver_username, receiver_phone, receiver_bank_name, receiver_account_name, receiver_account_number, status, order_id, expire, receiving_order) Values (oldId, mother, reason, @payerfullname, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, @accountnumber, 'pending', orderId, dateEntered, oldId);
+INSERT INTO transactions ( user, purpose, payer_fullname, payer_username, payer_phone, receiver_fullname, receiver_username, receiver_phone, receiver_bank_name, receiver_account_name, receiver_account_number, status, order_id, expire, receiving_order) Values (mother, reason, @payerfullname, @payerusername, @payerphone, @fullname, mother, @phone, @bankname, @accountname, @accountnumber, 'pending', orderId, dateEntered, oldId);
 
 
 END //
 DELIMETER;
 
 
+DELIMITER //
+CREATE PROCEDURE `placefeeder1` (`child` VARCHAR(255), `reason` VARCHAR(255), `spon` VARCHAR(255), `mother` VARCHAR(255)
+, `orderId` VARCHAR(255)
+, `dateEntered` VARCHAR(255), `oldId` VARCHAR(255)
+)  BEGIN
+
+SELECT @bankname := bank_name, @fullname := full_name, @accountname := account_name, @accountnumber := account_number, @phone := phone FROM user WHERE username = spon;
+
+SELECT @payerfullname := full_name, @payerphone := phone, @payerusername := username FROM user WHERE username = child;
+
+
+INSERT INTO transactions ( user, purpose, payer_fullname, payer_username, payer_phone, receiver_fullname, receiver_username, receiver_phone, receiver_bank_name, receiver_account_name, receiver_account_number, status, order_id, expire, receiving_order) Values (mother, reason, @payerfullname, @payerusername, @payerphone, @fullname, spon, @phone, @bankname, @accountname, @accountnumber, 'pending', orderId, dateEntered, oldId);
+
+
+END //
+DELIMETER;
 
 CREATE PROCEDURE `denyactivationpayment` (`mother` VARCHAR(255), `child` VARCHAR(255), `order_id` VARCHAR(255)
 )  

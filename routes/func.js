@@ -143,10 +143,10 @@ exports.receive = function(){
 			var re = results;
 		//	console.log(re)
 			for(var i = 0; i < re.length; i++){
-				console.log(re[i].username);
 				db.query( 'UPDATE feeder_tree set receive = ? WHERE username = ?', ['yes', re[i].username], function ( err, results, fields ){
 					if(err)throw err;
 					//check if the sponsor is present
+					console.log(re[i].username);
 					db.query( 'SELECT sponsor FROM feeder_tree WHERE sponsor = ?', [re[i].username], function ( err, results, fields ){
 						if (err) throw err;
 						if(results.length > 0){
