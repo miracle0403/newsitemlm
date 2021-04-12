@@ -1,0 +1,56 @@
+{{> mainh}}
+
+
+ {{#if errors}}
+  {{#each errors}}
+  <div class="alert alert-danger">
+    {{this.msg}}
+  </div>
+  {{/each}}
+{{/if}}
+
+{{#if error}}
+  <div class="alert alert-danger">
+    {{error}}
+  </div>
+  {{/if}}
+  {{#if success}}
+  <div class="alert alert-success">
+    {{success}}
+  </div>
+  {{/if}}
+  
+  <div class="card-body">
+                <div class="input-group no-border input-lg">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="now-ui-icons users_circle-08"></i>
+                    </span>
+                  </div>
+                  <input type="text" class="form-control" placeholder="First Name...">
+                </div>
+                <div class="input-group no-border input-lg">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="now-ui-icons text_caps-small"></i>
+                    </span>
+                  </div>
+                  <input type="text" placeholder="Last Name..." class="form-control" />
+                </div>
+              </div>
+              <div class="card-footer text-center">
+                <a href="#pablo" class="btn btn-primary btn-round btn-lg btn-block">Get Started</a>
+                <div class="pull-left">
+                  <h6>
+                    <a href="#pablo" class="link">Create Account</a>
+                  </h6>
+                </div>
+                <div class="pull-right">
+                  <h6>
+                    <a href="#pablo" class="link">Need Help?</a>
+                  </h6>
+                </div>
+            </form>
+            </div>
+  
+{{> mainf}}
