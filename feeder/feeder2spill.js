@@ -15,7 +15,7 @@ exports.feeder2spill = function(bio, receiver, req, res, order_id, date){
 				db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if(err) throw err;
 					if(results.length === 1){
-						var entrance = 2;
+						var entrance = 1;
 						var receive = 'No';
 						console.log(results)
 						//update sponreceive, receive of the new user
@@ -56,7 +56,7 @@ exports.feeder2spill = function(bio, receiver, req, res, order_id, date){
 				db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if(err) throw err;
 					if(results[0].requiredEntrance === null && results[0].receive === null){
-						var entrance = 2;
+						var entrance = 1;
 						var receive = 'No';
 						db.query('UPDATE feeder_tree SET requiredEntrance = ?, receive = ?, sponreceive = ? WHERE order_id = ?', [entrance, receive, receiver.receive, order_id], function(err, results, fields){
 							if(err) throw err;
@@ -96,7 +96,7 @@ exports.feeder2spill = function(bio, receiver, req, res, order_id, date){
 				db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if(err) throw err;
 					if(results[0].requiredEntrance === null && results[0].receive === null){
-						var entrance = 2;
+						var entrance = 1;
 						var receive = 'No';
 						db.query('UPDATE feeder_tree SET requiredEntrance = ?, receive = ?, sponreceive = ? WHERE order_id = ?', [entrance, receive, receiver.receive, order_id], function(err, results, fields){
 							if(err) throw err;
@@ -137,7 +137,7 @@ exports.feeder2spill = function(bio, receiver, req, res, order_id, date){
 				db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if(err) throw err;
 					if(results.length === 1){
-						var entrance = 2;
+						var entrance = 1;
 						var receive = 'No';
 						console.log(results)
 						//update sponreceive, receive of the new user
@@ -179,7 +179,7 @@ exports.feeder2spill = function(bio, receiver, req, res, order_id, date){
 				db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 					if(err) throw err;
 					if(results.length === 1){
-						var entrance = 2;
+						var entrance = 1;
 						var receive = 'No';
 						console.log(results)
 						//update sponreceive, receive of the new user

@@ -1,0 +1,3 @@
+ CREATE DEFINER=`root`@`localhost` PROCEDURE `register`(IN `regsponsor` VARCHAR(255), IN `regfullname` VARCHAR(255), IN `regphone` VARCHAR(255), IN `regusername` VARCHAR(255), IN `regemail` VARCHAR(255), IN `reghash` VARCHAR(255)) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER BEGIN SELECT @myLeft := lft, @amount := amount FROM user WHERE username = regsponsor; UPDATE user SET rgt = rgt + 2 WHERE rgt > @myLeft; UPDATE user SET lft = lft + 2 WHERE lft > @myLeft; INSERT INTO user (lft, rgt, sponsor , full_name , phone , username , email , password, amount) VALUES (@myLeft + 1, @myLeft + 2, regsponsor, regfullname, regphone, regusername, regemail, reghash, @amount); UPDATE user SET amount = amount + 1 WHERE username = regsponsor; END
+
+ 

@@ -1,22 +1,4 @@
-{{> mainh}}
-
-{{> mainnav}}
-
-
-    
-
-	<div class="wrapper">
-    <div class="page-header page-header-small">
-      <div class="page-header-image" data-parallax="true" style="background-image: url('/assets/img/login.png');">
-      </div>
-      <div class="content-center">
-        <div class="container">
-          <h1 class="title">{{title}}</h1>
-         
-        </div>
-      </div>
-    </div>
-   <div class="section section-about-us">
+ <div class="section section-about-us">
       <div class="container">
         <div class="row">
           <div class="col-md-8 ml-auto mr-auto text-center">
@@ -28,7 +10,7 @@
         <div class="section-story-overview">
           <div class="row">
             <div class="col-md-6">
-              <div class="image-container image-left" style="background-image: url('/assets/img/bg6.png')">
+              <div class="image-container image-left" style="background-image: url('/assets/img/login.jpg')">
                 <!-- First image on the left side -->
                 <p class="blockquote blockquote-warning">"An investment in knowledge pays the best interest"
                   <br>
@@ -37,11 +19,11 @@
                 </p>
               </div>
               <!-- Second image on the left side of the article -->
-              <div class="image-container" style="background-image: url('/assets/img/bg7.png')"></div>
+              <div class="image-container" style="background-image: url('/assets/img/bg3.jpg')"></div>
             </div>
             <div class="col-md-5">
               <!-- First image on the right side, above the article -->
-              <div class="image-container image-right" style="background-image: url('/assets/img/bg5.png')"></div>
+              <div class="image-container image-right" style="background-image: url('/assets/img/bg1.jpg')"></div>
               <h3>WHAT DO WE DO?</h3>
               <p><strong class = "text-primary">Welcome to {{title}}!  </strong> {{title}} is not a 'get rich quick' scheme, not a money doubling platform, not a ponzi scheme, not a trading website, not a PH to GH triple or double of PH amount website but a pure network marketing platform targeted at reducing unemployment and underemployment to its lowest minimum, providing the society with young vibrant youth with strong passion for financial growth, reducing social vices, increasing security and industries. <br><br>However, because we do not want to stress you with hard to achieve long matrix, we made it easy and simple so you won't worry over referrals and long unachievable matrix... <br><br>See <a href = "/ref={{username}}/#howitworks">How it works </a> for more information. 
 			From time to time, we will run promotions please look out for them in your dashboard</b>
@@ -60,26 +42,38 @@
           <div class="row">
             <div class="col-md-4">
               <div class="team-player">
+                <img src="/assets/img/avatar.jpg" alt="Thumbnail Image" class="rounded-circle img-fluid img-raised">
                 
                 <p class="category text-primary">Activation</p>
                 <p class="description">
 					The first financial commitment you will make in this website is an "activation fee". Why do you need to pay this? Well, this is to make us know and understand you want to stay with us and not play around. This fee is paid to individuals who took part in our promos and challenges meant to grow this community from time to time.
-				  </div>
+				<a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-twitter"></i></a>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-instagram"></i></a>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-facebook-square"></i></a>
+              </div>
             </div>
             <div class="col-md-4">
               <div class="team-player">
-               
+                <img src="/assets/img/ryan.jpg" alt="Thumbnail Image" class="rounded-circle img-fluid img-raised">
+                
                 <p class="category text-primary">Matrix Earnings</p>
                 <p class="description">
 					After the activation fee, you are now qualified to enter the first matrix which is the "feeder matrix". To join this matrix, you will need to pay the sum of N10,000 to your upline thus, ou are expected to earn N10,000 extra from your downlines as the feeder matrix is a 3 * 1 matrix. Click <a href = "/howitworks/ref={{username}}">here</a> for more information 
-				</div>
+				<a href="#"></a> .</p>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-twitter"></i></a>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-linkedin"></i></a>
+              </div>
             </div>
             <div class="col-md-4">
               <div class="team-player">
-               
+                <img src="/assets/img/eva.jpg" alt="Thumbnail Image" class="rounded-circle img-fluid img-raised">
+                
                 <p class="category text-primary">Referral Bonus</p>
                 <p class="description">Now this is thre interesting part about this wesite. We offer a whole 100% referral boonus on all your referrals! What this means is that if you have 10 referrals, your estimated referral bonus from them at a cycle is N10,000 * 10...Click <a href = "/howitworks/ref={{username}}">here</a> for more information</p>
-                 </div>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-google-plus"></i></a>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-youtube"></i></a>
+                <a href="#pablo" class="btn btn-primary btn-icon btn-round"><i class="fab fa-twitter"></i></a>
+              </div>
             </div>
           </div>
         </div>
@@ -118,8 +112,3 @@
       </div>
     </div>-->
     
-
-  
-   
-
-{{> mainf}}

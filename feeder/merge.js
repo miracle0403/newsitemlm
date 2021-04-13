@@ -46,7 +46,7 @@ exports.merge = function (bio, req, res){
 							db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 								if(err) throw err;
 								if(results.length === 1){
-									var entrance = 2;
+									var entrance = 1;
 									var receive = 'No';
 									console.log(results)
 									//update sponreceive, receive of the new user
@@ -142,7 +142,7 @@ exports.merge = function (bio, req, res){
 							db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 								if(err) throw err;
 								if(results.length === 1){
-									var entrance = 2;
+									var entrance = 1;
 									var receive = 'No';
 									console.log(results)
 									//update sponreceive, receive of the new user
@@ -185,7 +185,7 @@ exports.merge = function (bio, req, res){
 							db.query('SELECT requiredEntrance, receive FROM feeder_tree WHERE username = ?', [bio.username], function(err, results, fields){
 								if(err) throw err;
 								if(results.length === 1){
-									var entrance = 2;
+									var entrance = 1;
 									var receive = 'No';
 									console.log(results)
 									//update sponreceive, receive of the new user

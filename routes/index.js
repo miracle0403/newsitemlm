@@ -55,7 +55,7 @@ const saltRounds = bcrypt.genSalt( 10, rounds);
 /* GET home page. */
 router.get('/', function(req, res, next) {
 	
-	res.render('index', { mess: "SWIFT EMPOWER" });
+	res.render('index', { mess: "EZWIFT",  title: "EZWIFT", });
 });
 
 
@@ -142,7 +142,7 @@ router.get('/all-users', ensureLoggedIn('/login'), function(req, res, next) {
 	db.query('SELECT * FROM user ', function ( err, results, fields ){
 		if( err ) throw err;
 		var users = results;
-		res.render('all-users', {mess: 'SWIFT EMPOWER  All Users ', users: users, admin: currentUser});
+		res.render('all-users', {mess: 'EZWIFT  All Users ', users: users, admin: currentUser});
 	});
 });
 
@@ -194,7 +194,7 @@ router.get('/all-transactions', ensureLoggedIn('/login'), function(req, res, nex
 	db.query('SELECT * FROM transactions ', function ( err, results, fields ){
 		if( err ) throw err;
 		var transactions = results;
-		res.render('all-transactions', {mess: 'SWIFT EMPOWER  Transactions ', transactions: transactions, admin: currentUser});
+		res.render('all-transactions', {mess: 'EZWIFT  Transactions ', transactions: transactions, admin: currentUser});
 	});
 });
 
@@ -264,7 +264,7 @@ router.get('/confirmPass/email=:email/link=:link', function(req, res, next) {
 //faq
 router.get('/faq', function(req, res, next) {
 		var message = 'FAQ';
-  res.render('faq', { mess: message });
+  res.render('faq', { mess: message, title: "EZWIFT",});
 });
 
 router.get('/faq/ref=:username', function(req, res, next) {
@@ -276,7 +276,7 @@ router.get('/faq/ref=:username', function(req, res, next) {
 //promote
 router.get('/promote_us', function(req, res, next) {
 		var message = 'FAQ';
-  res.render('promote', { mess: message });
+  res.render('promote', { mess: message, title: "EZWIFT", });
 });
 
 router.get('/promote_us/ref=:username', function(req, res, next) {
@@ -285,7 +285,6 @@ router.get('/promote_us/ref=:username', function(req, res, next) {
 		link.route(username, db, route, req, res);
 });
 
-
 //dashboard
 router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 	func.receive();
@@ -293,7 +292,6 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 	func.feedtimer()
 	//func.actimer();
 	var currentUser = req.session.passport.user.user_id;
-	
 	db.query( 'SELECT * FROM user WHERE user_id = ?', [currentUser], function ( err, results, fields ){
 		if( err ) throw err;
 		var bio = results[0];		
@@ -691,8 +689,8 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 
 //register
 router.get('/register', function(req, res, next) {
-		var message = 'FAQ';
-  res.render('register', { mess: message });
+		var message = 'Registration';
+  res.render('register', { mess: message, title: "EZWIFT", });
 });
 
 router.get('/register/ref=:username', function(req, res, next) {
@@ -704,7 +702,7 @@ router.get('/register/ref=:username', function(req, res, next) {
 				res.redirect('/register')
 			}else{
 				var message = 'Registration';
-				res.render('register', {mess: message, sponsor: username})
+				res.render('register', {mess: message, sponsor: username, title: "EZWIFT",})
 			}
 		});
 });
@@ -725,16 +723,28 @@ router.get('/faq/ref=', function(req, res, next) {
 	res.redirect('/faq')
 });
 
+router.get('/fastteams/ref=', function(req, res, next) {
+	res.redirect('/fastteams')
+});
+
 router.get('/howitworks/ref=', function(req, res, next) {
 	res.redirect('/howitworks')
 });
 
-
+//get fast teams
+router.get('/fastteams',  function (req, res, next){
+	//get the max 5
+	db.query( 'SELECT phone, full_name, email, username,amount FROM user ORDER BY amount DESC LIMIT 4', function ( err, results, fields ){
+		if( err ) throw err;
+		var fast = results;
+		res.render('fastteams', {mess: "OUR FASTEST TEAMS", fast: fast, title: 'EZWIFT'});
+	});
+});
 
 //how it works
 router.get('/howitworks',  function (req, res, next){
 	var message = 'How It Works';
- res.render('howitworks', {mess: message});
+ res.render('howitworks', {mess: message, title: "EZWIFT",});
 });
 
 router.get('/howitworks/ref=:username', function(req, res, next) {
@@ -768,6 +778,7 @@ router.get('/verify/:email/:link', function(req, res, next) {
 
 //get login
 router.get('/login', function(req, res, next) {
+	
 	func.actimer();
 	func.feedtimer()
 	const flashMessages = res.locals.getMessages( );
@@ -1670,14 +1681,28 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 	});
 });
 
-
-
 //post log in
 router.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
   successReturnToOrRedirect: '/dashboard',
   failureFlash: true
 }));
+
+
+/*router.post('/login', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  function(req, res) {
+	
+		res.redirect('/dashboard');
+	}else{ 
+	var ret = "'/" + req.session.returnTo + "'";
+		res.redirect(ret);
+	}
+  });
+  
+
+*/
+//
 
 //Passport login
 passport.serializeUser(function(user_id, done){

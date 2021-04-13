@@ -130,6 +130,9 @@ app.use(function(req, res, next){
 app.use('/', indexRouter);
 app.use('/users', usersRouter); 
 
+
+
+
 passport.use(new localStrategy(function(username, password, done){
 	console.log(username);
  console.log(password);
@@ -142,11 +145,12 @@ passport.use(new localStrategy(function(username, password, done){
   			message: 'Invalid Username'
    });
   }else {
-  		console.log(results[0]);
+  		
    const hash = results[0].password.toString();
    bcrypt.compare(password, hash, function(err, response){
    		if (response === true){
    			console.log('logged in')
+			console.log(results[0]);
    			return done(null, {user_id: results[0].user_id});
 		}else{
 			return done(null, false,{
