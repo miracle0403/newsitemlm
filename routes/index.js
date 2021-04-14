@@ -1682,24 +1682,19 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 });
 
 //post log in
+router.post('/login', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  function(req, res) {
+		res.redirect('/dashboard');
+  });
+/*
+  
 router.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
   successReturnToOrRedirect: '/dashboard',
   failureFlash: true
 }));
 
-
-/*router.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
-  function(req, res) {
-	
-		res.redirect('/dashboard');
-	}else{ 
-	var ret = "'/" + req.session.returnTo + "'";
-		res.redirect(ret);
-	}
-  });
-  
 
 */
 //

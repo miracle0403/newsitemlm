@@ -2,16 +2,16 @@
   <div class="wrapper ">
     <div class="sidebar" data-color="white" data-active-color="danger">
       <div class="logo">
-        <a href="https://www.creative-tim.com" class="simple-text logo-mini">
+        <a href="/" class="simple-text logo-mini">
           <div class="logo-image-small">
-            <img src="/assets/img/logo-small.png">
+            <img src="/assets/img/ezwift.png">
           </div>
           <!-- <p>CT</p> -->
         </a>
-        <a href="https://www.creative-tim.com" class="simple-text logo-normal">
-          Creative Tim
+        <a href="/" class="simple-text logo-normal">
+          {{mess}}
           <!-- <div class="logo-image-big">
-            <img src="/assets/img/logo-big.png">
+            <img src="/assets/img/ezwift.png">
           </div> -->
         </a>
       </div>
@@ -26,18 +26,19 @@
           
           <li>
               <a href="/fastteams/">
+			  <i class="nc-icon nc-user-run"></i>
 			  Fast Teams
               </a>
             </li>
           <li class="active ">
             <a href="/profile">
-              <i class="nc-icon nc-single-02"></i>
+              <i class="nc-icon nc-badge"></i>
               <p>User Profile</p>
             </a>
           </li>
           <li>
             <a href="/referrals">
-              <i class="nc-icon nc-tile-56"></i>
+              <i class="nc-icon nc-single-02"></i>
               <p>Referrals</p>
             </a>
           </li>
@@ -50,7 +51,7 @@
           {{#if admin}}
           <li>
             <a href="/all-Users">
-              <i class="nc-icon nc-caps-small"></i>
+              <i class="nc-icon nc-nc-single-02"></i>
               <p>All Users</p>
             </a>
           </li>
@@ -90,9 +91,9 @@
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-            <a class="navbar-brand" href="javascript:;">Paper Dashboard 2</a>
+            <a class="navbar-brand" href="javascript:;">{{mess}}</a>
           </div>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+          <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
             <span class="navbar-toggler-bar navbar-kebab"></span>
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -139,6 +140,6 @@
                 </a>
               </li>
             </ul>
-          </div>
+          </div>-->
         </div>
       </nav>
