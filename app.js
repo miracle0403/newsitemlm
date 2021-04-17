@@ -92,9 +92,9 @@ var options = {
   waitForConnections: true,
   connectionLimit : 0,
   host: "localhost",
-  user: "root",
-  password: '',
-  database: "newdb"
+  user: "miracle0403",
+  password: 'MIracle1994@I',
+  database: "ezwiftdb"
 } 
 
 

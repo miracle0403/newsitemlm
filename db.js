@@ -6,9 +6,9 @@ var pool  = sql.createPool({
   connectionLimit : 0,
   waitForConnections: true,
  host: "localhost",
-  user: "root",
-  password: '',
-  database: "newdb"
+  user: "miracle0403",
+  password: 'MIracle1994@I',
+  database: "ezwiftdb"
 });
 
 /*mysql -u root -p
