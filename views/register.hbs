@@ -1,26 +1,8 @@
 {{> mainh}}
 
-<div class="wrapper">
-    <section class="section section-shaped section-lg">
-      <div class="shape shape-style-1 bg-gradient-default">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div class="container pt-lg-7">
-        <div class="row justify-content-center">
-          <div class="col-lg-5">
-            <div class="card bg-secondary shadow border-0">
-              <div class="card-header bg-white pb-5">
-                <h3 class="text- text-center mb-3"><small>Sign Up </small></h3>
-                
-              </div>
-              {{#if errors}}
+
+<div class="section section-signup" style="background-image: url('assets/img/bg11.jpg'); background-size: cover; background-position: top center; min-height: 700px;">
+         {{#if errors}}
   {{#each errors}}
   <div class="alert alert-danger">
     {{this.msg}}
@@ -38,83 +20,105 @@
     {{success}}
   </div>
   {{/if}}
-              <div class="card-body px-lg-5 py-lg-5">
-                <div class="text-center text-muted mb-4">
-                  
+		<div class="container">
+          <div class="row">
+            <div class="card card-signup" data-background-color="orange">
+              <form class="form" action = "/register" method = "post">
+                <div class="card-header text-center">
+                  <h3 class="card-title title-up">Log In</h3>
+                  <div class="social-line">
+                    <a href="#pablo" class="btn btn-neutral btn-facebook btn-icon btn-round">
+                      <i class="fab fa-facebook-square"></i>
+                    </a>
+                    <a href="#pablo" class="btn btn-neutral btn-twitter btn-icon btn-lg btn-round">
+                      <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#pablo" class="btn btn-neutral btn-google btn-icon btn-round">
+                      <i class="fab fa-google-plus"></i>
+                    </a>
+                  </div>
                 </div>
-                <form action = "/register" method = "post"  role="form">
-                  <div class ="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
-                      </div>
-                      <input class="form-control" placeholder="Username" type="text" name = "username" value = "{{username}}" required/>
+                <div class="card-body">
+                  <div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons users_circle-08"></i>
+                      </span>
                     </div>
+                     <input class="form-control" placeholder="Username" type="text" name = "username" value = "{{username}}" required/>
                   </div>
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
-                      </div>
-                      <input class="form-control" placeholder="sponsor" type="text" name = "sponsor" value = "{{sponsor}}" /  >
+				  <div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons users_circle-08"></i>
+                      </span>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
-                      </div>
-                      <input class="form-control" placeholder="Fullname" type="text" name = "fullname" value = "{{fullname}}" required/  >
+                     <input class="form-control" placeholder="sponsor" type="text" name = "sponsor" value = "{{sponsor}}" /  >
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-email-83"></i></span>
-                      </div>
-                      <input class="form-control" placeholder="Email" type="email" name = "email" value = "{{email}}" required/  >
+                  <div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons text_caps-small"></i>
+                      </span>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-phone-83"></i></span>
-                      </div>
-                      <input class="form-control" placeholder="Phone Number" type="tel" name = "phone" value = "{{phone}}" required/  >
+                    <input class="form-control" placeholder="Fullname" type="text" name = "fullname" value = "{{fullname}}" required/  >
                     </div>
-                  </div>
-                  <div class="form-group focused">
-                    <div class="input-group input-group-alternative">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                      </div>
-                      <input class="form-control" placeholder="Password"  id = "REGpassword" type="password" name = "password" value = "{{password}}" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/ >
+                  <div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons ui-1_email-85"></i>
+                      </span>
+                    </div>
+                    <input class="form-control" placeholder="Email" type="email" name = "email" value = "{{email}}" required/  >
+                    </div>
+					<div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons ui-1_email-85"></i>
+                      </span>
+                    </div>
+                    <input class="form-control" placeholder="Phone Number" type="tel" name = "phone" value = "{{phone}}" required/  >
+                    </div>
+					<div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons ui-1_email-85"></i>
+                      </span>
+                    </div>
+                    <input class="form-control" placeholder="Password"  id = "REGpassword" type="password" name = "password" value = "{{password}}" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/ >
                       
                     </div>
-                  </div>
-                  <div class="form-group focused">
-                    <div class="input-group input-group-alternative">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                      </div>
-                      <input class="form-control" id = "cpass" placeholder="Re-enter Password" type="password" name = "cpass" value = "{{password}}" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/ >
+					<div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons ui-1_email-85"></i>
+                      </span>
                     </div>
-                  </div>
-                  
-                  
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary mt-4" id = "ableReg" >Create account</button>
-                  </div><br>
-                  <p class = " text-center">Have an account already? <a href = "/login">Login</a></p>
-                </form>
-              </div>
+                    <input class="form-control" id = "cpass" placeholder="Re-enter Password" type="password" name = "cpass" value = "{{password}}" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/ >
+                    </div>
+                  <!-- If you want to add a checkbox to this form, uncomment this code -->
+                  <!-- <div class="checkbox">
+								<input id="checkboxSignup" type="checkbox">
+									<label for="checkboxSignup">
+									Unchecked
+									</label>
+								</div> -->
+                </div>
+                <div class="card-footer text-center">
+                  <button type="submit" class="btn btn-neutral btn-round btn-lg">Get Started</button>
+                </div>
+              </form>
             </div>
+          </div>
+          <div class="col text-center">
+            <a href = "/login/ref={{username}}" class="btn btn-outline-default btn-round btn-white btn-lg" target="_blank">View Login Page</a>
           </div>
         </div>
       </div>
-      
-    </section>
-    
-  </div>
+	
+	
+	
+	
+</div>
 
 {{> mainf}}

@@ -6,57 +6,63 @@
   </div>
 {{/errors}}
 {{/showErrors}}
-  <div class="container pt-lg-7">
-      <div class="row justify-content-center">
-        <div class="col-lg-5">
-          <div class="card bg-secondary shadow border-0">
-            <div class="card-header bg-white pb-5">
-              
-            <div class="card-body px-lg-5 py-lg-5">
-              <div class="text-center text-muted mb-4">
-                <h3> LOG IN</h3><hr>
-              </div>
-              <form method = "Post" action = "/login" role="form">
-                <div class="form-group mb-3">
-                  <div class="input-group input-group-alternative">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="ni ni-email-83"></i></span>
-                    </div>
-                    <input class="form-control" placeholder="Username" name = "username" type="text">
+
+<div class="container">
+          <div class="row">
+            <div class="card card-signup" data-background-color="orange">
+              <form class="form" action = "/login" method = "post">
+                <div class="card-header text-center">
+                  <h3 class="card-title title-up">Sign Up</h3>
+                  <div class="social-line">
+                    <a href="#pablo" class="btn btn-neutral btn-facebook btn-icon btn-round">
+                      <i class="fab fa-facebook-square"></i>
+                    </a>
+                    <a href="#pablo" class="btn btn-neutral btn-twitter btn-icon btn-lg btn-round">
+                      <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#pablo" class="btn btn-neutral btn-google btn-icon btn-round">
+                      <i class="fab fa-google-plus"></i>
+                    </a>
                   </div>
                 </div>
-                <div class="form-group focused">
-                  <div class="input-group input-group-alternative">
+                <div class="card-body">
+                  <div class="input-group no-border">
                     <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                      <span class="input-group-text">
+                        <i class="now-ui-icons users_circle-08"></i>
+                      </span>
                     </div>
-                    <input class="form-control" placeholder="Password" type="password" name = "password">
+                     <input class="form-control" placeholder="Username" type="text" name = "username" value = "{{username}}" required/>
                   </div>
+				  
+					<div class="input-group no-border">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="now-ui-icons ui-1_email-85"></i>
+                      </span>
+                    </div>
+                    <input class="form-control" placeholder="Password"  id = "REGpassword" type="password" name = "password" value = "{{password}}" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required/ >
+                      
+                    </div>
+					
+                  <!-- If you want to add a checkbox to this form, uncomment this code -->
+                  <!-- <div class="checkbox">
+								<input id="checkboxSignup" type="checkbox">
+									<label for="checkboxSignup">
+									Unchecked
+									</label>
+								</div> -->
                 </div>
-                <div class="custom-control custom-control-alternative custom-checkbox">
-                  <input class="custom-control-input" id=" customCheckLogin" type="checkbox">
-                  
-                </div>
-                <div class="text-center">
-                  <button type="submit" class="btn btn-primary my-4">Sign in</button>
+                <div class="card-footer text-center">
+                  <button type="submit" class="btn btn-neutral btn-round btn-lg">Log In</button>
                 </div>
               </form>
             </div>
           </div>
-          <div class="row mt-3">
-            <div class="col-4">
-              <a href="/passwordreset/ref={{username}}" class="text-primary"><small>Forgot password?</small></a>
-            </div>
-			<div class="col-4 text-center">
-              <a href="/ref={{username}}" class="text-primary"><small>Home</small></a>
-            </div>
-            <div class="col-4 text-right">
-              <a href="/register/ref={{username}}" class="text-primary"><small>Create new account</small></a>
-            </div>
+          <div class="col text-center">
+             <a href="/passwordreset/ref={{username}}"  class="btn btn-outline-default btn-round btn-white btn-lg" target="_blank">Forgot Password</a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
 {{> mainf}}

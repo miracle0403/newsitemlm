@@ -42,15 +42,6 @@ function rounds( err, results ){
 
 const saltRounds = bcrypt.genSalt( 10, rounds);
 
-/*var pool  = db.createPool({
-  connectionLimit : 100,
-  multipleStatements: true, 
-  waitForConnections: true,
-  host: "localhost",
-  user: "root",
-//  password: 'new',
-  database: "new"
-});*/
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -686,7 +677,6 @@ router.get('/dashboard', ensureLoggedIn('/login'), function(req, res, next) {
 });
 
 
-
 //register
 router.get('/register', function(req, res, next) {
 		var message = 'Registration';
@@ -727,6 +717,13 @@ router.get('/fastteams/ref=', function(req, res, next) {
 	res.redirect('/fastteams')
 });
 
+router.get('/register/ref=', function(req, res, next) {
+	res.redirect('/register')
+});
+
+router.get('/passwordreset/ref=', function(req, res, next) {
+	res.redirect('/passwordreset')
+});
 router.get('/howitworks/ref=', function(req, res, next) {
 	res.redirect('/howitworks')
 });
@@ -1683,9 +1680,9 @@ router.post('/enter-feeder',authentificationMiddleware(), function(req, res, nex
 
 //post log in
 router.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
   function(req, res) {
-		res.redirect('/dashboard');
+	res.redirect('/dashboard');
   });
 /*
   

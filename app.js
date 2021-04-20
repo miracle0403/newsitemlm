@@ -27,7 +27,7 @@ var MySQLStore = require ('express-mysql-session')(session);
 var flash = require('express-flash-messages');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var db = require('./db.js');
+var db = require('./db.js').pool;
 
 console.log('mysql server started')
 console.log('no bugs')
@@ -88,16 +88,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //session
-var options = {
+/*var options = {
   waitForConnections: true,
   connectionLimit : 0,
   host: "localhost",
   user: "miracle0403",
   password: 'MIracle1994@I',
   database: "ezwiftdb"
-} 
-
-
+} */
+var options = {
+	host: "localhost",
+	user: "miracle0403",
+	password: 'MIracle1994@I',
+	database: "ezwiftdb"
+}
 
 app.use(myConnection(sql, options, 'pool')); 
 
