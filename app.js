@@ -100,9 +100,9 @@ app.use(helmet());
 } */
 var options = {
 	host: "localhost",
-	user: "miracle0403",
-	password: 'MIracle1994@I',
-	database: "ezwiftdb"
+  user: "miracle0403",
+  password: 'MIracle1994@I',
+  database: "ezwiftdb"
 }
 
 app.use(myConnection(sql, options, 'pool')); 

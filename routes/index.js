@@ -36,11 +36,8 @@ var verify = require('../nodemailer/verify');
 
 //var bcrypt = require('../functions/other/bcrypt');
 
-function rounds( err, results ){
-        if ( err ) throw err;
-}
 
-const saltRounds = bcrypt.genSalt( 10, rounds);
+const saltRounds = bcrypt.genSaltSync(10);
 
 
 /* GET home page. */
@@ -1242,16 +1239,18 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 														if (err) throw err;
 														if(results.length === 0){
 															//register user
-															bcrypt.hash(password, saltRounds, function(err, hash){
-																db.query('INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (?,?,?,?,?,?,?,?)', [1, 2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
+															//register user
+															bcrypt.hash(password, saltRounds,  function(err, hash){
+																db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 																	if (err) throw err;
 																	var success = 'Registration successful! please login';
 																	res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
 																});
-															});
+															});	
 														}else{
 															//register user
 															bcrypt.hash(password, saltRounds,  function(err, hash){
+																console.log(hash)
 																db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 																	if (err) throw err;
 																	var success = 'Registration successful! please login';
@@ -1280,13 +1279,13 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 													});
 												}else{
 													//register user
-													bcrypt.hash(password, saltRounds, function(err, hash){
-														db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
+													bcrypt.hash(password, saltRounds,  function(err, hash){
+														db.query('INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (?,?,?,?,?,?,?,?)', [1, 2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 															if (err) throw err;
 															var success = 'Registration successful! please login';
 															res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
 														});
-													});	
+													});
 												}
 												
 											});
