@@ -18,7 +18,7 @@ var sql = require('mysql');// || require('postgres');
 var hbs = require('hbs');
 var fs = require('fs');
 
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcryptjs');
 var securePin = require('secure-pin');
 var passport = require('passport');
 var localStrategy = require('passport-local'),Strategy;

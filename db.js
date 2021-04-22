@@ -46,11 +46,13 @@ const mySQL = PoolManager(options);
 
 var pool  = mySQL.raw.createConnection({
 	host: "localhost",
-	user: "root",
-	password: '',
-	database: "newdb"
-})
+        user: "miracle0403",
+        password: 'MIracle1994@I',
+        database: "ezwiftdb"
+});
+
 pool.connect();
+
 /*mysql -u root -p
 YOUR_ROOT_PASSWORD_HERE
 use newdb*/

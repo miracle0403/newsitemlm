@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "bcrypt-nodejs": "0.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "confirm-dialog": "^0.1.2",
     "connect-ensure-login": "^0.1.1",
@@ -23,6 +23,7 @@
     "express-validator": "^6.6.1",
     "formidable": "^1.2.2",
     "hbs": "^4.1.1",
+    "helmet": "^4.5.0",
     "http-errors": "~1.6.3",
     "mathjs": "^9.3.0",
     "morgan": "~1.9.1",

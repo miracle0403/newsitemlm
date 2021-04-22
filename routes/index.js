@@ -30,7 +30,7 @@ var { check, validationResult } = require('express-validator');
 
 
 var linke = require('../functions/routes/route-link');
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcryptjs');
 var verify = require('../nodemailer/verify');
 
 
@@ -1242,7 +1242,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 														if (err) throw err;
 														if(results.length === 0){
 															//register user
-															bcrypt.hash(password, saltRounds, null, function(err, hash){
+															bcrypt.hash(password, saltRounds, function(err, hash){
 																db.query('INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (?,?,?,?,?,?,?,?)', [1, 2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 																	if (err) throw err;
 																	var success = 'Registration successful! please login';
@@ -1251,7 +1251,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 															});
 														}else{
 															//register user
-															bcrypt.hash(password, saltRounds, null, function(err, hash){
+															bcrypt.hash(password, saltRounds,  function(err, hash){
 																db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 																	if (err) throw err;
 																	var success = 'Registration successful! please login';
@@ -1271,7 +1271,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 												if (err) throw err;
 												if(results.length === 0){
 													//register user
-													bcrypt.hash(password, saltRounds, null, function(err, hash){
+													bcrypt.hash(password, saltRounds,  function(err, hash){
 														db.query('INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (?,?,?,?,?,?,?,?)', [1, 2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 															if (err) throw err;
 															var success = 'Registration successful! please login';
@@ -1280,7 +1280,7 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 													});
 												}else{
 													//register user
-													bcrypt.hash(password, saltRounds, null, function(err, hash){
+													bcrypt.hash(password, saltRounds, function(err, hash){
 														db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
 															if (err) throw err;
 															var success = 'Registration successful! please login';
@@ -1359,8 +1359,8 @@ router.post('/uploadpop/:order_id/', function(req, res, next){
 	});
 });
 
-func.receive();
-											func.noreceive();
+//func.receive();
+											//func.noreceive();
 											
 //confirm payment 
 router.post('/confirm-payment/:order_id/:receive', authentificationMiddleware(), function(req, res, next){
@@ -1584,7 +1584,7 @@ router.post('/passwordchange',[	 check('password', 'Password must be between 8 t
 					req.flash('passworderror', error);
 					res.redirect('/profile/#passworderror');
 				}else{
-					bcrypt.hash(password, saltRounds, null, function(err, hash){
+					bcrypt.hash(password, saltRounds, function(err, hash){
 						db.query('UPDATE user SET password = ? WHERE user_id = ?', [hash, currentUser], function(err, results, fields){
 							if(err) throw err;
 							var success = 'Password change was successful';
