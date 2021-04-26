@@ -12,6 +12,11 @@ const PoolManager = require('mysql-connection-pool-manager');
 	user: "root",
 	password: '',
 	database: "newdb"
+	host: "localhost",
+  user: "miracle0403",
+  password: 'MIracle1994@I',
+  database: "ezwiftdb"
+	
 });*/
 const options = {
   idleCheckInterval: 1000,
