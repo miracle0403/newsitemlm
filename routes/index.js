@@ -1204,99 +1204,104 @@ router.post('/register', [	check('username', 'Username must be between 8 to 25 n
 			var error = 'Password must match';
 			res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor, error: error});
 		}else{
-			db.query('SELECT username FROM user WHERE username = ?', [username], function(err, results, fields){
-				if (err) throw err;
-				if(results.length > 0){
-					var error = "Sorry, this username is taken";
-					res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,  sponsor: sponsor});
-				}else{
-					db.query('SELECT email FROM user WHERE email = ?', [email], function(err, results, fields){
-						if (err) throw err;
-						if (results.length > 0){
-							var error = "Sorry, this email is taken";
-							res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
-						}else{
-							db.query('SELECT phone FROM user WHERE phone = ?', [phone], function(err, results, fields){
-								if (err) throw err;
-							
-								if (results.length > 0){
-									var error = "Sorry, this phone number is taken";
-									res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
-								}else{
-									db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
-										if (err) throw err;
-										if(results.length === 0){
-											console.log('spon not valid');
-											db.query('SELECT * FROM default_sponsor order by amount DESC', function(err, results, fields){
-												if (err) throw err;
-												console.log(results);
-												var sponsor = results[0].username;
-												var amount = results[0].amount;
-												db.query('UPDATE default_sponsor SET amount = ? WHERE username = ?', [amount - 1, sponsor], function(err, results, next){
+			if(typeof(phone) !== 'number'){
+				var error = 'Unsupported phone number format. Please review.';
+				res.render('register', { mess: 'REGISTRATION FAILED', errors: errors, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname, sponsor: sponsor, error: error});
+			}else{
+				db.query('SELECT username FROM user WHERE username = ?', [username], function(err, results, fields){
+					if (err) throw err;
+					if(results.length > 0){
+						var error = "Sorry, this username is taken";
+						res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,  sponsor: sponsor});
+					}else{
+						db.query('SELECT email FROM user WHERE email = ?', [email], function(err, results, fields){
+							if (err) throw err;
+							if (results.length > 0){
+								var error = "Sorry, this email is taken";
+								res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
+							}else{
+								db.query('SELECT phone FROM user WHERE phone = ?', [phone], function(err, results, fields){
+									if (err) throw err;
+								
+									if (results.length > 0){
+										var error = "Sorry, this phone number is taken";
+										res.render('register', { mess: 'REGISTRATION FAILED', error: error, username: username, email: email, phone: phone, password: password, cpass: cpass, fullname: fullname,     sponsor: sponsor});
+									}else{
+										db.query('SELECT username FROM user WHERE username = ?', [sponsor], function(err, results, fields){
+											if (err) throw err;
+											if(results.length === 0){
+												console.log('spon not valid');
+												db.query('SELECT * FROM default_sponsor order by amount DESC', function(err, results, fields){
 													if (err) throw err;
-													//check if there is a lft
-													db.query('SELECT lft FROM user WHERE lft = ?', [1], function(err, results, fields){
+													console.log(results);
+													var sponsor = results[0].username;
+													var amount = results[0].amount;
+													db.query('UPDATE default_sponsor SET amount = ? WHERE username = ?', [amount - 1, sponsor], function(err, results, next){
 														if (err) throw err;
-														if(results.length === 0){
-															//register user
-															//register user
-															bcrypt.hash(password, saltRounds,  function(err, hash){
-																db.query('INSERT INTO user (user_id, amount, lft, rgt, sponsor, full_name, phone, username, email, password) VALUES (?,?,?,?,?,?,?,?,?,?)', [1,1,1,2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
-																	if (err) throw err;
-																	var success = 'Registration successful! please login';
-																	res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
-																});
-															});	
-														}else{
-															//register user
-															bcrypt.hash(password, saltRounds,  function(err, hash){
-																console.log(hash)
-																db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
-																	if (err) throw err;
-																	var success = 'Registration successful! please login';
-																	res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
-																});
-															});	
-														}
-														
+														//check if there is a lft
+														db.query('SELECT lft FROM user WHERE lft = ?', [1], function(err, results, fields){
+															if (err) throw err;
+															if(results.length === 0){
+																//register user
+																//register user
+																bcrypt.hash(password, saltRounds,  function(err, hash){
+																	db.query('INSERT INTO user (user_id, amount, lft, rgt, sponsor, full_name, phone, username, email, password) VALUES (?,?,?,?,?,?,?,?,?,?)', [1,1,1,2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
+																		if (err) throw err;
+																		var success = 'Registration successful! please login';
+																		res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+																	});
+																});	
+															}else{
+																//register user
+																bcrypt.hash(password, saltRounds,  function(err, hash){
+																	console.log(hash)
+																	db.query('CALL register (?,?,?,?,?,?)', [sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
+																		if (err) throw err;
+																		var success = 'Registration successful! please login';
+																		res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+																	});
+																});	
+															}
+															
+														});
 													});
 												});
-											});
-											
-										}else{
-											var sponsor = req.body.sponsor;
-											console.log('spon is valid');
-											db.query('SELECT lft FROM user WHERE lft = ?', [1], function(err, results, fields){
-												if (err) throw err;
-												if(results.length === 0){
-													//register user
-													bcrypt.hash(password, saltRounds,  function(err, hash){
-														db.query('INSERT INTO user (user_id, amount, lft, rgt, sponsor, full_name, phone, username, email, password) VALUES (?,?,?,?,?,?,?,?,?,?)', [1,1,1,2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
-															if (err) throw err;
-															var success = 'Registration successful! please login';
-															res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
-														});
-													});	;	
-												}else{
-													//register user
-													bcrypt.hash(password, saltRounds,  function(err, hash){
-														db.query('INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (?,?,?,?,?,?,?,?)', [1, 2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
-															if (err) throw err;
-															var success = 'Registration successful! please login';
-															res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
-														});
-													});
-												}
 												
-											});
-										}
-									});
-								}
-							});
-						}
-					});
-				}
-			});
+											}else{
+												var sponsor = req.body.sponsor;
+												console.log('spon is valid');
+												db.query('SELECT lft FROM user WHERE lft = ?', [1], function(err, results, fields){
+													if (err) throw err;
+													if(results.length === 0){
+														//register user
+														bcrypt.hash(password, saltRounds,  function(err, hash){
+															db.query('INSERT INTO user (user_id, amount, lft, rgt, sponsor, full_name, phone, username, email, password) VALUES (?,?,?,?,?,?,?,?,?,?)', [1,1,1,2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
+																if (err) throw err;
+																var success = 'Registration successful! please login';
+																res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+															});
+														});	;	
+													}else{
+														//register user
+														bcrypt.hash(password, saltRounds,  function(err, hash){
+															db.query('INSERT INTO user (lft, rgt, sponsor ,  full_name ,  phone ,  username ,  email , password) VALUES (?,?,?,?,?,?,?,?)', [1, 2, sponsor, fullname, phone, username, email, hash],  function(err, results, fields){
+																if (err) throw err;
+																var success = 'Registration successful! please login';
+																res.render('register', {mess: 'REGISTRATION SUCCESSFUL', success: success});
+															});
+														});
+													}
+													
+												});
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
 		}
 	}
 });
